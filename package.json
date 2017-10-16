@@ -1,0 +1,19 @@
+{
+  "name": "react-domjudge",
+  "version": "0.0.1",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "nodemon server.js",
+    "client": "node start-client.js"
+  },
+  "author": "Myungwoo Chun",
+  "dependencies": {
+    "express": "^4.16.2"
+  },
+  "devDependencies": {
+    "concurrently": "^3.5.0",
+    "nodemon": "^1.12.1"
+  }
+}
