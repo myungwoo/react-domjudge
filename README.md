@@ -13,6 +13,15 @@ npm i && cd client && npm i && cd ..
 npm start
 ```
 
+## ESLint 확인
+
+```bash
+npm run lint
+
+cd client
+npm run lint
+```
+
 ## 도움이 됐던 사이트들
 
 [Create-react-app with express api](https://github.com/fullstackreact/food-lookup-demo)

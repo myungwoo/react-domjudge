@@ -6,7 +6,8 @@
   "scripts": {
     "start": "concurrently \"npm run server\" \"npm run client\"",
     "server": "nodemon server.js",
-    "client": "node start-client.js"
+    "client": "node start-client.js",
+    "lint": "eslint **/*.js"
   },
   "author": "Myungwoo Chun",
   "dependencies": {
@@ -14,6 +15,8 @@
   },
   "devDependencies": {
     "concurrently": "^3.5.0",
+    "eslint": "^4.9.0",
     "nodemon": "^1.12.1"
-  }
+  },
+  "eslintIgnore": ["client/*"]
 }
