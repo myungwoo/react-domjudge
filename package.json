@@ -11,12 +11,15 @@
   },
   "author": "Myungwoo Chun",
   "dependencies": {
-    "express": "^4.16.2"
+    "express": "^4.16.2",
+    "jsonwebtoken": "^8.1.0"
   },
   "devDependencies": {
     "concurrently": "^3.5.0",
     "eslint": "^4.9.0",
     "nodemon": "^1.12.1"
   },
-  "eslintIgnore": ["client/*"]
+  "eslintIgnore": [
+    "client/*"
+  ]
 }
