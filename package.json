@@ -12,9 +12,11 @@
   "author": "Myungwoo Chun",
   "dependencies": {
     "express": "^4.16.2",
-    "jsonwebtoken": "^8.1.0"
+    "jsonwebtoken": "^8.1.0",
+    "node-mysql": "^0.4.2"
   },
   "devDependencies": {
+    "babel-eslint": "^8.0.1",
     "concurrently": "^3.5.0",
     "eslint": "^4.9.0",
     "nodemon": "^1.12.1"

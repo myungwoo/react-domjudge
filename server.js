@@ -2,10 +2,12 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const config = require('./config');
+const db = require('./db');
 
 const app = express();
 
 app.set('port', process.env.PORT || 3001);
+app.set('db_pool', db);
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
