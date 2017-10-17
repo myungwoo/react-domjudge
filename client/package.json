@@ -5,6 +5,8 @@
   "private": true,
   "dependencies": {
     "axios": "^0.16.2",
+    "material-ui": "^1.0.0-beta.17",
+    "material-ui-icons": "^1.0.0-beta.17",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
     "react-scripts": "1.0.14"
@@ -20,5 +22,7 @@
     "eslint": "^4.9.0",
     "eslint-plugin-react": "^7.4.0"
   },
-  "eslintIgnore": ["build/*"]
+  "eslintIgnore": [
+    "build/*"
+  ]
 }
