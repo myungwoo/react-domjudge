@@ -1,4 +1,5 @@
 import React from 'react';
+import {HashRouter, Route, Redirect} from 'react-router-dom';
 import {AppBar, Toolbar, Typography, Button, IconButton, Drawer, Divider} from 'material-ui';
 import MenuIcon from 'material-ui-icons/Menu';
 import WebIcon from 'material-ui-icons/Web';
@@ -11,6 +12,18 @@ import Auth from './auth';
 import Login from './auth/login';
 
 import './App.css';
+
+class A extends React.Component {
+  render() {
+    return (<h1>A</h1>);
+  }
+}
+
+class B extends React.Component {
+  render() {
+    return (<h1>B</h1>);
+  }
+}
 
 class App extends React.Component {
   constructor(props) {
@@ -29,8 +42,8 @@ class App extends React.Component {
   }
 
   render() {
-    if (Auth.getUser())
-      return (
+    return (
+      Auth.getUser() ?
         <div>
           <AppBar>
             <Toolbar>
@@ -52,13 +65,13 @@ class App extends React.Component {
           <Drawer open={this.state.open} onRequestClose={() => this.setState({open: false})}>
             <div>
               <List style={{width: 250}}>
-                <ListItem button>
+                <ListItem button onClick={() => {this.setState({open: false}); window.location = '#/';}}>
                   <ListItemIcon>
                     <DescriptionIcon />
                   </ListItemIcon>
                   <ListItemText primary="Overview" />
                 </ListItem>
-                <ListItem button>
+                <ListItem button onClick={() => {this.setState({open: false}); window.location = '#/B';}}>
                   <ListItemIcon>
                     <LibraryBooksIcon />
                   </ListItemIcon>
@@ -90,15 +103,19 @@ class App extends React.Component {
               border: '1px solid #ebebeb',
               boxShadow: 'rgba(0, 0, 0, 0.14902) 0px 1px 1px 0px, rgba(0, 0, 0, 0.09804) 0px 1px 2px 0px'
             }}>
-              <h1>Hello!</h1>
+              <HashRouter>
+                <div>
+                  <Route exact path="/" component={A} />
+                  <Route path="/B" component={B} />
+                  <Redirect to="/" />
+                </div>
+              </HashRouter>
             </div>
           </div>
         </div>
-      );
-    else
-      return (
+        :
         <Login />
-      );
+    );
   }
 }
 
