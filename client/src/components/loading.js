@@ -7,10 +7,9 @@ class Loading extends React.Component {
     return (
       <div style={{
         backgroundColor: 'rgba(0, 0, 0, 0.1892)',
-        width: '100%', height: '100%', zIndex: 9999,
-        position: 'absolute', top: 0, left: 0,
+        width: '100%', height: '100%', zIndex: 10000,
+        position: 'fixed', top: 0, left: 0,
         textAlign: 'center',
-        display: this.props.loading ? 'block' : 'none'
       }}>
         <div style={{
           position: 'relative', top: '50%',

@@ -1,8 +1,10 @@
 import React from 'react';
-import Auth from '../auth';
+import PropTypes from 'prop-types';
+
+import Auth from './Auth';
 import {TextField, Button} from 'material-ui';
 
-import Loading from '../components/loading';
+import Loading from './components/loading';
 
 class LoginPage extends React.Component {
   constructor(props) {
@@ -31,7 +33,7 @@ class LoginPage extends React.Component {
         }
         else{
           this.toast('Welcome!');
-          this.props.afterLogin();
+          this.props.onLogin();
         }
       });
   }
@@ -39,7 +41,7 @@ class LoginPage extends React.Component {
   render() {
     return (
       <div>
-        <Loading loading={this.state.loading} />
+        {this.state.loading && <Loading loading={this.state.loading} />}
         <hgroup style={{textAlign: 'center', marginTop: '4em'}}>
           <h1 style={{fontWeight: 300, color: '#636363'}}><a href="http://domjudge.org" target="_blank" rel="noopener noreferrer">DOMJudge</a> for React</h1>
           <h3 style={{fontWeight: 300, color: '#4a89dc'}}>Powered by <a href="https://github.com/myungwoo" target="_blank" rel="noopener noreferrer">Myungwoo Chun</a></h3>
@@ -74,6 +76,11 @@ class LoginPage extends React.Component {
       </div>
     );
   }
+}
+
+LoginPage.PropTypes = {
+  toast: PropTypes.object.isRequired,
+  onLogin: PropTypes.object.isRequired
 }
 
 export default LoginPage;

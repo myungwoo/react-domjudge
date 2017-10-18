@@ -48,7 +48,7 @@ class UserInfoDialog extends React.Component {
 }
 
 UserInfoDialog.propTypes = {
-  user: PropTypes.object // dict
+  user: PropTypes.object.isRequired // dict
 };
 
 export default UserInfoDialog;

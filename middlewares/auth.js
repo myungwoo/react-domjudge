@@ -6,9 +6,11 @@ module.exports = function(req, res, next) {
 
   req.user = null;
   try {
-    req.user = jwt.verify(token, secret, {
+    // eslint-disable-next-line no-unused-vars
+    let {iat, exp, iss, ...rest} = jwt.verify(token, secret, {
       issuer: req.app.get('jwt-issuer')
     });
+    req.user = rest;
   } catch (e) {
     // Token verification failed
   }
