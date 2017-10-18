@@ -2,17 +2,17 @@ import React from 'react';
 import Auth from '../auth';
 import {TextField, Button} from 'material-ui';
 
-import Loading from '../common/loading';
+import Loading from '../components/loading';
 
 class LoginPage extends React.Component {
   constructor(props) {
     super(props);
+    this.toast = props.toast;
     this.state = {
       username: '',
       password: '',
 
-      loading: false,
-      message: ''
+      loading: false
     };
   }
 
@@ -25,8 +25,14 @@ class LoginPage extends React.Component {
     this.setState({loading: true});
     Auth.doLogin(this.state.username, this.state.password)
       .then(err => {
-        if (err) this.setState({message: message[err] || 'Sign in failed...', loading: false});
-        else window.location.reload();
+        if (err){
+          this.toast(message[err] || 'Sign in failed...');
+          this.setState({loading: false});
+        }
+        else{
+          this.toast('Welcome!');
+          this.props.afterLogin();
+        }
       });
   }
 
@@ -44,7 +50,6 @@ class LoginPage extends React.Component {
           border: '1px solid #ebebeb',
           boxShadow: 'rgba(0, 0, 0, 0.14902) 0px 1px 1px 0px, rgba(0, 0, 0, 0.09804) 0px 1px 2px 0px'
         }}>
-          <div style={{color: '#d00'}}>{this.state.message}</div>
           <TextField
             placeholder="Username"
             label="Username"
