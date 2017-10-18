@@ -32,7 +32,7 @@ class LoginPage extends React.Component {
           this.setState({loading: false});
         }
         else{
-          this.toast('Welcome!');
+          this.toast(`Welcome, ${this.state.username}!`);
           this.props.onLogin();
         }
       });
