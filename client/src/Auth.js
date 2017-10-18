@@ -32,7 +32,7 @@ const Auth = {
       localStorage.removeItem('jwt-token');
       localStorage.removeItem('userdata');
     }
-    return res;
+    return res.data;
   },
 
   getUser: () => {

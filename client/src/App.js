@@ -49,14 +49,14 @@ class App extends React.Component {
             Cannot connect to API server.<br /> Please contact administrator.
           </div>
           : this.state.loading ?
-          <div style={{textAlign: 'center', paddingTop: 100, fontWeight: 900, fontSize: 40}}>
-            Application is loading, please wait...
-            <Loading />
-          </div>
-          : this.state.user ?
-          <Main toast={this.toast.bind(this)} onLogout={() => this.setState({user: Auth.getUser()})} user={this.state.user} />
-          :
-          <Login toast={this.toast.bind(this)} onLogin={() => this.setState({user: Auth.getUser()})} />
+            <div style={{textAlign: 'center', paddingTop: 100, fontWeight: 900, fontSize: 40}}>
+              Application is loading, please wait...
+              <Loading />
+            </div>
+            : this.state.user ?
+              <Main toast={this.toast.bind(this)} onLogout={() => this.setState({user: Auth.getUser()})} user={this.state.user} />
+              :
+              <Login toast={this.toast.bind(this)} onLogin={() => this.setState({user: Auth.getUser()})} />
         }
         <Snackbar
           anchorOrigin={{vertical: 'top', horizontal: 'right'}}

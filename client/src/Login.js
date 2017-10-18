@@ -81,6 +81,6 @@ class LoginPage extends React.Component {
 LoginPage.PropTypes = {
   toast: PropTypes.object.isRequired,
   onLogin: PropTypes.object.isRequired
-}
+};
 
 export default LoginPage;
