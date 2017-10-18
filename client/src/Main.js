@@ -67,15 +67,15 @@ class Main extends React.Component {
               DOMJudge
             </Typography>
             <Tooltip placement="bottom" title="Contest starts in">
-              <Button color="contrast" onClick={() => this.setState({timer_open: !this.state.timer_open})}>
+              <Button dense color="contrast" onClick={() => this.setState({timer_open: !this.state.timer_open})}>
                 <ClockIcon />
                 {this.state.timer_open &&
                   <Timer
-                    style={{paddingLeft: 10}}
+                    style={{paddingLeft: 10, fontSize: 15}}
                   />}
               </Button>
             </Tooltip>
-            <Button color="contrast" onClick={() => this.setState({dialog_open: true})}>
+            <Button dense color="contrast" onClick={() => this.setState({dialog_open: true})}>
               <AccountCircleIcon />
             </Button>
           </Toolbar>
