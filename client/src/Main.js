@@ -108,11 +108,11 @@ class Main extends React.Component {
             </List>
             <Divider />
             <List>
-              <ListItem button>
+              <ListItem button onClick={() => {this.setState({open: false}); this.logout();}}>
                 <ListItemIcon>
                   <HighlightOffIcon />
                 </ListItemIcon>
-                <ListItemText primary="Logout" onClick={() => {this.setState({open: false}); this.logout();}} />
+                <ListItemText primary="Logout" />
               </ListItem>
             </List>
           </div>
