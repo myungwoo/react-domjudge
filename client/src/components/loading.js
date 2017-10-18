@@ -15,7 +15,7 @@ class Loading extends React.Component {
           position: 'relative', top: '50%',
           transform: 'translateY(-50%)'
         }}>
-          <img src={loading} alt="loading" />
+          <img src={loading} style={{width: 300, height: 300}} alt="loading" />
         </div>
       </div>
     );
