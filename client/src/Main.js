@@ -13,7 +13,7 @@ import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
 import Auth from './storages/auth';
 
 import {ClockIcon} from './components/icons';
-import Timer from './components/timer';
+import Timer, {getNow} from './components/timer';
 import UserInfoDialog from './components/user-info-dialog';
 
 import Overview from './Overview';
@@ -36,12 +36,34 @@ class Main extends React.Component {
     this.onLogout = props.onLogout;
     this.user = props.user;
     this.contest = props.contest;
+    let now = getNow();
+    let contest_state = 0;
+    if (now >= this.contest.endtime) contest_state = 2;
+    else if (now >= this.contest.starttime) contest_state = 1;
     this.state = {
       open: false,
-
       timer_open: true,
-      dialog_open: false
+      dialog_open: false,
+
+      contest_state, // 0: start yet, 1: running, 2: finished
     };
+  }
+
+  componentDidMount() {
+    this.timer = setInterval(this.tick.bind(this), 1000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timer);
+  }
+
+  tick() {
+    let now = getNow();
+    let contest_state = 0;
+    if (now >= this.contest.endtime) contest_state = 2;
+    else if (now >= this.contest.starttime) contest_state = 1;
+    if (this.state.contest_state !== contest_state)
+      this.setState({contest_state});
   }
 
   logout() {
@@ -63,11 +85,17 @@ class Main extends React.Component {
             <Typography type="title" color="inherit" style={{flex: 1}}>
               DOMjudge
             </Typography>
-            <Tooltip placement="bottom" title="Contest starts in">
+            <Tooltip placement="bottom" title={['Time to start'][this.state.contest_state] || 'Time left'}>
               <Button dense color="contrast" onClick={() => this.setState({timer_open: !this.state.timer_open})}>
                 <ClockIcon />
-                {this.state.timer_open &&
+                {this.state.timer_open && this.state.contest_state === 0 &&
                   <Timer
+                    timeToGo={this.contest.starttime}
+                    style={{paddingLeft: 10, fontSize: 15}}
+                  />}
+                {this.state.timer_open && this.state.contest_state !== 0 &&
+                  <Timer
+                    timeToGo={this.contest.endtime}
                     style={{paddingLeft: 10, fontSize: 15}}
                   />}
               </Button>
@@ -118,8 +146,10 @@ class Main extends React.Component {
           width: '100%', padding: '86px 10px 15px 10px'
         }}>
           <Switch>
-            <Route exact path="/" render={props => (<Overview {...props} user={this.user} contest={this.contest} toast={this.toast.bind(this)} />)} />
-            <Route exact path="/B" render={props => (<B {...props} toast={this.toast.bind(this)} />)} />
+            <Route exact path="/" render={props =>
+              (<Overview {...props} user={this.user} contest={this.contest} state={this.state.contest_state} toast={this.toast.bind(this)} />)} />
+            <Route exact path="/B" render={props =>
+              (<B {...props} toast={this.toast.bind(this)} />)} />
             <Redirect to="/" />
           </Switch>
         </div>

@@ -71,7 +71,8 @@ class Overview extends React.Component {
 Overview.PropTypes = {
   toast: PropTypes.func.isRequired,
   user: PropTypes.object.isRequired,
-  contest: PropTypes.object.isRequired
+  contest: PropTypes.object.isRequired,
+  state: PropTypes.number.isRequired
 };
 
 export default Overview;
