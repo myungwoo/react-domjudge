@@ -28,14 +28,15 @@ class LoginPage extends React.Component {
     Auth.doLogin(this.state.username, this.state.password)
       .then(err => {
         if (err){
-          this.toast(message[err] || 'Sign in failed...');
+          this.toast(message[err] || 'Something went wrong, please reload the app.');
           this.setState({loading: false});
         }
         else{
           this.toast(`Welcome, ${this.state.username}!`);
           this.props.onLogin();
         }
-      });
+      })
+      .catch(() => this.toast('Something went wrong, please reload the app.'));
   }
 
   render() {
