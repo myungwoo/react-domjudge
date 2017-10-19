@@ -65,7 +65,7 @@ class Main extends React.Component {
               <MenuIcon />
             </IconButton>
             <Typography type="title" color="inherit" style={{flex: 1}}>
-              DOMJudge
+              DOMjudge
             </Typography>
             <Tooltip placement="bottom" title="Contest starts in">
               <Button dense color="contrast" onClick={() => this.setState({timer_open: !this.state.timer_open})}>

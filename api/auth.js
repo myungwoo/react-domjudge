@@ -4,7 +4,7 @@ const db = require('../db');
 
 const crypto = require('crypto');
 
-// It chould be changed by DOMJudge's hashing algorithm
+// It chould be changed by DOMjudge's hashing algorithm
 const hash_password = (username, password) => crypto.createHash('md5').update(username + '#' + password).digest('hex');
 
 router.post('/login', (req, res) => {

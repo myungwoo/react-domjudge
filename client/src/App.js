@@ -14,6 +14,8 @@ import './App.css';
 
 class App extends React.Component {
   constructor(props) {
+    // eslint-disable-next-line no-console
+    console.log('%cDOMjudge', 'color: #3f51b5; font-weight: bold; font-size: 60pt;');
     super(props);
     this.state = {
       error: false,
