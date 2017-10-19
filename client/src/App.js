@@ -63,22 +63,28 @@ class App extends React.Component {
   }
 
   render() {
+    let content;
+    if (this.state.error)
+      content = (
+        <div style={{textAlign: 'center', paddingTop: 100, fontWeight: 900, fontSize: 40, color: 'red', lineHeight: 2}}>
+          Cannot connect to API server.<br />Please contact administrator.
+        </div>
+      );
+    else if (this.state.loading)
+      content = (
+        <div style={{textAlign: 'center', paddingTop: 100, fontWeight: 900, fontSize: 40}}>
+          Application is loading, please wait...
+          <Loading />
+        </div>
+      );
+    else if (this.state.user)
+      content = (<Main toast={this.toast.bind(this)} onLogout={() => this.setState({user: Auth.getUser()})} user={this.state.user} contest={this.state.contest} />);
+    else
+      content = (<Login toast={this.toast.bind(this)} onLogin={() => this.setState({user: Auth.getUser()})} />);
+
     return (
       <div>
-        {this.state.error ?
-          <div style={{textAlign: 'center', paddingTop: 100, fontWeight: 900, fontSize: 40, color: 'red', lineHeight: 2}}>
-            Cannot connect to API server.<br /> Please contact administrator.
-          </div>
-          : this.state.loading ?
-            <div style={{textAlign: 'center', paddingTop: 100, fontWeight: 900, fontSize: 40}}>
-              Application is loading, please wait...
-              <Loading />
-            </div>
-            : this.state.user ?
-              <Main toast={this.toast.bind(this)} onLogout={() => this.setState({user: Auth.getUser()})} user={this.state.user} contest={this.state.contest} />
-              :
-              <Login toast={this.toast.bind(this)} onLogin={() => this.setState({user: Auth.getUser()})} />
-        }
+        {content}
         <Snackbar
           anchorOrigin={{vertical: 'top', horizontal: 'right'}}
           open={this.state.snackbar_open}
