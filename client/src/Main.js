@@ -16,11 +16,7 @@ import {ClockIcon} from './components/icons';
 import Timer from './components/timer';
 import UserInfoDialog from './components/user-info-dialog';
 
-class A extends React.Component {
-  render() {
-    return (<h1>A</h1>);
-  }
-}
+import Overview from './Overview';
 
 class B extends React.Component {
   componentDidMount() {
@@ -119,19 +115,13 @@ class Main extends React.Component {
           </div>
         </Drawer>
         <div style={{
-          width: '100%', padding: '86px 15px 15px 20px'
+          width: '100%', padding: '86px 10px 15px 10px'
         }}>
-          <div style={{
-            background: '#fafafa',
-            border: '1px solid #ebebeb',
-            boxShadow: 'rgba(0, 0, 0, 0.14902) 0px 1px 1px 0px, rgba(0, 0, 0, 0.09804) 0px 1px 2px 0px'
-          }}>
-            <Switch>
-              <Route exact path="/" render={props => (<A {...props} toast={this.toast.bind(this)} />)} />
-              <Route exact path="/B" render={props => (<B {...props} toast={this.toast.bind(this)} />)} />
-              <Redirect to="/" />
-            </Switch>
-          </div>
+          <Switch>
+            <Route exact path="/" render={props => (<Overview {...props} user={this.user} contest={this.contest} toast={this.toast.bind(this)} />)} />
+            <Route exact path="/B" render={props => (<B {...props} toast={this.toast.bind(this)} />)} />
+            <Redirect to="/" />
+          </Switch>
         </div>
       </div>
     );
