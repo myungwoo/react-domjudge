@@ -52,7 +52,18 @@ router.post('/login', (req, res) => {
 });
 
 router.get('/user', (req, res) => {
-  res.json(req.user);
+  (async function(req, res){
+    if (!req.user) throw Error();
+    let users = await db.user.getByUsername(req.user.username);
+    if (users.length !== 1) throw Error();
+    let user = users[0];
+
+    let teams = await db.team.getByTeamId(user.teamid);
+    if (teams.length !== 1) throw Error();
+
+    res.json(req.user);
+  })(req, res)
+    .catch(() => res.json(null));
 });
 
 module.exports = router;

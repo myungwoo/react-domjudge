@@ -26,12 +26,12 @@ class App extends React.Component {
 
   componentDidMount() {
     // Loading logic
-    const validate_token = async function(){
+    const validate_token = (async function(){
       if (!Auth.getUser())
         return;
       let res = await Auth.validateUser();
       this.setState({user: res});
-    };
+    }).bind(this);
     const check_api = async function(){
       let res = (await axios.get('/api/status'));
       if (res.status !== 200 || !res.data.pong || !res.data.db_conn) throw new Error();
