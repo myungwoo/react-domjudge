@@ -34,7 +34,7 @@ const Auth = {
   getUser: () => {
     try{
       if (localStorage.getItem('jwt-token'))
-        return JSON.parse(localStorage.getItem('userdata') || 'null');
+        return JSON.parse(localStorage.getItem('userdata') || null);
       return null;
     }catch(err){
       localStorage.removeItem('jwt-token');

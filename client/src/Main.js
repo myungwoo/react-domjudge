@@ -10,7 +10,7 @@ import LibraryBooksIcon from 'material-ui-icons/LibraryBooks';
 import HighlightOffIcon from 'material-ui-icons/HighlightOff';
 import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
 
-import Auth from './Auth';
+import Auth from './storages/auth';
 
 import {ClockIcon} from './components/icons';
 import Timer from './components/timer';
@@ -39,6 +39,7 @@ class Main extends React.Component {
     this.toast = props.toast;
     this.onLogout = props.onLogout;
     this.user = props.user;
+    this.contest = props.contest;
     this.state = {
       open: false,
 
@@ -140,7 +141,8 @@ class Main extends React.Component {
 Main.PropTypes = {
   toast: PropTypes.func.isRequired,
   onLogout: PropTypes.func.isRequired,
-  user: PropTypes.object.isRequired
+  user: PropTypes.object.isRequired,
+  contest: PropTypes.object.isRequired
 };
 
 export default Main;

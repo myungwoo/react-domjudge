@@ -21,12 +21,16 @@ router.post('/login', (req, res) => {
       if (teams.length !== 1) throw new Error('no_team');
       let team = teams[0];
 
+      let contests = await db.contest.getListByTeam(team.teamid);
+      if (contests.length === 0) throw new Error('no_contest');
+
       let affils = await db.affiliation.getByAffilId(team.affilid);
       let affiliation = affils.length === 1 ? affils[0] : null;
       let userdata = {
         username: user.username,
         name: user.name,
         teamname: team.name,
+        teamid: team.teamid,
         affiliation: affiliation
       };
       const token = jwt.sign(userdata, secret, {

@@ -19,8 +19,17 @@ router.get('/status', (req, res) => {
     });
   })(req, res);
 });
-router.get('/', (req, res) => {
-  res.send({result: 0, user: req.user});
+
+router.get('/contests', (req, res) => {
+  if (req.user && req.user.teamid){
+    db.contest.getListByTeam(req.user.teamid).then(val => {
+      res.send(val);
+    });
+  }else{
+    db.contest.getPublicList().then(val => {
+      res.send(val);
+    });
+  }
 });
 
 router.use('/', (req, res) => {

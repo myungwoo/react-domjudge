@@ -2,7 +2,8 @@ import React from 'react';
 import axios from 'axios';
 import {Snackbar} from 'material-ui';
 
-import Auth from './Auth';
+import Auth from './storages/auth';
+import Contest from './storages/contest';
 
 import Main from './Main';
 import Login from './Login';
@@ -18,6 +19,7 @@ class App extends React.Component {
       error: false,
       loading: true,
       user: null,
+      contest: null,
 
       snackbar_open: false,
       snackbar_message: ''
@@ -26,18 +28,31 @@ class App extends React.Component {
 
   componentDidMount() {
     // Loading logic
+    let user, contest;
     const validate_token = (async function(){
       if (!Auth.getUser())
         return;
       let res = await Auth.validateUser();
       this.setState({user: res});
+      user = res;
     }).bind(this);
     const check_api = async function(){
       let res = (await axios.get('/api/status'));
       if (res.status !== 200 || !res.data.pong || !res.data.db_conn) throw new Error();
     };
-    Promise.all([validate_token(), check_api()])
-      .then(() => this.setState({loading :false}))
+    const get_contest = (async function(){
+      await Contest.getList();
+      contest = Contest.getContest();
+      this.setState({contest});
+    }).bind(this);
+    Promise.all([validate_token(), check_api(), get_contest()])
+      .then(() => {
+        if (user && !contest){
+          Auth.doLogout();
+          this.setState({user: null});
+        }
+        this.setState({loading:false});
+      })
       .catch(() => this.setState({error: true}));
   }
 
@@ -58,7 +73,7 @@ class App extends React.Component {
               <Loading />
             </div>
             : this.state.user ?
-              <Main toast={this.toast.bind(this)} onLogout={() => this.setState({user: Auth.getUser()})} user={this.state.user} />
+              <Main toast={this.toast.bind(this)} onLogout={() => this.setState({user: Auth.getUser()})} user={this.state.user} contest={this.state.contest} />
               :
               <Login toast={this.toast.bind(this)} onLogin={() => this.setState({user: Auth.getUser()})} />
         }

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import Auth from './Auth';
+import Auth from './storages/auth';
 import {TextField, Button} from 'material-ui';
 
 import Loading from './components/loading';
@@ -22,7 +22,8 @@ class LoginPage extends React.Component {
     const message = {
       no_user: 'Sign in failed...',
       wrong_password: 'Sign in failed...',
-      no_team: 'You\'re not a team member'
+      no_team: 'You\'re not a team member',
+      no_contest: 'No contest available'
     };
     this.setState({loading: true});
     Auth.doLogin(this.state.username, this.state.password)
