@@ -4,7 +4,6 @@ import Button from 'material-ui/Button';
 import Dialog, {
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
 } from 'material-ui/Dialog';
 import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table';
@@ -16,26 +15,24 @@ class UserInfoDialog extends React.Component {
       <Dialog {...rest}>
         <DialogTitle>User information</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Username</TableCell>
-                  <TableCell>Teamname</TableCell>
-                  <TableCell>Affiliation</TableCell>
-                  <TableCell>Country</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                <TableRow key={0}>
-                  <TableCell>{user.username}</TableCell>
-                  <TableCell>{user.teamname}</TableCell>
-                  <TableCell>{(user.affiliation && user.affiliation.name) || 'N/A'}</TableCell>
-                  <TableCell>{(user.affiliation && user.affiliation.country) || 'N/A'}</TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </DialogContentText>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Username</TableCell>
+                <TableCell>Teamname</TableCell>
+                <TableCell>Affiliation</TableCell>
+                <TableCell>Country</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              <TableRow key={0}>
+                <TableCell>{user.username}</TableCell>
+                <TableCell>{user.teamname}</TableCell>
+                <TableCell>{(user.affiliation && user.affiliation.name) || 'N/A'}</TableCell>
+                <TableCell>{(user.affiliation && user.affiliation.country) || 'N/A'}</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
         </DialogContent>
         <DialogActions>
           <Button onClick={rest.onRequestClose} color="primary">
