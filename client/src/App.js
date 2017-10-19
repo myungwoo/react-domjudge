@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import {Snackbar} from 'material-ui';
 
 import Auth from './Auth';
@@ -24,17 +25,20 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    if (!Auth.getUser()){
-      this.setState({loading: false});
-      return;
-    }
-    Auth.validateUser()
-      .then(res => {
-        this.setState({user: res, loading: false});
-      })
-      .catch(() => {
-        this.setState({error: true});
-      });
+    // Loading logic
+    const validate_token = async function(){
+      if (!Auth.getUser())
+        return;
+      let res = await Auth.validateUser();
+      this.setState({user: res});
+    };
+    const check_api = async function(){
+      let res = (await axios.get('/api/status'));
+      if (res.status !== 200 || !res.data.pong || !res.data.db_conn) throw new Error();
+    };
+    Promise.all([validate_token(), check_api()])
+      .then(() => this.setState({loading :false}))
+      .catch(() => this.setState({error: true}));
   }
 
   toast(message) {
