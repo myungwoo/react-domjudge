@@ -43,7 +43,7 @@ class App extends React.Component {
       if (res.status !== 200 || !res.data.pong || !res.data.db_conn) throw new Error();
     };
     const get_contest = (async function(){
-      await Contest.getList();
+      await Contest.updateInfo();
       contest = Contest.getContest();
       this.setState({contest});
     }).bind(this);
@@ -78,9 +78,12 @@ class App extends React.Component {
         </div>
       );
     else if (this.state.user)
-      content = (<Main toast={this.toast.bind(this)} onLogout={() => this.setState({user: Auth.getUser()})} user={this.state.user} contest={this.state.contest} />);
+      content = (<Main toast={this.toast.bind(this)}
+        onLogout={() => this.setState({user: Auth.getUser()})}
+        onContestChange={contest => this.setState({contest})}
+        user={this.state.user} contest={this.state.contest} />);
     else
-      content = (<Login toast={this.toast.bind(this)} onLogin={() => this.setState({user: Auth.getUser()})} />);
+      content = (<Login toast={this.toast.bind(this)} onLogin={() => this.setState({user: Auth.getUser(), contest: Contest.getContest()})} />);
 
     return (
       <div>

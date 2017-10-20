@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+import Contest from './contest';
+
 const Auth = {
   doLogin: async function(username, password) {
     let res = await axios.post('/api/auth/login', {
@@ -9,6 +11,7 @@ const Auth = {
     if (res.data.success){
       localStorage.setItem('jwt-token', res.data.token);
       localStorage.setItem('userdata', JSON.stringify(res.data.userdata));
+      await Contest.updateInfo();
       return null;
     }else{
       return res.data.error;

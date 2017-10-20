@@ -7,14 +7,17 @@ import WebIcon from 'material-ui-icons/Web';
 import AccountCircleIcon from 'material-ui-icons/AccountCircle';
 import DescriptionIcon from 'material-ui-icons/Description';
 import LibraryBooksIcon from 'material-ui-icons/LibraryBooks';
+import ListIcon from 'material-ui-icons/List';
 import HighlightOffIcon from 'material-ui-icons/HighlightOff';
 import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
 
 import Auth from './storages/auth';
+import Contest from './storages/contest';
 
 import {ClockIcon} from './components/icons';
 import Timer, {getNow} from './components/timer';
 import UserInfoDialog from './components/user-info-dialog';
+import ContestSelectDialog from './components/contest-select-dialog';
 
 import Overview from './Overview';
 
@@ -32,18 +35,13 @@ class B extends React.Component {
 class Main extends React.Component {
   constructor(props) {
     super(props);
-    this.toast = props.toast;
-    this.onLogout = props.onLogout;
-    this.user = props.user;
-    this.contest = props.contest;
+    let {contest} = props;
     let now = getNow();
     let contest_state = 0;
-    if (now >= this.contest.endtime) contest_state = 2;
-    else if (now >= this.contest.starttime) contest_state = 1;
+    if (now >= contest.endtime) contest_state = 2;
+    else if (now >= contest.starttime) contest_state = 1;
     this.state = {
-      open: false,
       timer_open: true,
-      dialog_open: false,
 
       contest_state, // 0: start yet, 1: running, 2: finished
     };
@@ -58,19 +56,24 @@ class Main extends React.Component {
   }
 
   tick() {
+    let {contest} = this.props;
     let now = getNow();
     let contest_state = 0;
-    if (now >= this.contest.endtime) contest_state = 2;
-    else if (now >= this.contest.starttime) contest_state = 1;
+    if (now >= contest.endtime) contest_state = 2;
+    else if (now >= contest.starttime) contest_state = 1;
     if (this.state.contest_state !== contest_state)
       this.setState({contest_state});
   }
 
   logout() {
-    Auth.doLogout(); this.onLogout();
+    Auth.doLogout(); this.props.onLogout();
   }
 
   render() {
+    // Since contest list will not be changed after app load.
+    // So it's able to use localStorage instead of state/props.
+    let contests = Contest.getList();
+    let {toast, user, contest, onContestChange} = this.props;
     return (
       <div>
         <AppBar>
@@ -90,7 +93,7 @@ class Main extends React.Component {
                 <ClockIcon />
                 {this.state.timer_open &&
                   <Timer
-                    timeToGo={this.state.contest_state ? this.contest.endtime : this.contest.starttime}
+                    timeToGo={this.state.contest_state ? contest.endtime : contest.starttime}
                     style={{paddingLeft: 10, fontSize: 15}}
                   />}
               </Button>
@@ -98,12 +101,22 @@ class Main extends React.Component {
             <Button dense color="contrast" onClick={() => this.setState({dialog_open: true})}>
               <AccountCircleIcon />
             </Button>
+            {contests.length > 1 &&
+              <Button dense color="contrast" onClick={() => this.setState({contests_open: true})}>
+                <ListIcon />
+              </Button>}
           </Toolbar>
         </AppBar>
         <UserInfoDialog
-          user={this.user}
+          user={user}
           open={this.state.dialog_open}
           onRequestClose={() => this.setState({dialog_open: false})} />
+        {contests.length > 1 &&
+          <ContestSelectDialog
+            open={this.state.contests_open}
+            contest={contest}
+            onContestChange={onContestChange}
+            onRequestClose={() => this.setState({contests_open: false})} />}
         <Drawer open={this.state.open} onRequestClose={() => this.setState({open: false})}>
           <div>
             <List style={{width: 250}}>
@@ -142,9 +155,9 @@ class Main extends React.Component {
         }}>
           <Switch>
             <Route exact path="/" render={props =>
-              (<Overview {...props} user={this.user} contest={this.contest} state={this.state.contest_state} toast={this.toast.bind(this)} />)} />
+              (<Overview {...props} user={user} contest={contest} state={this.state.contest_state} toast={toast} />)} />
             <Route exact path="/B" render={props =>
-              (<B {...props} toast={this.toast.bind(this)} />)} />
+              (<B {...props} toast={toast} />)} />
             <Redirect to="/" />
           </Switch>
         </div>
@@ -157,7 +170,8 @@ Main.PropTypes = {
   toast: PropTypes.func.isRequired,
   onLogout: PropTypes.func.isRequired,
   user: PropTypes.object.isRequired,
-  contest: PropTypes.object.isRequired
+  contest: PropTypes.object.isRequired,
+  onContestChange: PropTypes.func.isRequired
 };
 
 export default Main;
