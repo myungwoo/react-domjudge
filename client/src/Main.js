@@ -94,7 +94,7 @@ class Main extends React.Component {
                 {this.state.timer_open &&
                   <Timer
                     timeToGo={this.state.contest_state ? contest.endtime : contest.starttime}
-                    style={{paddingLeft: 10, fontSize: 15}}
+                    style={{paddingLeft: 10, fontSize: 15, textTransform: 'none'}}
                   />}
               </Button>
             </Tooltip>
