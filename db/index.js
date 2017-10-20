@@ -13,5 +13,6 @@ module.exports = {
   user: require('./user'),
   team: require('./team'),
   affiliation: require('./affiliation'),
-  contest: require('./contest')
+  contest: require('./contest'),
+  submission: require('./submission'),
 };

@@ -32,6 +32,28 @@ router.get('/contests', (req, res) => {
   }
 });
 
+router.post('/submissions', (req, res) => {
+  if (!req.user){ res.sendStatus(401); return; }
+  const {cid} = req.body;
+  const {teamid} = req.user;
+  if (!cid || isNaN(Number(cid))){ res.sendStatus(400); return; }
+  (async function(req, res){
+    let contests = await db.contest.getContestByCid(cid);
+    if (contests.length === 0){
+      res.send([]);
+      return;
+    }
+    let contest = contests[0];
+    let submissions = await db.submission.getListByTeamContest(cid, teamid);
+    res.send(submissions.map(x => {
+      let {...e} = x;
+      if (e.submittime >= contest.endtime)
+        e.result = 'too-late';
+      return e;
+    }));
+  })(req, res);
+});
+
 router.use('/', (req, res) => {
   // 404 Not found for remaining requests
   res.sendStatus(404);
