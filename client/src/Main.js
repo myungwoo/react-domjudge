@@ -88,14 +88,9 @@ class Main extends React.Component {
             <Tooltip placement="bottom" title={['Time to start'][this.state.contest_state] || 'Time left'}>
               <Button dense color="contrast" onClick={() => this.setState({timer_open: !this.state.timer_open})}>
                 <ClockIcon />
-                {this.state.timer_open && this.state.contest_state === 0 &&
+                {this.state.timer_open &&
                   <Timer
-                    timeToGo={this.contest.starttime}
-                    style={{paddingLeft: 10, fontSize: 15}}
-                  />}
-                {this.state.timer_open && this.state.contest_state !== 0 &&
-                  <Timer
-                    timeToGo={this.contest.endtime}
+                    timeToGo={this.state.contest_state ? this.contest.endtime : this.contest.starttime}
                     style={{paddingLeft: 10, fontSize: 15}}
                   />}
               </Button>
