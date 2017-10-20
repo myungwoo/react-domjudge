@@ -9,7 +9,6 @@ import Loading from './components/loading';
 class LoginPage extends React.Component {
   constructor(props) {
     super(props);
-    this.toast = props.toast;
     this.state = {
       username: '',
       password: '',
@@ -19,6 +18,7 @@ class LoginPage extends React.Component {
   }
 
   handleSubmit() {
+    const {toast} = this.props;
     const message = {
       no_user: 'Sign in failed...',
       wrong_password: 'Sign in failed...',
@@ -29,15 +29,15 @@ class LoginPage extends React.Component {
     Auth.doLogin(this.state.username, this.state.password)
       .then(err => {
         if (err){
-          this.toast(message[err] || 'Something went wrong, please reload the app.');
+          toast(message[err] || 'Something went wrong, please reload the app.');
           this.setState({loading: false});
         }
         else{
-          this.toast(`Welcome, ${this.state.username}!`);
+          toast(`Welcome, ${this.state.username}!`);
           this.props.onLogin();
         }
       })
-      .catch(() => this.toast('Something went wrong, please reload the app.'));
+      .catch(() => toast('Something went wrong, please reload the app.'));
   }
 
   render() {
