@@ -151,7 +151,7 @@ class Main extends React.Component {
           </div>
         </Drawer>
         <div style={{
-          width: '100%', padding: '86px 10px 15px 10px'
+          width: '100%', padding: '86px 20px 15px 20px'
         }}>
           <Switch>
             <Route exact path="/" render={props =>
