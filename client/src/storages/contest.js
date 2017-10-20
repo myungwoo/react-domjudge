@@ -8,8 +8,11 @@ const Contest = {
     let contests = res.data;
     localStorage.setItem('contests', JSON.stringify(contests));
     let current_contest = JSON.parse(localStorage.getItem('contest') || null);
-    if (!contests.map(e => e.cid).includes(current_contest.cid))
+    let idx = contests.map(e => e.cid).indexOf(current_contest.cid);
+    if (idx < 0)
       localStorage.setItem('contest', JSON.stringify(contests[0] || null));
+    else
+      localStorage.setItem('contest', JSON.stringify(contests[idx] || null));
     return contests;
   },
   getList: () => JSON.parse(localStorage.getItem('contests') || '[]'),
