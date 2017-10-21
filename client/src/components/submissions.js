@@ -34,6 +34,7 @@ class Submissions extends React.Component {
   refreshSubmission(c) {
     const {setLoading, toast} = this.props;
     const contest = c || this.props.contest;
+    clearTimeout(this.timer);
     setLoading(true);
     axios.post('/api/submissions', {
       cid: contest.cid
@@ -41,11 +42,14 @@ class Submissions extends React.Component {
       .then(res => {
         this.setState({submissions: res.data});
         setLoading(false);
+        // If there's pending submission reload automatically.
+        if (res.data.map(e => e.result).includes(null))
+          this.timer = setTimeout(this.refreshSubmission.bind(this, contest), 4000);
       })
       .catch(() => toast('Something went wrong, please reload the app.'));
   }
 
-  select_submission(submitid) {
+  selectSubmission(submitid) {
     const {toast} = this.props;
     this.setState({loading: true});
     axios.post('/api/submission', {
@@ -94,7 +98,7 @@ class Submissions extends React.Component {
         <TableBody>
           {submissions.map(s => (
             <TableRow key={s.submitid} hover
-              onClick={clickAble(s) ? this.select_submission.bind(this, s.submitid) : null}
+              onClick={clickAble(s) ? this.selectSubmission.bind(this, s.submitid) : null}
               style={{
                 fontWeight: s.seen ? 'inherit' : 800,
                 cursor: clickAble(s) ? 'pointer' : 'inherit',
