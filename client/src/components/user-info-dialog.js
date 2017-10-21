@@ -2,17 +2,20 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Button from 'material-ui/Button';
 import Dialog, {
+  withResponsiveFullScreen,
   DialogActions,
   DialogContent,
   DialogTitle,
 } from 'material-ui/Dialog';
 import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table';
 
+let ResponsiveDialog = withResponsiveFullScreen()(Dialog);
+
 class UserInfoDialog extends React.Component {
   render() {
     const {user, ...rest} = this.props;
     return (
-      <Dialog {...rest}>
+      <ResponsiveDialog {...rest}>
         <DialogTitle>User information</DialogTitle>
         <DialogContent>
           <Table>
@@ -39,7 +42,7 @@ class UserInfoDialog extends React.Component {
             Close
           </Button>
         </DialogActions>
-      </Dialog>
+      </ResponsiveDialog>
     );
   }
 }
