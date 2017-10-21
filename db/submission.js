@@ -26,7 +26,7 @@ exports.getDetailByTeam = (submitid, teamid) => {
         WHERE j.submitid = ? AND teamid = ? AND j.valid = 1`, [submitid, teamid], (err, res) => {
         if (err) reject(err);
         resolve(res.map(e => {
-          e.output_compile = e.output_compile.toString('utf-8');
+          if (e.output_compile) e.output_compile = e.output_compile.toString('utf-8');
           return e;
         }));
       });
@@ -43,9 +43,9 @@ exports.getSampleRun = submitid => {
         WHERE submitid = ? ORDER BY t.rank`, [submitid], (err, res) => {
         if (err) reject(err);
         resolve(res.map(e => {
-          e.output_run = e.output_run.toString('utf-8');
-          e.output_diff = e.output_diff.toString('utf-8');
-          e.output_error = e.output_error.toString('utf-8');
+          if (e.output_run) e.output_run = e.output_run.toString('utf-8');
+          if (e.output_diff) e.output_diff = e.output_diff.toString('utf-8');
+          if (e.output_error) e.output_error = e.output_error.toString('utf-8');
           return e;
         }));
       });
