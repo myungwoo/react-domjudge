@@ -163,7 +163,9 @@ router.post('/submit', upload.array('files'), (req, res) => {
         });
       });
       res.send({success: true});
-      db.auditlog.addLog(cid, username, 'submission', submitid, 'added', 'via react');
+      try{
+        db.auditlog.addLog(cid, username, 'submission', submitid, 'added', 'via react');
+      }catch(err){}
     }catch (err){
       await new Promise((resolve, reject) => {
         conn.query('ROLLBACK', (err, res) => {
