@@ -9,6 +9,7 @@ import Loading from './loading';
 import SubmissionDetailDialog from './submission-detail-dialog';
 
 import Auth from '../storages/auth';
+import Config from '../storages/config';
 
 class Submissions extends React.Component {
   constructor(props) {
@@ -52,6 +53,7 @@ class Submissions extends React.Component {
       submitid
     }, Auth.getHeader())
       .then(res => {
+        if (!res.data) toast('Something went wrong, please reload the app.');
         this.setState({loading: false, selected_submission: res.data});
       })
       .catch(() => {
@@ -78,7 +80,7 @@ class Submissions extends React.Component {
     };
 
     const clickAble = s => (
-      s.submittime < contest.endtime && s.result && s.valid
+      s.submittime < contest.endtime && s.result && s.valid && (!Config.getConfig('verification_required', 0) || s.verified)
     );
     const table = (
       <Table style={{width: '100%'}}>

@@ -76,7 +76,8 @@ router.post('/submission', (req, res) => {
     let contests = await db.contest.getContestByCid(submission.cid);
     if (contests.length === 0){ res.sendStatus(500); return; }
     let contest = contests[0];
-    if (submission.submittime >= contest.endtime){ res.json(null); return; }
+    let verification_required = await db.configuration.getConfig('verification_required', 0);
+    if (submission.submittime >= contest.endtime || (verification_required && !submission.verified)){ res.json(null); return; }
     res.send(submission);
   })(req, res);
 });

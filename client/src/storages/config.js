@@ -6,7 +6,10 @@ const Config = {
     let configs = res.data;
     localStorage.setItem('configs', JSON.stringify(configs));
   },
-  getConfig: () => JSON.parse(localStorage.getItem('configs') || '[]'),
+  getConfig: (key, defaultValue) => {
+    let configs = JSON.parse(localStorage.getItem('configs') || '{}');
+    return configs.key || defaultValue;
+  }
 };
 
 export default Config;
