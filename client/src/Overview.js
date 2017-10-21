@@ -5,6 +5,7 @@ import {Typography, Grid, Paper} from 'material-ui';
 import {LinearProgress} from 'material-ui/Progress';
 
 import Submissions from './components/submissions';
+import SubmitForm from './components/submit-form';
 
 class Overview extends React.Component {
   constructor(props) {
@@ -16,23 +17,31 @@ class Overview extends React.Component {
     const styles = {
       title: {paddingTop: 10, paddingBottom: 10, textAlign: 'center'}
     };
-    const {contest} = this.props;
+    const {contest, state} = this.props;
+    let {sidx} = this.state;
     return (
       <Grid container spacing={16}>
         <Grid item xs={12} md={6}>
           <Grid container>
+            {state === 1 &&
             <Grid item xs={12}>
               <Paper style={{padding: 16}}>
+                {this.state.submitform_loading && <LinearProgress />}
                 <Typography type="title" style={styles.title}>Submit your solution</Typography>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                <SubmitForm
+                  afterSubmit={() => this.setState({sidx: (sidx && ++sidx) || 1})}
+                  contest={contest}
+                  toast={this.props.toast}
+                  setLoading={val => this.setState({submitform_loading: val})} />
               </Paper>
             </Grid>
+            }
             <Grid item xs={12}>
               <Paper style={{padding: 16}}>
                 {this.state.submission_loading && <LinearProgress />}
                 <Typography type="title" style={styles.title}>Submissions</Typography>
                 <Submissions
+                  sidx={sidx}
                   contest={contest}
                   toast={this.props.toast}
                   setLoading={val => this.setState({submission_loading: val})} />
@@ -75,7 +84,7 @@ Overview.PropTypes = {
   toast: PropTypes.func.isRequired,
   user: PropTypes.object.isRequired,
   contest: PropTypes.object.isRequired,
-  state: PropTypes.number.isRequired
+  state: PropTypes.number.isRequired,
 };
 
 export default Overview;

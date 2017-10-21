@@ -51,3 +51,25 @@ exports.getSampleRun = submitid => {
       });
   });
 };
+
+exports.addSubmission = (cid, teamid, probid, langid, connection) => {
+  const conn = connection || pool;
+  return new Promise((resolve, reject) => {
+    conn.query(`INSERT INTO submission (cid, teamid, probid, langid, submittime)
+        VALUES (?, ?, ?, ?, UNIX_TIMESTAMP())`, [cid, teamid, probid, langid], (err, res) => {
+        if (err) reject(err);
+        resolve(res.insertId);
+      });
+  });
+};
+
+exports.addSubmissionFile = (submitid, filename, rank, sourcecode, connection) => {
+  const conn = connection || pool;
+  return new Promise((resolve, reject) => {
+    conn.query(`INSERT INTO submission_file (submitid, filename, rank, sourcecode)
+        VALUES (?, ?, ?, ?)`, [submitid, filename, rank, sourcecode], (err, res) => {
+        if (err) reject(err);
+        resolve(res.insertId);
+      });
+  });
+};

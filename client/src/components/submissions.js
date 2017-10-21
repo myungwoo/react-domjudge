@@ -23,7 +23,8 @@ class Submissions extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if (JSON.stringify(this.props.contest) !== JSON.stringify(nextProps.contest)){
+    if (JSON.stringify(this.props.contest) !== JSON.stringify(nextProps.contest) ||
+        JSON.stringify(this.props.sidx) !== JSON.stringify(nextProps.sidx)){
       // If contest has been changed submission list also has to be changed
       this.refreshSubmission(nextProps.contest);
     }

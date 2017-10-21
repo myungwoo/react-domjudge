@@ -10,7 +10,7 @@ app.set('port', process.env.PORT || 3001);
 app.set('db_pool', db);
 
 app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: config.express.max_body_size}));
 
 app.set('jwt-secret', config.auth.secret);
 app.set('jwt-expire', config.auth.token_expire);

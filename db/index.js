@@ -16,4 +16,6 @@ module.exports = {
   affiliation: require('./affiliation'),
   contest: require('./contest'),
   submission: require('./submission'),
+  problem: require('./problem'),
+  language: require('./language'),
 };

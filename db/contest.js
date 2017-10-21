@@ -34,3 +34,15 @@ exports.getContestByCid = cid => {
     });
   });
 };
+
+exports.getContestByCidTeam = (cid, teamid) => {
+  return new Promise((resolve, reject) => {
+    pool.query(`SELECT *
+        FROM      contest     as c
+        LEFT JOIN contestteam as ct ON (c.cid = ct.cid AND ct.teamid = ?)
+        WHERE c.cid = ? AND (ct.teamid = ? OR c.public = 1)`, [teamid, cid, teamid], (err, res) => {
+        if (err) reject(err);
+        resolve(res);
+      });
+  });
+};

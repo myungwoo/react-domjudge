@@ -1,5 +1,9 @@
 const router = require('express').Router();
 
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({storage});
+
 const authMiddleware = require('../middlewares/auth');
 
 const db = require('./../db');
@@ -74,7 +78,7 @@ router.post('/submission', (req, res) => {
   if (!submitid || isNaN(Number(submitid))){ res.sendStatus(400); return; }
   (async function(req, res){
     let submissions = await db.submission.getDetailByTeam(submitid, teamid);
-    if (submissions.length === 0){ res.json(null); return; }
+    if (submissions.length === 0){ res.json(204); return; }
     let submission = submissions[0];
     let contests = await db.contest.getContestByCid(submission.cid);
     if (contests.length === 0){ res.sendStatus(500); return; }
@@ -91,6 +95,85 @@ router.post('/submission', (req, res) => {
       submission.sample_runs = await db.submission.getSampleRun(submitid);
     res.send(submission);
   })(req, res);
+});
+
+router.post('/problems', (req, res) => {
+  if (!req.user){ res.sendStatus(401); return; }
+  const {cid} = req.body;
+  const {teamid} = req.user;
+  if (!cid || isNaN(Number(cid))){ res.sendStatus(400); return; }
+  (async function(req, res) {
+    let contests = await db.contest.getContestByCidTeam(cid, teamid);
+    if (contests.length === 0){ res.json(204); return; }
+    res.send(await db.problem.getListByContest(cid));
+  })(req, res);
+});
+
+router.get('/languages', (req, res) => {
+  if (!req.user){ res.sendStatus(401); return; }
+  db.language.getList().then(val => res.send(val));
+});
+
+router.post('/submit', upload.array('files'), (req, res) => {
+  const files = req.files;
+  const {cid, probid, langid} = req.body;
+  const {teamid} = req.user;
+  if (!(files.length > 0)){ res.sendStatus(400); return; }
+  if (!cid || isNaN(Number(cid))){ res.sendStatus(400); return; }
+  if (!probid || isNaN(Number(probid))){ res.sendStatus(400); return; }
+  if (!langid || typeof langid !== 'string'){ res.sendStatus(400); return; }
+  (async function(req, res) {
+    const maxfiles = await db.configuration.getConfig('sourcefiles_limit', 100);
+    const maxsize = await db.configuration.getConfig('sourcesize_limit', 256);
+    if (files.length > maxfiles){ res.sendStatus(400); return; }
+    let totalsize = files.map(e => e.size).reduce((a, b) => a+b, 0);
+    if (totalsize > maxsize*1024){ res.sendStatus(400); return; }
+    const contests = await db.contest.getContestByCidTeam(cid, teamid);
+    if (contests.length === 0){ res.sendStatus(400); return; }
+    const contest = contests[0];
+    const now = Date.now();
+    if (contest.starttime > now){ res.sendStatus(400); return; }
+    const problems = await db.problem.getByContest(probid, cid);
+    if (problems.length === 0){ res.sendStatus(400); return; }
+    const languages = await db.language.getById(langid);
+    if (languages.length === 0){ res.sendStatus(400); return; }
+
+    const conn = await new Promise((resolve, reject) => {
+      db.pool.getConnection((err, res) => {
+        if (err) reject(err);
+        resolve(res);
+      });
+    });
+    await new Promise((resolve, reject) => {
+      conn.query('START TRANSACTION', (err, res) => {
+        if (err) reject(err);
+        resolve(res);
+      });
+    });
+    try{
+      const submitid = await db.submission.addSubmission(cid, teamid, probid, langid, conn);
+      let promises = files.map((file, rank) => (
+        db.submission.addSubmissionFile(submitid, file.originalname, rank, file.buffer.toString('utf-8'), conn)
+      ));
+      await Promise.all(promises);
+      await new Promise((resolve, reject) => {
+        conn.query('COMMIT', (err, res) => {
+          if (err) reject(err);
+          resolve(res);
+        });
+      });
+      res.send({success: true});
+    }catch (err){
+      await new Promise((resolve, reject) => {
+        conn.query('ROLLBACK', (err, res) => {
+          if (err) reject(err);
+          resolve(res);
+        });
+      });
+      res.send({success: false});
+    }
+  })(req, res)
+    .catch(() => res.send({success: false}));
 });
 
 router.use('/', (req, res) => {
