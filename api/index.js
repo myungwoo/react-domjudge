@@ -96,7 +96,9 @@ router.post('/submission', (req, res) => {
     res.send(submission);
     try{
       db.judging.setSeen(submission.judgingid);
-    }catch(err){}
+    }catch(err){
+      // ignore
+    }
   })(req, res)
     .catch(() => res.sendStatus(500));
 });
@@ -169,7 +171,9 @@ router.post('/submit', upload.array('files'), (req, res) => {
       res.send({success: true});
       try{
         db.auditlog.addLog(cid, username, 'submission', submitid, 'added', 'via react');
-      }catch(err){}
+      }catch(err){
+        // ignore
+      }
     }catch (err){
       await new Promise((resolve, reject) => {
         conn.query('ROLLBACK', (err, res) => {
