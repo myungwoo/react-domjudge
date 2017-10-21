@@ -47,7 +47,8 @@ class SubmitForm extends React.Component {
       setLoading(true);
       let problems = (await axios.post('/api/problems', {cid: contest.cid}, Auth.getHeader())).data;
       let languages = (await axios.get('/api/languages', Auth.getHeader())).data;
-      this.setState({problems, languages, problem: '', language: ''});
+      this.files = [];
+      this.setState({problems, languages, problem: '', language: '', filenames: []});
       setLoading(false);
     }).bind(this)()
       .catch(() => toast('Something went wrong, please reload the app.'));
