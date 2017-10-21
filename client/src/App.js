@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
-import {Snackbar} from 'material-ui';
+import {Snackbar, Typography} from 'material-ui';
+import {red} from 'material-ui/colors';
 
 import Auth from './storages/auth';
 import Contest from './storages/contest';
@@ -56,7 +57,7 @@ class App extends React.Component {
           Auth.doLogout();
           this.setState({user: null});
         }
-        this.setState({loading:false});
+        this.setState({loading: false});
       })
       .catch(() => this.setState({error: true}));
   }
@@ -69,16 +70,16 @@ class App extends React.Component {
     let content;
     if (this.state.error)
       content = (
-        <div style={{textAlign: 'center', paddingTop: 100, fontWeight: 900, fontSize: 40, color: 'red', lineHeight: 2}}>
+        <Typography type="display2" style={{textAlign: 'center', paddingTop: 100, color: red['A400']}}>
           Cannot connect to API server.<br />Please contact administrator.
-        </div>
+        </Typography>
       );
     else if (this.state.loading)
       content = (
-        <div style={{textAlign: 'center', paddingTop: 100, fontWeight: 900, fontSize: 40}}>
+        <Typography type="display2" style={{textAlign: 'center', paddingTop: 100}}>
           Application is loading, please wait...
           <Loading />
-        </div>
+        </Typography>
       );
     else if (this.state.user)
       content = (<Main toast={this.toast.bind(this)}
