@@ -27,6 +27,7 @@ router.post('/login', (req, res) => {
       let affils = await db.affiliation.getByAffilId(team.affilid);
       let affiliation = affils.length === 1 ? affils[0] : null;
       let userdata = {
+        userid: user.userid,
         username: user.username,
         name: user.name,
         teamname: team.name,
@@ -35,17 +36,19 @@ router.post('/login', (req, res) => {
       };
       const token = jwt.sign(userdata, secret, {
         expiresIn: req.app.get('jwt-expire'),
-        issuer: req.app.get('jwt-issuer')
+        issuer: req.app.get('jwt-issuer'),
+        subject: req.app.get('jwt-subject'),
       });
 
       let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
       db.user.login(user.username, ip);
-      // TODO: update teampage first visit
+      db.team.teampageVisit(team.teamid);
       res.send({
         success: true,
         userdata,
         token
       });
+      db.auditlog.addLog(null, user.username, 'user', user.userid, 'logged in', `${ip} - via react`);
     } catch (error) {
       res.send({
         success: false,
@@ -53,6 +56,13 @@ router.post('/login', (req, res) => {
       });
     }
   })(req, res);
+});
+
+router.get('/logout', (req, res) => {
+  if (!req.user){ res.sendStatus(401); return; }
+  let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  db.auditlog.addLog(null, req.user.username, 'user', req.user.userid, 'logged out', `${ip} - via react`);
+  res.sendStatus(200);
 });
 
 router.get('/user', (req, res) => {

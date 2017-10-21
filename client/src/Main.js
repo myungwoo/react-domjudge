@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import axios from 'axios';
+
 import {Route, Switch, Redirect} from 'react-router-dom';
 import {AppBar, Toolbar, Typography, Button, IconButton, Drawer, Divider, Tooltip} from 'material-ui';
 import MenuIcon from 'material-ui-icons/Menu';
@@ -66,7 +68,11 @@ class Main extends React.Component {
   }
 
   logout() {
-    Auth.doLogout(); this.props.onLogout();
+    const {user, toast} = this.props;
+    toast(`Bye bye, ${user.username}!`);
+    axios.get('/api/auth/logout', Auth.getHeader());
+    Auth.doLogout();
+    this.props.onLogout();
   }
 
   render() {

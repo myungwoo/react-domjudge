@@ -15,6 +15,7 @@ app.use(bodyParser.json({limit: config.express.max_body_size}));
 app.set('jwt-secret', config.auth.secret);
 app.set('jwt-expire', config.auth.token_expire);
 app.set('jwt-issuer', config.auth.issuer);
+app.set('jwt-subject', config.auth.subject);
 
 app.use('/api', require('./api'));
 

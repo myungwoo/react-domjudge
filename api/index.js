@@ -117,7 +117,7 @@ router.get('/languages', (req, res) => {
 router.post('/submit', upload.array('files'), (req, res) => {
   const files = req.files;
   const {cid, probid, langid} = req.body;
-  const {teamid} = req.user;
+  const {teamid, username} = req.user;
   if (!(files.length > 0)){ res.sendStatus(400); return; }
   if (!cid || isNaN(Number(cid))){ res.sendStatus(400); return; }
   if (!probid || isNaN(Number(probid))){ res.sendStatus(400); return; }
@@ -163,6 +163,7 @@ router.post('/submit', upload.array('files'), (req, res) => {
         });
       });
       res.send({success: true});
+      db.auditlog.addLog(cid, username, 'submission', submitid, 'added', 'via react');
     }catch (err){
       await new Promise((resolve, reject) => {
         conn.query('ROLLBACK', (err, res) => {

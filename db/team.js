@@ -9,7 +9,7 @@ exports.getByTeamId = teamid => {
   });
 };
 
-exports.teampage_visit = teamid => {
+exports.teampageVisit = teamid => {
   return new Promise((resolve, reject) => {
     pool.query('UPDATE team SET teampage_first_visited = UNIX_TIMESTAMP() WHERE teamid = ? AND teampage_first_visited IS NULL', [teamid], (err, res) => {
       if (err) reject(err);

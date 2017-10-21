@@ -8,7 +8,8 @@ module.exports = function(req, res, next) {
   try {
     // eslint-disable-next-line no-unused-vars
     let {iat, exp, iss, ...rest} = jwt.verify(token, secret, {
-      issuer: req.app.get('jwt-issuer')
+      issuer: req.app.get('jwt-issuer'),
+      subject: req.app.get('jwt-subject'),
     });
     req.user = rest;
   } catch (e) {

@@ -10,6 +10,7 @@ module.exports = {
       });
     })
   ),
+  auditlog: require('./auditlog'),
   configuration: require('./configuration'),
   user: require('./user'),
   team: require('./team'),
