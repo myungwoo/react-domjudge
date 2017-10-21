@@ -5,6 +5,9 @@ import axios from 'axios';
 import {Typography} from 'material-ui';
 import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table';
 
+import Loading from './loading';
+import SubmissionDetailDialog from './submission-detail-dialog';
+
 import Auth from '../storages/auth';
 
 class Submissions extends React.Component {
@@ -42,6 +45,21 @@ class Submissions extends React.Component {
       .catch(() => toast('Something went wrong, please reload the app.'));
   }
 
+  select_submission(submitid) {
+    const {toast} = this.props;
+    this.setState({loading: true});
+    axios.post('/api/submission', {
+      submitid
+    }, Auth.getHeader())
+      .then(res => {
+        this.setState({loading: false, selected_submission: res.data});
+      })
+      .catch(() => {
+        this.setState({loading: false});
+        toast('Something went wrong, please reload the app.');
+      });
+  }
+
   render() {
     const {contest} = this.props;
     const {submissions} = this.state;
@@ -58,6 +76,10 @@ class Submissions extends React.Component {
       if (r === 'pending' || r === 'too-late') color = 'gray';
       return (<span style={{color}}>{r}</span>);
     };
+
+    const clickAble = s => (
+      s.submittime < contest.endtime && s.result && s.valid
+    );
     const table = (
       <Table style={{width: '100%'}}>
         <TableHead>
@@ -71,7 +93,8 @@ class Submissions extends React.Component {
         <TableBody>
           {submissions.map(s => (
             <TableRow key={s.submitid} hover
-              style={{fontWeight: s.seen ? 'inherit' : 800, cursor: 'pointer'}}
+              onClick={clickAble(s) ? this.select_submission.bind(this, s.submitid) : null}
+              style={{fontWeight: s.seen ? 'inherit' : 800, cursor: clickAble(s) ? 'pointer' : 'inherit'}}
             >
               <TableCell padding="none" style={{textAlign: 'center'}}>{formatTime(s.submittime)}</TableCell>
               <TableCell padding="none" style={{textAlign: 'center'}}><span style={{textTransform: 'uppercase'}}>{s.shortname}</span></TableCell>
@@ -79,11 +102,19 @@ class Submissions extends React.Component {
               <TableCell padding="none" style={{textAlign: 'center'}}><span style={{textTransform: 'uppercase'}}>{formatResult(s.result)}</span></TableCell>
             </TableRow>
           ))}
+          {this.state.selected_submission &&
+          <SubmissionDetailDialog
+            open={true}
+            submission={this.state.selected_submission}
+            contest={contest}
+            onRequestClose={() => this.setState({selected_submission: null})}
+          />}
         </TableBody>
       </Table>
     );
     return (
       <div style={{width: '100%'}}>
+        {this.state.loading && <Loading />}
         {submissions.length > 0 ?
           table :
           <Typography type="subheading" style={{textAlign: 'center'}}>No submissions</Typography>}
