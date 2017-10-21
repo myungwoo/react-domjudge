@@ -10,6 +10,7 @@ module.exports = {
       });
     })
   ),
+  configuration: require('./configuration'),
   user: require('./user'),
   team: require('./team'),
   affiliation: require('./affiliation'),

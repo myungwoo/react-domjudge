@@ -20,6 +20,16 @@ router.get('/status', (req, res) => {
   })(req, res);
 });
 
+router.get('/config', (req, res) => {
+  db.configuration.getList().then(val => {
+    res.send(val.map(x => {
+      let {...e} = x;
+      e.value = JSON.parse(x.value);
+      return e;
+    }));
+  });
+});
+
 router.get('/contests', (req, res) => {
   if (req.user && req.user.teamid){
     db.contest.getListByTeam(req.user.teamid).then(val => {

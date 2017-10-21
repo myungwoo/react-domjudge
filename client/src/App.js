@@ -4,6 +4,7 @@ import {Snackbar} from 'material-ui';
 
 import Auth from './storages/auth';
 import Contest from './storages/contest';
+import Config from './storages/config';
 
 import Main from './Main';
 import Login from './Login';
@@ -43,11 +44,13 @@ class App extends React.Component {
       if (res.status !== 200 || !res.data.pong || !res.data.db_conn) throw new Error();
     };
     const get_contest = (async function(){
+      // TODO: Contest.updateInfo에서 Auth.getHeader를 쓰는데 비동기로 풀어나가도 괜찮은지?
       await Contest.updateInfo();
       contest = Contest.getContest();
       this.setState({contest});
     }).bind(this);
-    Promise.all([validate_token(), check_api(), get_contest()])
+    const get_config = Config.updateInfo;
+    Promise.all([validate_token(), check_api(), get_contest(), get_config()])
       .then(() => {
         if (user && !contest){
           Auth.doLogout();
