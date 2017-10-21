@@ -94,7 +94,11 @@ router.post('/submission', (req, res) => {
     if (show_sample && submission.result !== 'compile-error')
       submission.sample_runs = await db.submission.getSampleRun(submitid);
     res.send(submission);
-  })(req, res);
+    try{
+      db.judging.setSeen(submission.judgingid);
+    }catch(err){}
+  })(req, res)
+    .catch(() => res.sendStatus(500));
 });
 
 router.post('/problems', (req, res) => {

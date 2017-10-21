@@ -58,6 +58,7 @@ class Submissions extends React.Component {
     }, Auth.getHeader())
       .then(res => {
         if (!res.data) toast('Submission not found for this team or not judged yet.');
+        else this.refreshSubmission();
         this.setState({loading: false, selected_submission: res.data});
       })
       .catch(() => {

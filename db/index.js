@@ -19,4 +19,5 @@ module.exports = {
   submission: require('./submission'),
   problem: require('./problem'),
   language: require('./language'),
+  judging: require('./judging'),
 };
