@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import moment from 'moment';
+
 import {Typography, Grid, Paper} from 'material-ui';
 import {LinearProgress} from 'material-ui/Progress';
 
@@ -17,14 +19,33 @@ class Overview extends React.Component {
     const styles = {
       title: {paddingTop: 10, paddingBottom: 10, textAlign: 'center'}
     };
-    const {contest, state} = this.props;
+    const {contest, user, state} = this.props;
     let {sidx} = this.state;
+    const start_date = moment(contest.starttime * 1000);
+    const now = moment();
+    let start_date_display;
+    if (start_date.format('YYYYMMDD') === now.format('YYYYMMDD')) // today
+      start_date_display = start_date.format('HH:mm:ss');
+    else
+      start_date_display = start_date.format('ddd D MMM YYYY HH:mm:ss');
     return (
       <Grid container spacing={16}>
+        {state === 0 &&
+        <Grid item xs={12}>
+          <Paper style={{padding: 16, textAlign: 'center'}}>
+            <Typography type="display1">Welcome, <span style={{fontWeight: 700}}>{user.teamname}</span>!</Typography>
+            <Typography type="headline">contest is scheduled to start on {start_date_display}</Typography>
+          </Paper>
+        </Grid>}
+        {state === 2 &&
+        <Grid item xs={12}>
+          <Paper style={{padding: 16, textAlign: 'center'}}>
+            <Typography type="display1">Contest has been finished!!</Typography>
+          </Paper>
+        </Grid>}
         <Grid item xs={12} md={6}>
           <Grid container>
-            {state === 1 &&
-            <Grid item xs={12}>
+            {state !== 0 && <Grid item xs={12}>
               <Paper style={{padding: 16}}>
                 {this.state.submitform_loading && <LinearProgress />}
                 <Typography type="title" style={styles.title}>Submit your solution</Typography>
@@ -34,8 +55,7 @@ class Overview extends React.Component {
                   toast={this.props.toast}
                   setLoading={val => this.setState({submitform_loading: val})} />
               </Paper>
-            </Grid>
-            }
+            </Grid>}
             <Grid item xs={12}>
               <Paper style={{padding: 16}}>
                 {this.state.submission_loading && <LinearProgress />}
