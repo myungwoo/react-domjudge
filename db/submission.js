@@ -25,7 +25,29 @@ exports.getDetailByTeam = (submitid, teamid) => {
         LEFT JOIN contestproblem as cp    ON (cp.probid = p.probid AND cp.cid = s.cid)
         WHERE j.submitid = ? AND teamid = ? AND j.valid = 1`, [submitid, teamid], (err, res) => {
         if (err) reject(err);
-        resolve(res);
+        resolve(res.map(e => {
+          e.output_compile = e.output_compile.toString('utf-8');
+          return e;
+        }));
+      });
+  });
+};
+
+exports.getSampleRun = submitid => {
+  return new Promise((resolve, reject) => {
+    pool.query(`SELECT r.runresult, r.runtime, r.output_run, r.output_diff, r.output_error, t.rank, t.description
+        FROM judging          as j
+        LEFT JOIN submission  as s USING (submitid)
+        LEFT JOIN testcase    as t    ON (t.probid = s.probid AND t.sample = 1)
+        LEFT JOIN judging_run as r    ON (r.testcaseid = t.testcaseid AND r.judgingid = j.judgingid)
+        WHERE submitid = ? ORDER BY t.rank`, [submitid], (err, res) => {
+        if (err) reject(err);
+        resolve(res.map(e => {
+          e.output_run = e.output_run.toString('utf-8');
+          e.output_diff = e.output_diff.toString('utf-8');
+          e.output_error = e.output_error.toString('utf-8');
+          return e;
+        }));
       });
   });
 };

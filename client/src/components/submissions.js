@@ -9,7 +9,6 @@ import Loading from './loading';
 import SubmissionDetailDialog from './submission-detail-dialog';
 
 import Auth from '../storages/auth';
-import Config from '../storages/config';
 
 class Submissions extends React.Component {
   constructor(props) {
@@ -53,7 +52,7 @@ class Submissions extends React.Component {
       submitid
     }, Auth.getHeader())
       .then(res => {
-        if (!res.data) toast('Something went wrong, please reload the app.');
+        if (!res.data) toast('Submission not found for this team or not judged yet.');
         this.setState({loading: false, selected_submission: res.data});
       })
       .catch(() => {
@@ -80,7 +79,7 @@ class Submissions extends React.Component {
     };
 
     const clickAble = s => (
-      s.submittime < contest.endtime && s.result && s.valid && (!Config.getConfig('verification_required', 0) || s.verified)
+      s.submittime < contest.endtime && s.result && s.valid
     );
     const table = (
       <Table style={{width: '100%'}}>
@@ -96,7 +95,11 @@ class Submissions extends React.Component {
           {submissions.map(s => (
             <TableRow key={s.submitid} hover
               onClick={clickAble(s) ? this.select_submission.bind(this, s.submitid) : null}
-              style={{fontWeight: s.seen ? 'inherit' : 800, cursor: clickAble(s) ? 'pointer' : 'inherit'}}
+              style={{
+                fontWeight: s.seen ? 'inherit' : 800,
+                cursor: clickAble(s) ? 'pointer' : 'inherit',
+                textDecoration: s.valid ? 'none' : 'line-through',
+              }}
             >
               <TableCell padding="none" style={{textAlign: 'center'}}>{formatTime(s.submittime)}</TableCell>
               <TableCell padding="none" style={{textAlign: 'center'}}><span style={{textTransform: 'uppercase'}}>{s.shortname}</span></TableCell>
@@ -106,6 +109,7 @@ class Submissions extends React.Component {
           ))}
           {this.state.selected_submission &&
           <SubmissionDetailDialog
+            maxWidth="md"
             open={true}
             submission={this.state.selected_submission}
             contest={contest}
