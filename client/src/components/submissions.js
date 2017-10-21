@@ -78,9 +78,9 @@ class Submissions extends React.Component {
     };
     const formatResult = r => {
       r = r || 'pending';
-      let color = 'red';
-      if (r === 'correct') color = 'green';
-      if (r === 'pending' || r === 'too-late') color = 'gray';
+      let color = '#F44336';
+      if (r === 'correct') color = '#4CAF50';
+      if (r === 'pending' || r === 'too-late') color = '#9E9E9E';
       return (<span style={{color}}>{r}</span>);
     };
 
