@@ -62,7 +62,7 @@ class ClarificationDialog extends React.Component {
   }
 
   sendClarification() {
-    const {contest, toast, onRequestClose} = this.props;
+    const {contest, toast, afterSend, onRequestClose} = this.props;
     const {subject, text} = this.state;
     this.setState({loading: true});
     axios.post('/api/clarification/send', {
@@ -74,6 +74,7 @@ class ClarificationDialog extends React.Component {
         toast('Clarification request has been sent successfully!');
         this.setState({loading: false});
         onRequestClose();
+        afterSend();
       })
       .catch(() => {
         this.setState({loading: false});
@@ -83,7 +84,7 @@ class ClarificationDialog extends React.Component {
 
   render() {
     // eslint-disable-next-line no-unused-vars
-    const {clarification, contest, user, toast, ...rest} = this.props;
+    const {clarification, contest, user, toast, afterSend, ...rest} = this.props;
     const formatTime = t => {
       let s = Math.max(Math.floor((t-contest.starttime)/60), 0);
       const pad2 = v => v < 10 ? '0'+v : ''+v;
@@ -103,9 +104,9 @@ class ClarificationDialog extends React.Component {
     return (
       <ResponsiveDialog {...rest}>
         {this.state.loading && <Loading />}
-        <DialogTitle>{clarification.original && clarification.original.sender !== user.teamname ? 'Clarification' : 'Clarification Request'}</DialogTitle>
+        <DialogTitle>{clarification.original && clarification.original.sender !== user.teamid ? 'Clarification' : 'Clarification Request'}</DialogTitle>
         <DialogContent>
-          {clarification && clarification.list.map((e, idx) => (
+          {clarification.list && clarification.list.map((e, idx) => (
             <table style={{paddingBottom: 20, width: '100%'}} key={idx}>
               <tbody>
                 <tr><td style={{width: 80}}>From:</td><td>{e.from}</td></tr>
@@ -149,7 +150,7 @@ class ClarificationDialog extends React.Component {
           <Button onClick={rest.onRequestClose} color="primary">
             Close
           </Button>
-          <Button onClick={this.sendClarification.bind(this)} color="primary">
+          <Button onClick={this.sendClarification.bind(this)} color="primary" disabled={this.state.text === ''}>
             Send
           </Button>
         </DialogActions>
@@ -162,6 +163,7 @@ ClarificationDialog.propTypes = {
   clarification: PropTypes.object.isRequired, // dict
   contest: PropTypes.object.isRequired, // dict
   user: PropTypes.object.isRequired, // dict
+  afterSend: PropTypes.func.isRequired,
   onRequestClose: PropTypes.func.isRequired,
   toast: PropTypes.func.isRequired,
 };

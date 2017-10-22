@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 
-import {Typography} from 'material-ui';
+import {Typography, Button} from 'material-ui';
 import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table';
 
 import Loading from './loading';
@@ -10,16 +10,12 @@ import ClarificationDialog from './clarification-dialog';
 
 import Auth from '../storages/auth';
 
-import Logo from '../logo.png';
-
-class Clarifications extends React.Component {
+class ClarificationRequests extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       clarifications: [],
     };
-    this.viewed = null;
-    this.notified = new Set();
   }
 
   componentDidMount() {
@@ -27,9 +23,9 @@ class Clarifications extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if (JSON.stringify(this.props.contest) !== JSON.stringify(nextProps.contest)){
-      // If contest has been changed clarification list also has to be changed
-      this.viewed = null; this.notified = new Set();
+    if (JSON.stringify(this.props.contest) !== JSON.stringify(nextProps.contest) ||
+        JSON.stringify(this.props.cidx) !== JSON.stringify(nextProps.cidx)){
+      // If contest has been changed clarification request list also has to be changed
       this.refreshClarification(nextProps.contest);
     }
     return JSON.stringify(this.props) !== JSON.stringify(nextProps) ||
@@ -39,9 +35,8 @@ class Clarifications extends React.Component {
   refreshClarification(c) {
     const {setLoading, toast} = this.props;
     const contest = c || this.props.contest;
-    clearTimeout(this.timer);
     setLoading(true);
-    axios.post('/api/clarifications', {
+    axios.post('/api/clarifications/my', {
       cid: contest.cid
     }, Auth.getHeader())
       .then(res => {
@@ -50,21 +45,8 @@ class Clarifications extends React.Component {
           e.body = e.body[80] ? e.body.slice(0, 80) + '...' : e.body;
           return e;
         });
-        /* === Notification START === */
-        if (this.viewed){
-          for (let clar of clars){
-            if (!this.viewed.has(clar.clarid) && !this.notified.has(clar.clarid)){
-              this.notified.add(clar.clarid);
-              new Notification('New clarification received!', {body: `[${clar.subject}]\nTo: ${clar.to}\n\n${clar.body}`, icon: Logo});
-            }
-          }
-        }
-        this.viewed = new Set(clars.map(e => e.clarid));
-        /* === Notification END === */
         this.setState({clarifications: clars});
         setLoading(false);
-        // Reload clarifications automatically.
-        this.timer = setTimeout(this.refreshClarification.bind(this, contest), 30 * 1000);
       })
       .catch(() => toast('Something went wrong, please reload the app.'));
   }
@@ -87,7 +69,7 @@ class Clarifications extends React.Component {
   }
 
   render() {
-    const {contest, user, toast, afterSend} = this.props;
+    const {contest, user, toast} = this.props;
     const {clarifications} = this.state;
 
     const formatTime = t => {
@@ -122,38 +104,40 @@ class Clarifications extends React.Component {
               <TableCell padding="none" style={{textAlign: 'center', whiteSpace: 'pre-wrap'}}>{c.body}</TableCell>
             </TableRow>
           ))}
-          {this.state.selected_clarification &&
-          <ClarificationDialog
-            fullWidth
-            maxWidth="sm"
-            open={true}
-            contest={contest}
-            user={user}
-            toast={toast}
-            clarification={this.state.selected_clarification}
-            afterSend={afterSend}
-            onRequestClose={() => this.setState({selected_clarification: null})}
-          />}
         </TableBody>
       </Table>
     );
     return (
       <div style={{width: '100%'}}>
         {this.state.loading && <Loading />}
+        <div style={{width: '100%', textAlign: 'right'}}>
+          <Button dense raised onClick={() => this.setState({selected_clarification: {}})}>Request clarification</Button>
+        </div>
         {clarifications.length > 0 ?
           table :
-          <Typography type="subheading" style={{textAlign: 'center', fontStyle: 'italic'}}>No clarifications.</Typography>}
+          <Typography type="subheading" style={{textAlign: 'center', fontStyle: 'italic'}}>No clarification requests.</Typography>}
+        {this.state.selected_clarification &&
+        <ClarificationDialog
+          fullWidth
+          maxWidth="sm"
+          open={true}
+          contest={contest}
+          user={user}
+          toast={toast}
+          clarification={this.state.selected_clarification}
+          afterSend={this.refreshClarification.bind(this)}
+          onRequestClose={() => this.setState({selected_clarification: null})}
+        />}
       </div>
     );
   }
 }
 
-Clarifications.propTypes = {
+ClarificationRequests.propTypes = {
   toast: PropTypes.func.isRequired,
   setLoading: PropTypes.func.isRequired,
   contest: PropTypes.object.isRequired,
-  afterSend: PropTypes.func.isRequired,
   user: PropTypes.object.isRequired,
 };
 
-export default Clarifications;
+export default ClarificationRequests;

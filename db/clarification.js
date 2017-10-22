@@ -18,6 +18,24 @@ exports.getListByCidTeam = (cid, teamid) => {
   });
 };
 
+exports.getMyListByCidTeam = (cid, teamid) => {
+  return new Promise((resolve, reject) => {
+    pool.query(`SELECT c.clarid, c.cid, c.submittime, c.category, c.body, cp.shortname, t.name AS 'to', f.name AS 'from', u.mesgid AS unread
+                FROM clarification c
+                LEFT JOIN problem p USING (probid)
+                LEFT JOIN contestproblem cp USING (probid, cid)
+                LEFT JOIN team t ON (t.teamid = c.recipient)
+                LEFT JOIN team f ON (f.teamid = c.sender)
+                LEFT JOIN team_unread u ON (c.clarid=u.mesgid AND u.teamid = ?)
+                WHERE c.cid = ? AND c.sender = ? AND c.recipient IS NULL
+                ORDER BY c.submittime DESC, c.clarid DESC`,
+      [teamid, cid, teamid], (err, res) => {
+        if (err) reject(err);
+        resolve(res);
+      });
+  });
+};
+
 exports.getByIdTeam = (clarid, teamid) => {
   return new Promise((resolve, reject) => {
     pool.query(`SELECT c.*, cp.shortname, p.name AS probname, t.name AS 'to', f.name AS 'from'

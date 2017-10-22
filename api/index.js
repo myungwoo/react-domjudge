@@ -210,6 +210,26 @@ router.post('/clarifications', (req, res) => {
     .catch(() => res.sendStatus(500));
 });
 
+router.post('/clarifications/my', (req, res) => {
+  if (!req.user){ res.sendStatus(401); return; }
+  const {teamid, teamname} = req.user;
+  const {cid} = req.body;
+  if (!cid || isNaN(Number(cid))){ res.sendStatus(400); return; }
+  (async function(req, res) {
+    let contest = (await db.contest.getContestByCidTeam(cid, teamid))[0];
+    if (!contest){ res.sendStatus(400); return; }
+    let clarifications = await db.clarification.getMyListByCidTeam(cid, teamid);
+    const categories = await db.configuration.getConfig('clar_categories', {'general':'General issue', 'tech':'Technical issue'});
+    res.send(clarifications.map(e => {
+      if (e.from === teamname) e.from = 'You';
+      e.to = e.to || 'Jury';
+      e.subject = (e.shortname && 'Problem '+e.shortname) || categories[e.category || 'general'];
+      return e;
+    }));
+  })(req, res)
+    .catch(() => res.sendStatus(500));
+});
+
 router.post('/clarification', (req, res) => {
   if (!req.user){ res.sendStatus(401); return; }
   const {teamid} = req.user;
@@ -225,7 +245,7 @@ router.post('/clarification', (req, res) => {
       let {clarid, cid, submittime, body, sender, category, probid} = e;
       let subject = (e.shortname && e.probname && `Problem ${e.shortname}: ${e.probname}`) || categories[e.category || 'general'];
       let from = e.from || 'Jury';
-      let to = e.to || 'All';
+      let to = e.to || (!e.from && 'All') || 'Jury';
       if (e.sender) from += ` (t${e.sender})`;
       if (e.recipient) to += ` (t${e.recipient})`;
       return {clarid, cid, submittime, body, sender, category, probid, subject, from, to};

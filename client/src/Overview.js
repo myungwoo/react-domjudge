@@ -9,6 +9,7 @@ import {LinearProgress} from 'material-ui/Progress';
 import Submissions from './components/submissions';
 import SubmitForm from './components/submit-form';
 import Clarifications from './components/clarifications';
+import ClarificationRequests from './components/clarification-requests';
 
 class Overview extends React.Component {
   constructor(props) {
@@ -21,7 +22,7 @@ class Overview extends React.Component {
       title: {paddingTop: 10, paddingBottom: 10, textAlign: 'center'}
     };
     const {contest, user, state, toast} = this.props;
-    let {sidx} = this.state;
+    let {sidx, cidx} = this.state;
     const start_date = moment(contest.starttime * 1000);
     const now = moment();
     let start_date_display;
@@ -80,18 +81,20 @@ class Overview extends React.Component {
                   contest={contest}
                   toast={toast}
                   user={user}
+                  afterSend={() => this.setState({cidx: (cidx && ++cidx) || 1})}
                   setLoading={val => this.setState({clarifications_loading: val})} />
               </Paper>
             </Grid>
             <Grid item xs={12}>
               <Paper style={{padding: 16}}>
+                {this.state.clarification_requests_loading && <LinearProgress />}
                 <Typography type="title" style={styles.title}>Clarification Requests</Typography>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                <ClarificationRequests
+                  cidx={cidx}
+                  contest={contest}
+                  toast={toast}
+                  user={user}
+                  setLoading={val => this.setState({clarification_requests_loading: val})} />
               </Paper>
             </Grid>
           </Grid>
