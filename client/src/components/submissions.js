@@ -10,12 +10,16 @@ import SubmissionDetailDialog from './submission-detail-dialog';
 
 import Auth from '../storages/auth';
 
+import Logo from '../logo.png';
+
 class Submissions extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       submissions: [],
     };
+    this.notified = new Set();
+    this.pendings = [];
   }
 
   componentDidMount() {
@@ -30,6 +34,21 @@ class Submissions extends React.Component {
     }
     return JSON.stringify(this.props) !== JSON.stringify(nextProps) ||
            JSON.stringify(this.state) !== JSON.stringify(nextState);
+  }
+
+  componentDidUpdate() {
+    const {submissions} = this.state;
+    let pendings = [];
+    for (let sid of this.pendings){
+      let s = submissions[submissions.map(e => e.submitid).indexOf(sid)];
+      if (s && s.result){
+        if (!this.notified.has(sid)){
+          this.notified.add(sid);
+          new Notification('New result received!', {body: `Result of problem ${s.shortname} is ${s.result.toUpperCase()}`, icon: Logo});
+        }
+      }else pendings.push(sid);
+    }
+    this.pendings = submissions.filter(e => !e.result).map(e => e.submitid);
   }
 
   refreshSubmission(c) {
