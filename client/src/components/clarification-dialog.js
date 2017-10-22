@@ -29,16 +29,20 @@ class ClarificationDialog extends React.Component {
     const {clarification} = this.props;
     this.categories = Config.getConfig('clar_categories', {'general':'General issue', 'tech':'Technical issue'});
     const first = Object.entries(this.categories)[0];
-    let subject;
+    let subject = 'general';
     if (clarification.original && clarification.original.category) subject = clarification.original.category;
     else if (clarification.original && clarification.original.probid) subject = clarification.original.probid;
     else if (first && first[0]) subject = first[0];
-    else subject = 'general';
+    let text = '';
+    if (clarification.original && clarification.original.body){
+      let body = clarification.original.body;
+      text = body.split('\n').map(e => '> '+e).join('\n').trim()+'\n';
+    }
     this.state = {
       clarifications: [],
       problems: [],
       subject,
-      text: '',
+      text: text,
       loading: true,
     };
     this.notified = new Set();
@@ -67,6 +71,7 @@ class ClarificationDialog extends React.Component {
       text,
     }, Auth.getHeader())
       .then(() => {
+        toast('Clarification request has been sent successfully!');
         this.setState({loading: false});
         onRequestClose();
       })
