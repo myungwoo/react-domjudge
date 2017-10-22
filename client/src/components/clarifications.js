@@ -29,23 +29,11 @@ class Clarifications extends React.Component {
   shouldComponentUpdate(nextProps, nextState) {
     if (JSON.stringify(this.props.contest) !== JSON.stringify(nextProps.contest)){
       // If contest has been changed clarification list also has to be changed
+      this.viewed = null; this.notified = new Set();
       this.refreshClarification(nextProps.contest);
     }
     return JSON.stringify(this.props) !== JSON.stringify(nextProps) ||
            JSON.stringify(this.state) !== JSON.stringify(nextState);
-  }
-
-  componentDidUpdate() {
-    const {clarifications} = this.state;
-    if (this.viewed){
-      for (let clar of clarifications){
-        if (!this.viewed.has(clar.clarid) && !this.notified.has(clar.clarid)){
-          this.notified.add(clar.clarid);
-          new Notification('New clarification received!', {body: `[${clar.subject}]\nTo: ${clar.to}\n\n${clar.body}`, icon: Logo});
-        }
-      }
-    }
-    this.viewed = new Set(clarifications.map(e => e.clarid));
   }
 
   refreshClarification(c) {
@@ -61,6 +49,17 @@ class Clarifications extends React.Component {
           e.body = e.body.split('\n').filter(e => e[0] !== '>' && e.trim()[0]).join('\n');
           return e;
         });
+        /* === Notification START === */
+        if (this.viewed){
+          for (let clar of clars){
+            if (!this.viewed.has(clar.clarid) && !this.notified.has(clar.clarid)){
+              this.notified.add(clar.clarid);
+              new Notification('New clarification received!', {body: `[${clar.subject}]\nTo: ${clar.to}\n\n${clar.body}`, icon: Logo});
+            }
+          }
+        }
+        this.viewed = new Set(clars.map(e => e.clarid));
+        /* === Notification END === */
         this.setState({clarifications: clars});
         setLoading(false);
         // Reload clarifications automatically.
