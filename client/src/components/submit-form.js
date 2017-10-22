@@ -156,7 +156,6 @@ class SubmitForm extends React.Component {
               onChange={evt => this.setState({problem: evt.target.value})}
               input={<Input id="problem" />}
             >
-              <MenuItem value=""><em>None</em></MenuItem>
               {this.state.problems.map((e, idx) => (
                 <MenuItem value={e.probid} key={idx}>{e.shortname}</MenuItem>
               ))}
@@ -171,7 +170,6 @@ class SubmitForm extends React.Component {
               onChange={evt => this.setState({language: evt.target.value})}
               input={<Input id="language" />}
             >
-              <MenuItem value=""><em>None</em></MenuItem>
               {this.state.languages.map((e, idx) => (
                 <MenuItem value={e.langid} key={idx}>{e.langid}</MenuItem>
               ))}
