@@ -8,6 +8,7 @@ import {LinearProgress} from 'material-ui/Progress';
 
 import Submissions from './components/submissions';
 import SubmitForm from './components/submit-form';
+import Clarifications from './components/clarifications';
 
 class Overview extends React.Component {
   constructor(props) {
@@ -19,7 +20,7 @@ class Overview extends React.Component {
     const styles = {
       title: {paddingTop: 10, paddingBottom: 10, textAlign: 'center'}
     };
-    const {contest, user, state} = this.props;
+    const {contest, user, state, toast} = this.props;
     let {sidx} = this.state;
     const start_date = moment(contest.starttime * 1000);
     const now = moment();
@@ -52,7 +53,7 @@ class Overview extends React.Component {
                 <SubmitForm
                   afterSubmit={() => this.setState({sidx: (sidx && ++sidx) || 1})}
                   contest={contest}
-                  toast={this.props.toast}
+                  toast={toast}
                   setLoading={val => this.setState({submitform_loading: val})} />
               </Paper>
             </Grid>}
@@ -63,7 +64,7 @@ class Overview extends React.Component {
                 <Submissions
                   sidx={sidx}
                   contest={contest}
-                  toast={this.props.toast}
+                  toast={toast}
                   setLoading={val => this.setState({submission_loading: val})} />
               </Paper>
             </Grid>
@@ -73,13 +74,13 @@ class Overview extends React.Component {
           <Grid container>
             <Grid item xs={12}>
               <Paper style={{padding: 16}}>
+                {this.state.clarifications_loading && <LinearProgress />}
                 <Typography type="title" style={styles.title}>Clarifications</Typography>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                <Clarifications
+                  contest={contest}
+                  toast={toast}
+                  user={user}
+                  setLoading={val => this.setState({clarifications_loading: val})} />
               </Paper>
             </Grid>
             <Grid item xs={12}>

@@ -78,7 +78,7 @@ router.post('/submission', (req, res) => {
   if (!submitid || isNaN(Number(submitid))){ res.sendStatus(400); return; }
   (async function(req, res){
     let submissions = await db.submission.getDetailByTeam(submitid, teamid);
-    if (submissions.length === 0){ res.json(204); return; }
+    if (submissions.length === 0){ res.sendStatus(204); return; }
     let submission = submissions[0];
     let contests = await db.contest.getContestByCid(submission.cid);
     if (contests.length === 0){ res.sendStatus(500); return; }
@@ -95,7 +95,7 @@ router.post('/submission', (req, res) => {
       submission.sample_runs = await db.submission.getSampleRun(submitid);
     res.send(submission);
     try{
-      db.judging.setSeen(submission.judgingid);
+      await db.judging.setSeen(submission.judgingid);
     }catch(err){
       // ignore
     }
@@ -109,8 +109,9 @@ router.post('/problems', (req, res) => {
   const {teamid} = req.user;
   if (!cid || isNaN(Number(cid))){ res.sendStatus(400); return; }
   (async function(req, res) {
-    let contests = await db.contest.getContestByCidTeam(cid, teamid);
-    if (contests.length === 0){ res.json(204); return; }
+    let contest = (await db.contest.getContestByCidTeam(cid, teamid))[0];
+    if (!contest){ res.sendStatus(204); return; }
+    if (contest.starttime > Date.now()){ res.sendStatus(403); return; }
     res.send(await db.problem.getListByContest(cid));
   })(req, res);
 });
@@ -121,6 +122,7 @@ router.get('/languages', (req, res) => {
 });
 
 router.post('/submit', upload.array('files'), (req, res) => {
+  if (!req.user){ res.sendStatus(401); return; }
   const files = req.files;
   const {cid, probid, langid} = req.body;
   const {teamid, username} = req.user;
@@ -170,7 +172,7 @@ router.post('/submit', upload.array('files'), (req, res) => {
       });
       res.send({success: true});
       try{
-        db.auditlog.addLog(cid, username, 'submission', submitid, 'added', 'via react');
+        await db.auditlog.addLog(cid, username, 'submission', submitid, 'added', 'via react');
       }catch(err){
         // ignore
       }
@@ -185,6 +187,87 @@ router.post('/submit', upload.array('files'), (req, res) => {
     }
   })(req, res)
     .catch(() => res.send({success: false}));
+});
+
+router.post('/clarifications', (req, res) => {
+  if (!req.user){ res.sendStatus(401); return; }
+  const {teamid, teamname} = req.user;
+  const {cid} = req.body;
+  if (!cid || isNaN(Number(cid))){ res.sendStatus(400); return; }
+  (async function(req, res) {
+    let contest = (await db.contest.getContestByCidTeam(cid, teamid))[0];
+    if (!contest){ res.sendStatus(400); return; }
+    let clarifications = await db.clarification.getListByCidTeam(cid, teamid);
+    const categories = await db.configuration.getConfig('clar_categories', {'general':'General issue', 'tech':'Technical issue'});
+    res.send(clarifications.map(e => {
+      e.from = e.from || 'Jury';
+      e.to = e.to || 'All';
+      if (e.to === teamname) e.to = 'You';
+      e.subject = (e.shortname && 'Problem '+e.shortname) || categories[e.category || 'general'];
+      return e;
+    }));
+  })(req, res)
+    .catch(() => res.sendStatus(500));
+});
+
+router.post('/clarification', (req, res) => {
+  if (!req.user){ res.sendStatus(401); return; }
+  const {teamid} = req.user;
+  const {clarid} = req.body;
+  if (!clarid || isNaN(Number(clarid))){ res.sendStatus(400); return; }
+  (async function(req, res) {
+    let clarification = (await db.clarification.getByIdTeam(clarid, teamid))[0];
+    if (!clarification){ res.sendStatus(401); return; }
+    let respid = clarification.respid || clarid;
+    let data = (await db.clarification.getNextByIdTeam(respid, teamid));
+    const categories = await db.configuration.getConfig('clar_categories', {'general':'General issue', 'tech':'Technical issue'});
+    const simplify = e => {
+      let {clarid, cid, submittime, body, sender, category, probid} = e;
+      let subject = (e.shortname && e.probname && `Problem ${e.shortname}: ${e.probname}`) || categories[e.category || 'general'];
+      let from = e.from || 'Jury';
+      let to = e.to || 'All';
+      if (e.sender) from += ` (t${e.sender})`;
+      if (e.recipient) to += ` (t${e.recipient})`;
+      return {clarid, cid, submittime, body, sender, category, probid, subject, from, to};
+    };
+    res.send({
+      original: simplify(clarification),
+      list: data.map(simplify),
+    });
+    try{
+      await db.clarification.setRead(clarid, teamid);
+    }catch(err){
+      // ignore
+    }
+  })(req, res)
+    .catch(() => res.sendStatus(500));
+});
+
+router.post('/clarification/send', (req, res) => {
+  if (!req.user){ res.sendStatus(401); return; }
+  const {teamid, username} = req.user;
+  const {cid, subject, text} = req.body;
+  if (!cid || isNaN(Number(cid))){ res.sendStatus(400); return; }
+  if (!text || typeof text !== 'string'){ res.sendStatus(400); return; }
+  (async function(req, res) {
+    let clarid;
+    if (typeof subject === 'string'){
+      const categories = await db.configuration.getConfig('clar_categories', {'general':'General issue', 'tech':'Technical issue'});
+      if (!categories[subject]){ res.sendStatus(400); return; }
+      clarid = await db.clarification.addByCategory(cid, teamid, subject, text);
+    }else{
+      const problem = (await db.problem.getByContest(subject, cid))[0];
+      if (!problem){ res.sendStatus(400); return; }
+      clarid = await db.clarification.addByProblem(cid, teamid, subject, text);
+    }
+    res.sendStatus(201);
+    try{
+      await db.auditlog.addLog(cid, username, 'clarification', clarid, 'added', 'via react');
+    }catch(err){
+      // ignore
+    }
+  })(req, res)
+    .catch(() => res.sendStatus(500));
 });
 
 router.use('/', (req, res) => {

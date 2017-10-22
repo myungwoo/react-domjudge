@@ -20,4 +20,5 @@ module.exports = {
   problem: require('./problem'),
   language: require('./language'),
   judging: require('./judging'),
+  clarification: require('./clarification'),
 };

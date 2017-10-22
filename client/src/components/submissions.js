@@ -148,7 +148,7 @@ class Submissions extends React.Component {
         {this.state.loading && <Loading />}
         {submissions.length > 0 ?
           table :
-          <Typography type="subheading" style={{textAlign: 'center'}}>No submissions</Typography>}
+          <Typography type="subheading" style={{textAlign: 'center', fontStyle: 'italic'}}>No submissions.</Typography>}
       </div>
     );
   }

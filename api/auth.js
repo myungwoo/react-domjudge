@@ -48,7 +48,11 @@ router.post('/login', (req, res) => {
         userdata,
         token
       });
-      db.auditlog.addLog(null, user.username, 'user', user.userid, 'logged in', `${ip} - via react`);
+      try{
+        db.auditlog.addLog(null, user.username, 'user', user.userid, 'logged in', `${ip} - via react`);
+      }catch (err){
+        // ignore
+      }
     } catch (error) {
       res.send({
         success: false,
@@ -61,7 +65,8 @@ router.post('/login', (req, res) => {
 router.get('/logout', (req, res) => {
   if (!req.user){ res.sendStatus(401); return; }
   let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-  db.auditlog.addLog(null, req.user.username, 'user', req.user.userid, 'logged out', `${ip} - via react`);
+  db.auditlog.addLog(null, req.user.username, 'user', req.user.userid, 'logged out', `${ip} - via react`)
+    .catch(() => {});
   res.sendStatus(200);
 });
 
