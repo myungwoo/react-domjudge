@@ -8,6 +8,12 @@ import Input, {InputLabel} from 'material-ui/Input';
 import {MenuItem} from 'material-ui/Menu';
 import {FormControl} from 'material-ui/Form';
 import Select from 'material-ui/Select';
+import Dialog, {
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from 'material-ui/Dialog';
 
 import Auth from '../storages/auth';
 import Config from '../storages/config';
@@ -48,6 +54,14 @@ class SubmitForm extends React.Component {
       let problems = (await axios.post('/api/problems', {cid: contest.cid}, Auth.getHeader())).data;
       let languages = (await axios.get('/api/languages', Auth.getHeader())).data;
       this.files = [];
+      this.probid_to_obj = problems.reduce((acc, cur) => {
+        acc[cur.probid] = cur;
+        return acc;
+      }, {});
+      this.langid_to_obj = languages.reduce((acc, cur) => {
+        acc[cur.langid] = cur;
+        return acc;
+      }, {});
       this.setState({problems, languages, problem: '', language: '', filenames: []});
       setLoading(false);
     }).bind(this)()
@@ -109,12 +123,15 @@ class SubmitForm extends React.Component {
     data.append('cid', contest.cid);
     data.append('probid', problem);
     data.append('langid', language);
-    this.setState({loading: true});
+    this.setState({loading: true, open: false});
     axios.post('/api/submit', data, Auth.getHeader())
       .then(res => {
         this.setState({loading: false});
         if (res.data.success){
           toast('Submission succeed!'); // TODO: message
+          /* reset form */
+          this.files = [];
+          this.setState({filenames: [], problem: '', language: ''});
           afterSubmit();
         }
         else toast('Submission failed!'); // TODO: message
@@ -132,6 +149,17 @@ class SubmitForm extends React.Component {
       },
     };
     const maxfiles = Config.getConfig('sourcefiles_limit', 100);
+
+    let problem_dispaly = '';
+    if (this.state.problem){
+      const problem = this.probid_to_obj[this.state.problem];
+      problem_dispaly = (problem && `${problem.shortname} - ${problem.name}`) || '';
+    }
+    let language_display = '';
+    if (this.state.language){
+      const language = this.langid_to_obj[this.state.language];
+      language_display = (language && language.name) || '';
+    }
 
     return (
       <Grid container spacing={16}>
@@ -181,8 +209,26 @@ class SubmitForm extends React.Component {
             raised color="primary"
             disabled={!this.validateForm()}
             style={{...styles.fullwidth}}
-            onClick={this.doSubmit.bind(this)}>Submit</Button>
+            onClick={() => this.setState({open: true})}>Submit</Button>
         </Grid>
+        <Dialog open={this.state.open} onRequestClose={() => this.setState({open: false})}>
+          <DialogTitle>Make submission?</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Source file(s): {this.state.filenames.join(', ')}<br/>
+              Problem: {problem_dispaly}<br/>
+              Language: {language_display}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => this.setState({open: false})} color="primary">
+              No
+            </Button>
+            <Button onClick={this.doSubmit.bind(this)} color="primary">
+              Yes
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Grid>
     );
   }
