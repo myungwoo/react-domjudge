@@ -64,7 +64,7 @@ class ClarificationDialog extends React.Component {
   sendClarification() {
     const {contest, toast, afterSend, onRequestClose} = this.props;
     const {subject, text} = this.state;
-    this.setState({loading: true});
+    this.setState({loading: true, open: false});
     axios.post('/api/clarification/send', {
       cid: contest.cid,
       subject,
@@ -150,10 +150,21 @@ class ClarificationDialog extends React.Component {
           <Button onClick={rest.onRequestClose} color="primary">
             Close
           </Button>
-          <Button onClick={this.sendClarification.bind(this)} color="primary" disabled={this.state.text === ''}>
+          <Button onClick={() => this.setState({open: true})} color="primary" disabled={this.state.text === ''}>
             Send
           </Button>
         </DialogActions>
+        <Dialog open={this.state.open} onRequestClose={() => this.setState({open: false})}>
+          <DialogTitle>Send clarification request to Jury?</DialogTitle>
+          <DialogActions>
+            <Button onClick={() => this.setState({open: false})} color="primary">
+              No
+            </Button>
+            <Button onClick={this.sendClarification.bind(this)} color="primary">
+              Yes
+            </Button>
+          </DialogActions>
+        </Dialog>
       </ResponsiveDialog>
     );
   }
