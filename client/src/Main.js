@@ -22,17 +22,7 @@ import UserInfoDialog from './components/user-info-dialog';
 import ContestSelectDialog from './components/contest-select-dialog';
 
 import Overview from './Overview';
-
-class B extends React.Component {
-  componentDidMount() {
-    const {toast} = this.props;
-    toast('B');
-  }
-
-  render() {
-    return (<h1>B</h1>);
-  }
-}
+import Problems from './Problems';
 
 class Main extends React.Component {
   constructor(props) {
@@ -55,6 +45,11 @@ class Main extends React.Component {
 
   componentWillUnmount() {
     clearInterval(this.timer);
+  }
+
+  componentDidUpdate() {
+    if (this.state.redirect_to)
+      this.setState({redirect_to: null});
   }
 
   tick() {
@@ -141,7 +136,7 @@ class Main extends React.Component {
                 </ListItemIcon>
                 <ListItemText primary="Overview" />
               </ListItem>
-              <ListItem button onClick={() => this.setState({open: false, redirect_to: '/B'})}>
+              <ListItem button onClick={() => this.setState({open: false, redirect_to: '/problems'})}>
                 <ListItemIcon>
                   <LibraryBooksIcon />
                 </ListItemIcon>
@@ -171,8 +166,8 @@ class Main extends React.Component {
           <Switch>
             <Route exact path="/" render={props =>
               (<Overview {...props} user={user} contest={contest} state={this.state.contest_state} toast={toast} />)} />
-            <Route exact path="/B" render={props =>
-              (<B {...props} toast={toast} />)} />
+            <Route path="/problems" render={props =>
+              (<Problems {...props} contest={contest} state={this.state.contest_state} toast={toast} />)} />
             <Redirect to="/" />
           </Switch>
         </div>

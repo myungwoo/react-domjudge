@@ -116,6 +116,36 @@ router.post('/problems', (req, res) => {
   })(req, res);
 });
 
+router.post('/problems/with/text', (req, res) => {
+  if (!req.user){ res.sendStatus(401); return; }
+  const {cid} = req.body;
+  const {teamid} = req.user;
+  if (!cid || isNaN(Number(cid))){ res.sendStatus(400); return; }
+  (async function(req, res) {
+    let contest = (await db.contest.getContestByCidTeam(cid, teamid))[0];
+    if (!contest){ res.sendStatus(204); return; }
+    if (contest.starttime > Date.now()){ res.sendStatus(403); return; }
+    res.send(await db.problem.getListByContestWithText(cid));
+  })(req, res);
+});
+
+router.post('/problem', (req, res) => {
+  if (!req.user){ res.sendStatus(401); return; }
+  const {cid, probid} = req.body;
+  const {teamid} = req.user;
+  if (!cid || isNaN(Number(cid))){ res.sendStatus(400); return; }
+  (async function(req, res) {
+    let contest = (await db.contest.getContestByCidTeam(cid, teamid))[0];
+    if (!contest){ res.sendStatus(204); return; }
+    if (contest.starttime > Date.now()){ res.sendStatus(403); return; }
+    let problem = (await db.problem.getByContest(probid, cid))[0];
+    if (!problem){ res.sendStatus(204); return; }
+    /* Only supports pdf */
+    res.writeHead(200, {'Content-Type': 'application/pdf'});
+    res.end(problem.problemtext, 'binary');
+  })(req, res);
+});
+
 router.get('/languages', (req, res) => {
   if (!req.user){ res.sendStatus(401); return; }
   db.language.getList().then(val => res.send(val));
