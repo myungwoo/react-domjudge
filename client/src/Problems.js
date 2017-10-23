@@ -86,7 +86,7 @@ class Problems extends React.Component {
             </div>
           </Paper>
         </Grid>) || ''}
-        {(state && !problems[0] &&
+        {(state && !problems[0] && !loading &&
         <Grid item xs={12}>
           <Switch>
             <Route exact path="/problems" render={() =>
