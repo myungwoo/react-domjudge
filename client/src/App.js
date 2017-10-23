@@ -42,7 +42,7 @@ class App extends React.Component {
       user = res;
     }).bind(this);
     const check_api = async function(){
-      let res = (await axios.get('/api/status'));
+      let res = (await axios.get('./api/status'));
       if (res.status !== 200 || !res.data.pong || !res.data.db_conn) throw new Error();
     };
     const get_contest = (async function(){

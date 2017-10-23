@@ -35,7 +35,7 @@ class ProblemView extends React.Component {
     const problem = p || this.props.problem;
     const {toast, contest} = this.props;
     this.setState({loading: true});
-    axios.post('/api/problem', {
+    axios.post('./api/problem', {
       cid: contest.cid, probid: problem.probid
     }, {responseType: 'arraybuffer', ...Auth.getHeader()})
       .then(res => {

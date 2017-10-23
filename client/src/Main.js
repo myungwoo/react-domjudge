@@ -65,7 +65,7 @@ class Main extends React.Component {
   logout() {
     const {user, toast} = this.props;
     toast(`Bye bye, ${user.username}!`);
-    axios.get('/api/auth/logout', Auth.getHeader());
+    axios.get('./api/auth/logout', Auth.getHeader());
     Auth.doLogout();
     this.props.onLogout();
   }

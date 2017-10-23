@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const Config = {
   updateInfo: async function() {
-    let res = await axios.get('/api/config');
+    let res = await axios.get('./api/config');
     let configs = res.data;
     localStorage.setItem('configs', JSON.stringify(configs));
   },

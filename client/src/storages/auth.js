@@ -4,7 +4,7 @@ import Contest from './contest';
 
 const Auth = {
   doLogin: async function(username, password) {
-    let res = await axios.post('/api/auth/login', {
+    let res = await axios.post('./api/auth/login', {
       username: username,
       password: password
     });
@@ -24,7 +24,7 @@ const Auth = {
   },
 
   validateUser: async function() {
-    let res = await axios.get('/api/auth/user', Auth.getHeader());
+    let res = await axios.get('./api/auth/user', Auth.getHeader());
     if (res.data){
       localStorage.setItem('userdata', JSON.stringify(res.data));
     }else{

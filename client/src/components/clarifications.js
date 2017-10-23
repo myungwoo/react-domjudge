@@ -45,7 +45,7 @@ class Clarifications extends React.Component {
     const contest = c || this.props.contest;
     clearTimeout(this.timer);
     setLoading(true);
-    axios.post('/api/clarifications', {
+    axios.post('./api/clarifications', {
       cid: contest.cid
     }, Auth.getHeader())
       .then(res => {
@@ -80,7 +80,7 @@ class Clarifications extends React.Component {
   selectClarification(clarid) {
     const {toast} = this.props;
     this.setState({loading: true});
-    axios.post('/api/clarification', {
+    axios.post('./api/clarification', {
       clarid
     }, Auth.getHeader())
       .then(res => {

@@ -64,7 +64,7 @@ class Submissions extends React.Component {
     const contest = c || this.props.contest;
     clearTimeout(this.timer);
     setLoading(true);
-    axios.post('/api/submissions', {
+    axios.post('./api/submissions', {
       cid: contest.cid
     }, Auth.getHeader())
       .then(res => {
@@ -80,7 +80,7 @@ class Submissions extends React.Component {
   selectSubmission(submitid) {
     const {toast} = this.props;
     this.setState({loading: true});
-    axios.post('/api/submission', {
+    axios.post('./api/submission', {
       submitid
     }, Auth.getHeader())
       .then(res => {

@@ -4,7 +4,7 @@ import Auth from './auth';
 
 const Contest = {
   updateInfo: async function() {
-    let res = await axios.get('/api/contests', Auth.getHeader());
+    let res = await axios.get('./api/contests', Auth.getHeader());
     let contests = res.data;
     localStorage.setItem('contests', JSON.stringify(contests));
     let current_contest = JSON.parse(localStorage.getItem('contest') || null);
