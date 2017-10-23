@@ -2,6 +2,7 @@
   "name": "react-domjudge-client",
   "version": "0.1.0",
   "proxy": "http://localhost:3001/",
+  "homepage": ".",
   "private": true,
   "dependencies": {
     "axios": "^0.16.2",
