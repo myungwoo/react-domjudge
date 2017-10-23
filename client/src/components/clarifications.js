@@ -59,7 +59,11 @@ class Clarifications extends React.Component {
           for (let clar of clars){
             if (!this.viewed.has(clar.clarid) && !this.notified.has(clar.clarid)){
               this.notified.add(clar.clarid);
-              new Notification('New clarification received!', {body: `[${clar.subject}]\nTo: ${clar.to}\n\n${clar.body}`, icon: Logo});
+              let n = new Notification('New clarification received!', {body: `[${clar.subject}]\nTo: ${clar.to}\n\n${clar.body}`, icon: Logo});
+              n.onclick = evt => {
+                window.focus();
+                evt.target.close();
+              };
             }
           }
         }

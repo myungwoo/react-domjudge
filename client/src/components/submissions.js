@@ -44,7 +44,11 @@ class Submissions extends React.Component {
       if (s && s.result){
         if (!this.notified.has(sid)){
           this.notified.add(sid);
-          new Notification('New result received!', {body: `Result of problem ${s.shortname} is ${s.result.toUpperCase()}`, icon: Logo});
+          let n = new Notification('New result received!', {body: `Result of problem ${s.shortname} is ${s.result.toUpperCase()}`, icon: Logo});
+          n.onclick = evt => {
+            window.focus();
+            evt.target.close();
+          };
         }
       }else pendings.push(sid);
     }
