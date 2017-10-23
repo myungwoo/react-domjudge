@@ -22,6 +22,41 @@ cd client
 npm run lint
 ```
 
+## API server config
+
+```bash
+vim config.js
+```
+
+## Client 빌드
+
+```bash
+cd client
+npm run build
+```
+
+## Client 빌드 이후 production으로 서버 실행
+
+```bash
+NODE_ENV=production PORT=3000 node server.js
+```
+
+## Apache2를 통한 proxy 설정
+
+```bash
+sudo a2enmod proxy
+sudo a2enmod proxy_http
+```
+
+```
+LoadModule proxy_module modules/mod_proxy.so
+LoadModule proxy_http_module modules/mod_proxy_http.so
+
+RedirectMatch ^/react$ /react/
+ProxyPass "/react/" "http://localhost:3000/"
+ProxyPassReverse "/react/" "http://localhost:3000/"
+```
+
 ## 도움이 됐던 사이트들
 
 [Create-react-app with express api](https://github.com/fullstackreact/food-lookup-demo)
