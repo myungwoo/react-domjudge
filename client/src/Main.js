@@ -82,6 +82,7 @@ class Main extends React.Component {
     let {toast, user, contest, onContestChange} = this.props;
     return (
       <div>
+        {this.state.redirect_to && <Redirect to={this.state.redirect_to} />}
         <AppBar>
           <Toolbar>
             <IconButton
@@ -125,13 +126,13 @@ class Main extends React.Component {
         <Drawer open={this.state.open} onRequestClose={() => this.setState({open: false})}>
           <div>
             <List style={{width: 250}}>
-              <ListItem button onClick={() => {this.setState({open: false}); window.location = '#/';}}>
+              <ListItem button onClick={() => this.setState({open: false, redirect_to: '/'})}>
                 <ListItemIcon>
                   <DescriptionIcon />
                 </ListItemIcon>
                 <ListItemText primary="Overview" />
               </ListItem>
-              <ListItem button onClick={() => {this.setState({open: false}); window.location = '#/B';}}>
+              <ListItem button onClick={() => this.setState({open: false, redirect_to: '/B'})}>
                 <ListItemIcon>
                   <LibraryBooksIcon />
                 </ListItemIcon>
