@@ -75,11 +75,20 @@ class Main extends React.Component {
     this.props.onLogout();
   }
 
+  onContestChange(contest) {
+    let now = getNow();
+    let contest_state = 0;
+    if (now >= contest.endtime) contest_state = 2;
+    else if (now >= contest.starttime) contest_state = 1;
+    this.setState({contest_state});
+    this.props.onContestChange(contest);
+  }
+
   render() {
     // Since contest list will not be changed after app load.
     // So it's able to use localStorage instead of state/props.
     let contests = Contest.getList();
-    let {toast, user, contest, onContestChange} = this.props;
+    let {toast, user, contest} = this.props;
     return (
       <div>
         {this.state.redirect_to && <Redirect to={this.state.redirect_to} />}
@@ -121,7 +130,7 @@ class Main extends React.Component {
           <ContestSelectDialog
             open={this.state.contests_open}
             contest={contest}
-            onContestChange={onContestChange}
+            onContestChange={this.onContestChange.bind(this)}
             onRequestClose={() => this.setState({contests_open: false})} />}
         <Drawer open={this.state.open} onRequestClose={() => this.setState({open: false})}>
           <div>

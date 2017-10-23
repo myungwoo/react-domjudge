@@ -51,6 +51,10 @@ class Submissions extends React.Component {
     this.pendings = submissions.filter(e => !e.result).map(e => e.submitid);
   }
 
+  componentWillMount() {
+    clearTimeout(this.timer);
+  }
+
   refreshSubmission(c) {
     const {setLoading, toast} = this.props;
     const contest = c || this.props.contest;

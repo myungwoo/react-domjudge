@@ -26,6 +26,10 @@ class Clarifications extends React.Component {
     this.refreshClarification();
   }
 
+  componentWillUnmount() {
+    clearTimeout(this.timer);
+  }
+
   shouldComponentUpdate(nextProps, nextState) {
     if (JSON.stringify(this.props.contest) !== JSON.stringify(nextProps.contest)){
       // If contest has been changed clarification list also has to be changed
