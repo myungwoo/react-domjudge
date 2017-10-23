@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {translate, Trans} from 'react-i18next';
 import axios from 'axios';
 
 import Button from 'material-ui/Button';
@@ -27,13 +28,12 @@ class ProblemView extends React.Component {
     if (JSON.stringify(this.props.problem) !== JSON.stringify(nextProps.problem)){
       this.refreshProblem(nextProps.problem);
     }
-    return JSON.stringify(this.props) !== JSON.stringify(nextProps) ||
-           JSON.stringify(this.state) !== JSON.stringify(nextState);
+    return true;
   }
   
   refreshProblem(p) {
     const problem = p || this.props.problem;
-    const {toast, contest} = this.props;
+    const {toast, contest, t} = this.props;
     this.setState({loading: true});
     axios.post('./api/problem', {
       cid: contest.cid, probid: problem.probid
@@ -45,23 +45,30 @@ class ProblemView extends React.Component {
       })
       .catch(() => {
         this.setState({loading: false});
-        toast('Something went wrong, please reload the app.');
+        toast(t('error'));
       });
   }
 
   render() {
-    const {problem} = this.props;
+    const {problem, t} = this.props;
     const {url, loading} = this.state;
     return (
       <div style={{height: '100%'}}>
         {loading && <Loading />}
         <div>
           <a href={url} download={`${problem.shortname} - ${problem.name}.pdf`}>
-            <Button raised color="primary" style={{width: '100%'}}>Download</Button>
+            <Button raised color="primary" style={{width: '100%'}}>{t('problem_view.download')}</Button>
           </a>
         </div>
         <object data={url} type="application/pdf" style={{width: '100%', height: 'calc(100% - 36px)'}}>
-          If you can't view PDF file in browser. <a href={url} download={`${problem.shortname} - ${problem.name}.pdf`}><span style={{color: 'blue', textDecoration: 'underline'}}>Download it!</span></a>
+          <Trans i18nKey="problem_view.cant_view">
+            If you can't view PDF file in browser,
+            <a href={url} download={`${problem.shortname} - ${problem.name}.pdf`}>
+              <span style={{color: 'blue', textDecoration: 'underline'}}>
+                download it!
+              </span>
+            </a>
+          </Trans>
         </object>
       </div>
     );
@@ -74,4 +81,4 @@ ProblemView.PropTypes = {
   problem: PropTypes.number.isRequired,
 };
 
-export default ProblemView;
+export default translate('translations')(ProblemView);

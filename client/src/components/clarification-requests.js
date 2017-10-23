@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {translate} from 'react-i18next';
 import axios from 'axios';
 
 import {Typography, Button} from 'material-ui';
@@ -22,18 +23,17 @@ class ClarificationRequests extends React.Component {
     this.refreshClarification();
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
+  shouldComponentUpdate(nextProps) {
     if (JSON.stringify(this.props.contest) !== JSON.stringify(nextProps.contest) ||
         JSON.stringify(this.props.cidx) !== JSON.stringify(nextProps.cidx)){
       // If contest has been changed clarification request list also has to be changed
       this.refreshClarification(nextProps.contest);
     }
-    return JSON.stringify(this.props) !== JSON.stringify(nextProps) ||
-           JSON.stringify(this.state) !== JSON.stringify(nextState);
+    return true;
   }
 
   refreshClarification(c) {
-    const {setLoading, toast} = this.props;
+    const {setLoading, toast, t} = this.props;
     const contest = c || this.props.contest;
     setLoading(true);
     axios.post('./api/clarifications/my', {
@@ -48,28 +48,27 @@ class ClarificationRequests extends React.Component {
         this.setState({clarifications: clars});
         setLoading(false);
       })
-      .catch(() => toast('Something went wrong, please reload the app.'));
+      .catch(() => toast(t('error')));
   }
 
   selectClarification(clarid) {
-    const {toast} = this.props;
+    const {toast, t} = this.props;
     this.setState({loading: true});
     axios.post('./api/clarification', {
       clarid
     }, Auth.getHeader())
       .then(res => {
-        if (!res.data) toast('Submission not found for this team or not judged yet.');
-        else this.refreshClarification();
         this.setState({loading: false, selected_clarification: res.data});
+        this.refreshClarification();
       })
       .catch(() => {
         this.setState({loading: false});
-        toast('Something went wrong, please reload the app.');
+        toast(t('error'));
       });
   }
 
   render() {
-    const {contest, user, toast} = this.props;
+    const {contest, user, toast, t} = this.props;
     const {clarifications} = this.state;
 
     const formatTime = t => {
@@ -81,11 +80,11 @@ class ClarificationRequests extends React.Component {
       <Table style={{width: '100%'}}>
         <TableHead>
           <TableRow style={{fontSize: 15}}>
-            <TableCell padding="none" style={{width:43, textAlign: 'center'}}>Time</TableCell>
-            <TableCell padding="none" style={{width:38, textAlign: 'center'}}>From</TableCell>
-            <TableCell padding="none" style={{width:53, textAlign: 'center'}}>To</TableCell>
-            <TableCell padding="none" style={{maxWidth:67, textAlign: 'center'}}>Subject</TableCell>
-            <TableCell padding="none" style={{textAlign: 'center'}}>Text</TableCell>
+            <TableCell padding="none" style={{width:43, textAlign: 'center'}}>{t('clarification.time')}</TableCell>
+            <TableCell padding="none" style={{width:53, textAlign: 'center'}}>{t('clarification.from')}</TableCell>
+            <TableCell padding="none" style={{width:53, textAlign: 'center'}}>{t('clarification.to')}</TableCell>
+            <TableCell padding="none" style={{maxWidth:67, textAlign: 'center'}}>{t('clarification.subject')}</TableCell>
+            <TableCell padding="none" style={{textAlign: 'center'}}>{t('clarification.text')}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -111,11 +110,11 @@ class ClarificationRequests extends React.Component {
       <div style={{width: '100%'}}>
         {this.state.loading && <Loading />}
         <div style={{width: '100%', textAlign: 'right'}}>
-          <Button dense raised onClick={() => this.setState({selected_clarification: {}})}>Request clarification</Button>
+          <Button dense raised onClick={() => this.setState({selected_clarification: {}})}>{t('clarification.request')}</Button>
         </div>
         {clarifications.length > 0 ?
           table :
-          <Typography type="subheading" style={{textAlign: 'center', fontStyle: 'italic'}}>No clarification requests.</Typography>}
+          <Typography type="subheading" style={{textAlign: 'center', fontStyle: 'italic'}}>{t('clarification.no_clarification_request')}</Typography>}
         {this.state.selected_clarification &&
         <ClarificationDialog
           fullWidth
@@ -140,4 +139,4 @@ ClarificationRequests.propTypes = {
   user: PropTypes.object.isRequired,
 };
 
-export default ClarificationRequests;
+export default translate('translations')(ClarificationRequests);

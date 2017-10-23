@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {translate} from 'react-i18next';
 import axios from 'axios';
 
 import Grid from 'material-ui/Grid';
@@ -37,17 +38,16 @@ class SubmitForm extends React.Component {
     this.loadForm();
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
+  shouldComponentUpdate(nextProps) {
     if (JSON.stringify(this.props.contest) !== JSON.stringify(nextProps.contest)){
       // If contest has been changed problem, language list also has to be changed
       this.loadForm(nextProps.contest);
     }
-    return JSON.stringify(this.props) !== JSON.stringify(nextProps) ||
-           JSON.stringify(this.state) !== JSON.stringify(nextState);
+    return true;
   }
   
   loadForm(c) {
-    const {setLoading, toast} = this.props;
+    const {setLoading, toast, t} = this.props;
     const contest = c || this.props.contest;
     (async function(){
       setLoading(true);
@@ -65,22 +65,22 @@ class SubmitForm extends React.Component {
       this.setState({problems, languages, problem: '', language: '', filenames: []});
       setLoading(false);
     }).bind(this)()
-      .catch(() => toast('Something went wrong, please reload the app.'));
+      .catch(() => toast(t('error')));
   }
 
   selectFiles(evt) {
     const maxfiles = Config.getConfig('sourcefiles_limit', 100);
     const maxsize = Config.getConfig('sourcesize_limit', 256);
-    const {toast} = this.props;
+    const {toast, t} = this.props;
     let files = Array.from(evt.target.files);
     evt.target.value = '';
     if (files.length > maxfiles){
-      toast('You select too many files (At most '+maxfiles+' files)');
+      toast(t('submitform.too_many_files', {maxfiles}));
       return;
     }
     let totalsize = files.map(e => e.size).reduce((a, b) => a+b, 0);
     if (totalsize > maxsize*1024){
-      toast('File(s) are too big.');
+      toast(t('submitform.too_big', {count: files.length}));
       return;
     }
 
@@ -114,7 +114,7 @@ class SubmitForm extends React.Component {
   }
 
   doSubmit() {
-    const {toast, afterSubmit, contest} = this.props;
+    const {toast, afterSubmit, contest, t} = this.props;
     const {problem, language} = this.state;
     const files = this.files;
     let data = new FormData();
@@ -128,21 +128,22 @@ class SubmitForm extends React.Component {
       .then(res => {
         this.setState({loading: false});
         if (res.data.success){
-          toast('Submission succeed!'); // TODO: message
+          toast(t('submitform.success'));
           /* reset form */
           this.files = [];
           this.setState({filenames: [], problem: '', language: ''});
           afterSubmit();
         }
-        else toast('Submission failed!'); // TODO: message
+        else toast(t('submitform.failed'));
       })
       .catch(() => {
         this.setState({loading: false});
-        toast('Something went wrong, please reload the app.');
+        toast(t('error'));
       });
   }
 
   render() {
+    const {t} = this.props;
     const styles = {
       fullwidth: {
         width: '100%',
@@ -166,19 +167,19 @@ class SubmitForm extends React.Component {
         {this.state.loading && <Loading />}
         {this.state.filenames.length > 0 &&
         <Grid item xs={12} style={{textAlign: 'center'}}>
-          Selected file(s): {this.state.filenames.join(', ')}
+          {t('submitform.selected_file', {count: this.state.filenames.length})}: {this.state.filenames.join(', ')}
         </Grid>}
         <Grid item xs={12} sm={3}>
           <input id="file" multiple={maxfiles > 1} type="file" style={{display: 'none'}} onChange={this.selectFiles.bind(this)}/>
           <label htmlFor="file">
             <Button raised component="span" style={{...styles.fullwidth}}>
-              Select file
+              {t('submitform.select_file')}
             </Button>
           </label>
         </Grid>
         <Grid item xs={12} sm={3}>
           <FormControl style={styles.fullwidth}>
-            <InputLabel htmlFor="problem">Problem</InputLabel>
+            <InputLabel htmlFor="problem">{t('submitform.problem')}</InputLabel>
             <Select
               value={this.state.problem}
               onChange={evt => this.setState({problem: evt.target.value})}
@@ -192,7 +193,7 @@ class SubmitForm extends React.Component {
         </Grid>
         <Grid item xs={12} sm={3}>
           <FormControl style={styles.fullwidth}>
-            <InputLabel htmlFor="language">Language</InputLabel>
+            <InputLabel htmlFor="language">{t('submitform.language')}</InputLabel>
             <Select
               value={this.state.language}
               onChange={evt => this.setState({language: evt.target.value})}
@@ -209,23 +210,23 @@ class SubmitForm extends React.Component {
             raised color="primary"
             disabled={!this.validateForm()}
             style={{...styles.fullwidth}}
-            onClick={() => this.setState({open: true})}>Submit</Button>
+            onClick={() => this.setState({open: true})}>{t('submitform.submit')}</Button>
         </Grid>
         <Dialog open={this.state.open} onRequestClose={() => this.setState({open: false})}>
-          <DialogTitle>Make submission?</DialogTitle>
+          <DialogTitle>{t('submitform.confirm_title')}</DialogTitle>
           <DialogContent>
             <DialogContentText>
-              Source file(s): {this.state.filenames.join(', ')}<br/>
-              Problem: {problem_dispaly}<br/>
-              Language: {language_display}
+              {t('submitform.selected_file', {count: this.state.filenames.length})}: {this.state.filenames.join(', ')}<br/>
+              {t('submitform.problem')}: {problem_dispaly}<br/>
+              {t('submitform.language')}: {language_display}
             </DialogContentText>
           </DialogContent>
           <DialogActions>
             <Button onClick={() => this.setState({open: false})} color="primary">
-              No
+              {t('submitform.no')}
             </Button>
             <Button onClick={this.doSubmit.bind(this)} color="primary">
-              Yes
+              {t('submitform.yes')}
             </Button>
           </DialogActions>
         </Dialog>
@@ -241,4 +242,4 @@ SubmitForm.propTypes = {
   afterSubmit: PropTypes.func.isRequired,
 };
 
-export default SubmitForm;
+export default translate('translations')(SubmitForm);

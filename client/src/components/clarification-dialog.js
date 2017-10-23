@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {translate} from 'react-i18next';
 import axios from 'axios';
 
 import Typography from 'material-ui/Typography';
@@ -49,7 +50,7 @@ class ClarificationDialog extends React.Component {
   }
 
   componentDidMount() {
-    const {contest, toast} = this.props;
+    const {contest, toast, t} = this.props;
     // Get problem list
     axios.post('./api/problems', {cid: contest.cid}, Auth.getHeader())
       .then(res => {
@@ -57,12 +58,12 @@ class ClarificationDialog extends React.Component {
       })
       .catch(() => {
         this.setState({loading: false});
-        toast('Something went wrong, please reload the app.');
+        toast(t('error'));
       });
   }
 
   sendClarification() {
-    const {contest, toast, afterSend, onRequestClose} = this.props;
+    const {contest, toast, afterSend, onRequestClose, t} = this.props;
     const {subject, text} = this.state;
     this.setState({loading: true, open: false});
     axios.post('./api/clarification/send', {
@@ -71,20 +72,20 @@ class ClarificationDialog extends React.Component {
       text,
     }, Auth.getHeader())
       .then(() => {
-        toast('Clarification request has been sent successfully!');
+        toast(t('clarification.request_sent'));
         this.setState({loading: false});
         onRequestClose();
         afterSend();
       })
       .catch(() => {
         this.setState({loading: false});
-        toast('Something went wrong, please reload the app.');
+        toast(t('error'));
       });
   }
 
   render() {
     // eslint-disable-next-line no-unused-vars
-    const {clarification, contest, user, toast, afterSend, ...rest} = this.props;
+    const {clarification, contest, user, toast, afterSend, t, ...rest} = this.props;
     const formatTime = t => {
       let s = Math.max(Math.floor((t-contest.starttime)/60), 0);
       const pad2 = v => v < 10 ? '0'+v : ''+v;
@@ -104,28 +105,28 @@ class ClarificationDialog extends React.Component {
     return (
       <ResponsiveDialog {...rest}>
         {this.state.loading && <Loading />}
-        <DialogTitle>{clarification.original && clarification.original.sender !== user.teamid ? 'Clarification' : 'Clarification Request'}</DialogTitle>
+        <DialogTitle>{clarification.original && clarification.original.sender !== user.teamid ? t('clarification.title') : t('clarification.request_title')}</DialogTitle>
         <DialogContent>
           {clarification.list && clarification.list.map((e, idx) => (
             <table style={{paddingBottom: 20, width: '100%'}} key={idx}>
               <tbody>
-                <tr><td style={{width: 80}}>From:</td><td>{e.from}</td></tr>
-                <tr><td>To:</td><td>{e.to}</td></tr>
-                <tr><td>Subject:</td><td>{e.subject}</td></tr>
-                <tr><td>Time:</td><td>{formatTime(e.submittime)}</td></tr>
+                <tr><td style={{width: 80}}>{t('clarification.from')}:</td><td>{e.from}</td></tr>
+                <tr><td>{t('clarification.to')}:</td><td>{e.to}</td></tr>
+                <tr><td>{t('clarification.subject')}:</td><td>{e.subject}</td></tr>
+                <tr><td>{t('clarification.time')}:</td><td>{formatTime(e.submittime)}</td></tr>
                 <tr><td></td><td><pre style={styles.code}>{e.body}</pre></td></tr>
               </tbody>
             </table>
           ))}
-          <Typography type="title" style={{paddingBottom: 15}}>Send Clarification Request</Typography>
+          <Typography type="title" style={{paddingBottom: 15}}>{t('clarification.send_title')}</Typography>
           <TextField
             style={{paddingBottom: 8}}
-            label="To"
+            label={t('clarification.to')}
             value="Jury"
             fullWidth
             disabled/>
           <FormControl style={{paddingBottom: 8, width: '100%'}}>
-            <InputLabel htmlFor="problem">Subject</InputLabel>
+            <InputLabel htmlFor="problem">{t('clarification.subject')}</InputLabel>
             <Select
               value={this.state.subject}
               onChange={evt => this.setState({subject: evt.target.value})}
@@ -140,7 +141,7 @@ class ClarificationDialog extends React.Component {
             </Select>
           </FormControl>
           <TextField
-            label="Text"
+            label={t('clarification.text')}
             multiline
             value={this.state.text}
             onChange={evt => this.setState({text: evt.target.value})}
@@ -148,20 +149,20 @@ class ClarificationDialog extends React.Component {
         </DialogContent>
         <DialogActions>
           <Button onClick={rest.onRequestClose} color="primary">
-            Close
+            {t('clarification.close')}
           </Button>
           <Button onClick={() => this.setState({open: true})} color="primary" disabled={this.state.text === ''}>
-            Send
+            {t('clarification.send')}
           </Button>
         </DialogActions>
         <Dialog open={this.state.open} onRequestClose={() => this.setState({open: false})}>
-          <DialogTitle>Send clarification request to Jury?</DialogTitle>
+          <DialogTitle>{t('clarification.confirm_title')}</DialogTitle>
           <DialogActions>
             <Button onClick={() => this.setState({open: false})} color="primary">
-              No
+              {t('clarification.no')}
             </Button>
             <Button onClick={this.sendClarification.bind(this)} color="primary">
-              Yes
+              {t('clarification.yes')}
             </Button>
           </DialogActions>
         </Dialog>
@@ -179,4 +180,4 @@ ClarificationDialog.propTypes = {
   toast: PropTypes.func.isRequired,
 };
 
-export default ClarificationDialog;
+export default translate('translations')(ClarificationDialog);

@@ -1,0 +1,137 @@
+{
+  "locale": "ko",
+  "error": "예상치 못한 에러가 있습니다. 새로고침해서 app을 다시 실행해주세요.",
+  "notification": {
+    "new_result": {
+      "title": "채점 결과가 나왔습니다!",
+      "body": "문제 {{shortname}}의 결과는 {{result}} 입니다."
+    },
+    "new_clarification": {
+      "title": "새로운 공지/답변이 왔습니다!",
+      "body": "[{{subject}}]\nTo: {{to}}\n\n{{body}}"
+    }
+  },
+  "auth": {
+    "welcome": "반갑습니다, {{username}}!",
+    "byebye": "안녕히가세요, {{username}}!",
+    "failed": "접속에 실패했습니다.",
+    "no_team": "Team member만 접속 가능합니다.",
+    "no_contest": "대회가 없습니다."
+  },
+  "login": {
+    "username": "아이디",
+    "password": "패스워드",
+    "sign_in": "접속하기"
+  },
+  "main": {
+    "time_to_start": "대회 시작까지",
+    "time_left": "남은 시간",
+    "overview": "개요",
+    "problems": "문제",
+    "scoreboard": "점수판",
+    "logout": "나가기"
+  },
+  "user_info_dialog": {
+    "title": "접속 정보",
+    "username": "아이디",
+    "teamname": "팀 이름",
+    "affiliation": "소속",
+    "country": "국가",
+    "n/a": "N/A",
+    "close": "닫기"
+  },
+  "contest_select_dialog": {
+    "title": "다른 대회 선택하기",
+    "close": "닫기"
+  },
+  "language_select_dialog": {
+    "title": "다른 언어 선택하기",
+    "close": "닫기"
+  },
+  "overview": {
+    "near_date_format": "HH:mm:ss",
+    "far_date_format": "YY년 M월 D일 HH:mm:ss",
+    "welcome_team": "반갑습니다, <1><0>{{teamname}}</0></1>!",
+    "start_schedule": "{{date}}에 대회가 시작될 예정입니다.",
+    "contest_finished": "대회가 끝났습니다!!",
+    "submitform_title": "제출하기",
+    "submissions_title": "제출 목록",
+    "clarifications_title": "공지 및 답변",
+    "clarification_requests_title": "질문하기"
+  },
+  "submitform": {
+    "too_many_files": "선택한 파일의 수가 너무 많습니다. (최대: {{maxfiles}}개)",
+    "too_big": "선택한 파일이 너무 큽니다.",
+    "too_big_plural": "선택한 파일들이 너무 큽니다.",
+    "success": "제출에 성공하였습니다!",
+    "failed": "제출에 실패하였습니다!",
+    "selected_file": "선택된 파일",
+    "selected_file_plural": "선택된 파일들",
+    "select_file": "파일 선택",
+    "problem": "문제",
+    "language": "언어",
+    "submit": "제출하기",
+    "confirm_title": "정말로 제출하겠습니까?",
+    "no": "아니오",
+    "yes": "예"
+  },
+  "submissions": {
+    "not_found": "제출이 존재하지 않거나, 아직 채점되기 전 입니다.",
+    "time": "시간",
+    "problem": "문제",
+    "language": "언어",
+    "result": "결과",
+    "no_submissions": "제출이 없습니다."
+  },
+  "submission_detail_dialog": {
+    "title": "제출 상세보기",
+    "invalid_submission": "이 제출은 무시되며, 결과에 반영되지 않습니다.",
+    "problem": "문제",
+    "submitted_time": "시간",
+    "language": "언어",
+    "result": "결과",
+    "compile_output": "컴파일 결과",
+    "no_compile_output": "컴파일 에러 혹은 결과가 없습니다.",
+    "sample_runs": "예제 데이터 결과",
+    "run_rank": "테스트 {{rank}}",
+    "description": "이름",
+    "runtime": "실행시간",
+    "program_output": "프로그램 출력",
+    "no_program_output": "프로그램 출력이 없습니다.",
+    "diff_output": "비교 결과",
+    "no_diff_output": "비교 결과가 없습니다.",
+    "stderr_output": "표준에러 (info/debug/error)",
+    "no_stderr_output": "표준에러 출력이 없습니다.",
+    "run_not_finished": "아직 실행이 끝나지 않았습니다.",
+    "no_sample_case": "결과가 없습니다.",
+    "close": "닫기"
+  },
+  "clarification": {
+    "title": "공지 및 답변",
+    "request_title": "질문",
+    "send_title": "질문하기",
+    "request": "질문하기",
+    "time": "시간",
+    "from": "보낸이",
+    "to": "받는이",
+    "subject": "주제",
+    "text": "내용",
+    "no_clarification": "공지 및 답변이 없습니다.",
+    "no_clarification_request": "질문이 없습니다.",
+    "request_sent": "성공적으로 질문했습니다!",
+    "close": "닫기",
+    "send": "질문하기",
+    "confirm_title": "정말로 질문하시겠습니까?",
+    "no": "아니오",
+    "yes": "예"
+  },
+  "problems": {
+    "title": "문제",
+    "no_problem_texts": "대회에 제공된 문제 파일이 없습니다.",
+    "contest_not_starts": "대회가 시작되면 문제 내용이 여기에 공개됩니다."
+  },
+  "problem_view": {
+    "download": "다운로드",
+    "cant_view": "PDF 파일이 브라우저에서 보이지 않는다면, <1><0>다운로드</0></1>해서 보시기 바랍니다!"
+  }
+}

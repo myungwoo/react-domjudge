@@ -1,11 +1,14 @@
 import React from 'react';
 import axios from 'axios';
+import {translate} from 'react-i18next';
+
 import {Snackbar, Typography} from 'material-ui';
 import {red} from 'material-ui/colors';
 
 import Auth from './storages/auth';
 import Contest from './storages/contest';
 import Config from './storages/config';
+import Language from './storages/language';
 
 import Main from './Main';
 import Login from './Login';
@@ -33,6 +36,9 @@ class App extends React.Component {
 
   componentDidMount() {
     // Loading logic
+    const {i18n} = this.props;
+    const lng = Language.getLanguage(); Language.setLanguage(lng);
+    i18n.changeLanguage(lng);
     let user, contest;
     const validate_token = (async function(){
       if (!Auth.getUser())
@@ -68,6 +74,7 @@ class App extends React.Component {
   }
 
   render() {
+    const {t} = this.props;
     let content;
     if (this.state.error)
       content = (
@@ -75,7 +82,7 @@ class App extends React.Component {
           Cannot connect to API server.<br />Please contact administrator.
         </Typography>
       );
-    else if (this.state.loading)
+    else if (this.state.loading || t('locale') === 'locale')
       content = (
         <Typography type="display2" style={{textAlign: 'center', paddingTop: 100}}>
           Application is loading, please wait...
@@ -107,4 +114,4 @@ class App extends React.Component {
   }
 }
 
-export default App;
+export default translate('translations')(App);

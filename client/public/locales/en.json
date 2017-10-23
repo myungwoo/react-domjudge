@@ -1,0 +1,137 @@
+{
+  "locale": "en",
+  "error": "Something went wrong, please reload the app.",
+  "notification": {
+    "new_result": {
+      "title": "New result received!",
+      "body": "Result of problem {{shortname}} is {{result}}"
+    },
+    "new_clarification": {
+      "title": "New clarification received!",
+      "body": "[{{subject}}]\nTo: {{to}}\n\n{{body}}"
+    }
+  },
+  "auth": {
+    "welcome": "Welcome, {{username}}!",
+    "byebye": "Bye bye, {{username}}!",
+    "failed": "Sign in failed...",
+    "no_team": "You're not a team member.",
+    "no_contest": "No contest available."
+  },
+  "login": {
+    "username": "Username",
+    "password": "Password",
+    "sign_in": "Sign in"
+  },
+  "main": {
+    "time_to_start": "Time to start",
+    "time_left": "Time left",
+    "overview": "Overview",
+    "problems": "Problems",
+    "scoreboard": "Scoreboard",
+    "logout": "Logout"
+  },
+  "user_info_dialog": {
+    "title": "User information",
+    "username": "Username",
+    "teamname": "Teamname",
+    "affiliation": "Affiliation",
+    "country": "Country",
+    "n/a": "N/A",
+    "close": "Close"
+  },
+  "contest_select_dialog": {
+    "title": "Select other contest",
+    "close": "Close"
+  },
+  "language_select_dialog": {
+    "title": "Select other language",
+    "close": "Close"
+  },
+  "overview": {
+    "near_date_format": "HH:mm:ss",
+    "far_date_format": "ddd D MMM YYYY HH:mm:ss",
+    "welcome_team": "Welcome, <1><0>{{teamname}}</0></1>!",
+    "start_schedule": "contest is scheduled to start on {{date}}",
+    "contest_finished": "Contest has been finished!!",
+    "submitform_title": "Submit your solution",
+    "submissions_title": "Submissions",
+    "clarifications_title": "Clarifications",
+    "clarification_requests_title": "Clarification Requests"
+  },
+  "submitform": {
+    "too_many_files": "You select too many files (At most {{maxfiles}} files)",
+    "too_big": "File is too big.",
+    "too_big_plural": "Files are too big.",
+    "success": "Submission succeed!",
+    "failed": "Submission failed!",
+    "selected_file": "Selected file",
+    "selected_file_plural": "Selected files",
+    "select_file": "Select file",
+    "problem": "Problem",
+    "language": "Language",
+    "submit": "Submit",
+    "confirm_title": "Make submission?",
+    "no": "No",
+    "yes": "Yes"
+  },
+  "submissions": {
+    "not_found": "Submission not found for this team or not judged yet.",
+    "time": "Time",
+    "problem": "Problem",
+    "language": "Language",
+    "result": "Result",
+    "no_submissions": "No submissions."
+  },
+  "submission_detail_dialog": {
+    "title": "Submission details",
+    "invalid_submission": "This submission is being ignored. It is not used in determining your score.",
+    "problem": "Problem",
+    "submitted_time": "Submitted",
+    "language": "Language",
+    "result": "Result",
+    "compile_output": "Compilation output",
+    "no_compile_output": "There were no compiler errors or warnings.",
+    "sample_runs": "Run(s) on the provided sample data",
+    "run_rank": "Run {{rank}}",
+    "description": "Description",
+    "runtime": "Runtime",
+    "program_output": "Program Output",
+    "no_program_output": "There was no program output.",
+    "diff_output": "Diff output",
+    "no_diff_output": "There was no diff output.",
+    "stderr_output": "Error output (info/debug/error)",
+    "no_stderr_output": "There was no stderr output.",
+    "run_not_finished": "Run not finished yet.",
+    "no_sample_case": "No sample cases available.",
+    "close": "Close"
+  },
+  "clarification": {
+    "title": "Clarification",
+    "request_title": "Clarification Request",
+    "send_title": "Send Clarification Request",
+    "request": "Request Clarification",
+    "time": "Time",
+    "from": "From",
+    "to": "To",
+    "subject": "Subject",
+    "text": "Text",
+    "no_clarification": "No clarifications.",
+    "no_clarification_request": "No clarification requests.",
+    "request_sent": "Clarification request has been sent successfully!",
+    "close": "Close",
+    "send": "Send",
+    "confirm_title": "Send clarification request to Jury?",
+    "no": "No",
+    "yes": "Yes"
+  },
+  "problems": {
+    "title": "Problems",
+    "no_problem_texts": "No problem texts available for this contest.",
+    "contest_not_starts": "Problem texts will appear here at contest start."
+  },
+  "problem_view": {
+    "download": "Download",
+    "cant_view": "If you can't view PDF file in browser, <1><0>download it!</0></1>"
+  }
+}

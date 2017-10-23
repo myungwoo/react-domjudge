@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {translate} from 'react-i18next';
 import axios from 'axios';
 
 import {Typography} from 'material-ui';
@@ -30,18 +31,17 @@ class Clarifications extends React.Component {
     clearTimeout(this.timer);
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
+  shouldComponentUpdate(nextProps) {
     if (JSON.stringify(this.props.contest) !== JSON.stringify(nextProps.contest)){
       // If contest has been changed clarification list also has to be changed
       this.viewed = null; this.notified = new Set();
       this.refreshClarification(nextProps.contest);
     }
-    return JSON.stringify(this.props) !== JSON.stringify(nextProps) ||
-           JSON.stringify(this.state) !== JSON.stringify(nextState);
+    return true;
   }
 
   refreshClarification(c) {
-    const {setLoading, toast} = this.props;
+    const {setLoading, toast, t} = this.props;
     const contest = c || this.props.contest;
     clearTimeout(this.timer);
     setLoading(true);
@@ -59,7 +59,11 @@ class Clarifications extends React.Component {
           for (let clar of clars){
             if (!this.viewed.has(clar.clarid) && !this.notified.has(clar.clarid)){
               this.notified.add(clar.clarid);
-              let n = new Notification('New clarification received!', {body: `[${clar.subject}]\nTo: ${clar.to}\n\n${clar.body}`, icon: Logo});
+              let n = new Notification(
+                t('notification.new_clarification.title'), {
+                  body: t('notification.new_clarification.body', {subject: clar.subject, to: clar.to, body: clar.body}),
+                  icon: Logo
+                });
               n.onclick = evt => {
                 window.focus();
                 evt.target.close();
@@ -74,28 +78,27 @@ class Clarifications extends React.Component {
         // Reload clarifications automatically.
         this.timer = setTimeout(this.refreshClarification.bind(this, contest), 30 * 1000);
       })
-      .catch(() => toast('Something went wrong, please reload the app.'));
+      .catch(() => toast(t('error')));
   }
 
   selectClarification(clarid) {
-    const {toast} = this.props;
+    const {toast, t} = this.props;
     this.setState({loading: true});
     axios.post('./api/clarification', {
       clarid
     }, Auth.getHeader())
       .then(res => {
-        if (!res.data) toast('Submission not found for this team or not judged yet.');
-        else this.refreshClarification();
         this.setState({loading: false, selected_clarification: res.data});
+        this.refreshClarification();
       })
       .catch(() => {
         this.setState({loading: false});
-        toast('Something went wrong, please reload the app.');
+        toast(t('error'));
       });
   }
 
   render() {
-    const {contest, user, toast, afterSend} = this.props;
+    const {contest, user, toast, afterSend, t} = this.props;
     const {clarifications} = this.state;
 
     const formatTime = t => {
@@ -107,11 +110,11 @@ class Clarifications extends React.Component {
       <Table style={{width: '100%'}}>
         <TableHead>
           <TableRow style={{fontSize: 15}}>
-            <TableCell padding="none" style={{width:43, textAlign: 'center'}}>Time</TableCell>
-            <TableCell padding="none" style={{width:38, textAlign: 'center'}}>From</TableCell>
-            <TableCell padding="none" style={{width:53, textAlign: 'center'}}>To</TableCell>
-            <TableCell padding="none" style={{maxWidth:67, textAlign: 'center'}}>Subject</TableCell>
-            <TableCell padding="none" style={{textAlign: 'center'}}>Text</TableCell>
+            <TableCell padding="none" style={{width:43, textAlign: 'center'}}>{t('clarification.time')}</TableCell>
+            <TableCell padding="none" style={{width:53, textAlign: 'center'}}>{t('clarification.from')}</TableCell>
+            <TableCell padding="none" style={{width:53, textAlign: 'center'}}>{t('clarification.to')}</TableCell>
+            <TableCell padding="none" style={{maxWidth:67, textAlign: 'center'}}>{t('clarification.subject')}</TableCell>
+            <TableCell padding="none" style={{textAlign: 'center'}}>{t('clarification.text')}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -150,7 +153,7 @@ class Clarifications extends React.Component {
         {this.state.loading && <Loading />}
         {clarifications.length > 0 ?
           table :
-          <Typography type="subheading" style={{textAlign: 'center', fontStyle: 'italic'}}>No clarifications.</Typography>}
+          <Typography type="subheading" style={{textAlign: 'center', fontStyle: 'italic'}}>{t('clarification.no_clarification')}</Typography>}
       </div>
     );
   }
@@ -164,4 +167,4 @@ Clarifications.propTypes = {
   user: PropTypes.object.isRequired,
 };
 
-export default Clarifications;
+export default translate('translations')(Clarifications);

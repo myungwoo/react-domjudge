@@ -6,12 +6,15 @@
   "private": true,
   "dependencies": {
     "axios": "^0.16.2",
+    "i18next": "^10.0.3",
+    "i18next-xhr-backend": "^1.4.3",
     "material-ui": "^1.0.0-beta.17",
     "material-ui-icons": "^1.0.0-beta.17",
     "moment": "^2.19.1",
     "react": "^16.0.0",
     "react-bootstrap": "^0.31.3",
     "react-dom": "^16.0.0",
+    "react-i18next": "^6.0.6",
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
     "react-scripts": "1.0.14"

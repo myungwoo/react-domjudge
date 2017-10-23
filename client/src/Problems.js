@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {translate} from 'react-i18next';
 import axios from 'axios';
 
 import {Route, Switch, Redirect} from 'react-router-dom';
@@ -28,13 +29,12 @@ class Problems extends React.Component {
     this.refreshList();
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
+  shouldComponentUpdate(nextProps) {
     if (JSON.stringify(this.props.contest) !== JSON.stringify(nextProps.contest) ||
         this.props.state !== nextProps.state){
       this.refreshList(nextProps.contest);
     }
-    return JSON.stringify(this.props) !== JSON.stringify(nextProps) ||
-           JSON.stringify(this.state) !== JSON.stringify(nextState);
+    return true;
   }
 
   componentDidUpdate() {
@@ -44,17 +44,17 @@ class Problems extends React.Component {
 
   refreshList(c) {
     const contest = c || this.props.contest;
-    const {toast} = this.props;
+    const {toast, t} = this.props;
     this.setState({loading: true});
     axios.post('./api/problems/with/text', {cid: contest.cid}, Auth.getHeader())
       .then(res => {
         this.setState({loading: false, problems: res.data});
       })
-      .catch(() => toast('Something went wrong, please reload the app.'));
+      .catch(() => toast(t('error')));
   }
 
   render() {
-    const {contest, toast, state} = this.props;
+    const {contest, toast, state, t} = this.props;
     const {loading, problems, redirect_to} = this.state;
     return (
       <Grid container spacing={16}>
@@ -64,7 +64,7 @@ class Problems extends React.Component {
         <Grid item xs={12} style={{height: '100vh', marginTop: -86, paddingTop: 86}}>
           <Paper style={{height: '100%'}}>
             <div style={{height: '100%', width: problemSidebarWidth, display: 'inline-block', verticalAlign: 'top'}}>
-              <List subheader={<ListSubheader style={{background: '#fff'}}>Problems</ListSubheader>} style={{width: '100%', maxHeight: '100%', overflow: 'auto'}}>
+              <List subheader={<ListSubheader style={{background: '#fff'}}>{t('problems.title')}</ListSubheader>} style={{width: '100%', maxHeight: '100%', overflow: 'auto'}}>
                 {problems.map((e, idx) => (
                   <ListItem button key={idx} onClick={() => this.setState({redirect_to: '/problems/'+e.shortname})}>
                     <Avatar>{e.shortname}</Avatar>
@@ -89,9 +89,9 @@ class Problems extends React.Component {
         {(state && !problems[0] &&
         <Grid item xs={12}>
           <Switch>
-            <Route exact path="/problems" render={props =>
+            <Route exact path="/problems" render={() =>
               (<Paper>
-                <Typography type="headline" style={{fontStyle: 'italic', textAlign: 'center', padding: 16}}>No problem texts available for this contest.</Typography>
+                <Typography type="headline" style={{fontStyle: 'italic', textAlign: 'center', padding: 16}}>{t('problems.no_problem_texts')}</Typography>
               </Paper>)} />
             <Redirect to="/problems" />
           </Switch>
@@ -99,9 +99,9 @@ class Problems extends React.Component {
         {(!state &&
         <Grid item xs={12}>
           <Switch>
-            <Route exact path="/problems" render={props =>
+            <Route exact path="/problems" render={() =>
               (<Paper>
-                <Typography type="headline" style={{fontStyle: 'italic', textAlign: 'center', padding: 16}}>Problem texts will appear here at contest start.</Typography>
+                <Typography type="headline" style={{fontStyle: 'italic', textAlign: 'center', padding: 16}}>{t('problems.contest_not_starts')}</Typography>
               </Paper>)} />
             <Redirect to="/problems" />
           </Switch>
@@ -118,4 +118,4 @@ Problems.PropTypes = {
   state: PropTypes.number.isRequired,
 };
 
-export default Problems;
+export default translate('translations')(Problems);

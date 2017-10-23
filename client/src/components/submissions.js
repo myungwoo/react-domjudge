@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import {translate} from 'react-i18next';
 
 import {Typography} from 'material-ui';
 import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table';
@@ -26,17 +27,17 @@ class Submissions extends React.Component {
     this.refreshSubmission();
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
+  shouldComponentUpdate(nextProps) {
     if (JSON.stringify(this.props.contest) !== JSON.stringify(nextProps.contest) ||
         JSON.stringify(this.props.sidx) !== JSON.stringify(nextProps.sidx)){
       // If contest has been changed submission list also has to be changed
       this.refreshSubmission(nextProps.contest);
     }
-    return JSON.stringify(this.props) !== JSON.stringify(nextProps) ||
-           JSON.stringify(this.state) !== JSON.stringify(nextState);
+    return true;
   }
 
   componentDidUpdate() {
+    const {t} = this.props;
     const {submissions} = this.state;
     let pendings = [];
     for (let sid of this.pendings){
@@ -44,7 +45,11 @@ class Submissions extends React.Component {
       if (s && s.result){
         if (!this.notified.has(sid)){
           this.notified.add(sid);
-          let n = new Notification('New result received!', {body: `Result of problem ${s.shortname} is ${s.result.toUpperCase()}`, icon: Logo});
+          let n = new Notification(
+            t('notification.new_result.title'), {
+              body: t('notification.new_result.body', {shortname: s.shortname, result: s.result.toUpperCase()}),
+              icon: Logo
+            });
           n.onclick = evt => {
             window.focus();
             evt.target.close();
@@ -60,7 +65,7 @@ class Submissions extends React.Component {
   }
 
   refreshSubmission(c) {
-    const {setLoading, toast} = this.props;
+    const {setLoading, toast, t} = this.props;
     const contest = c || this.props.contest;
     clearTimeout(this.timer);
     setLoading(true);
@@ -74,28 +79,28 @@ class Submissions extends React.Component {
         if (res.data.map(e => e.result).includes(null))
           this.timer = setTimeout(this.refreshSubmission.bind(this, contest), 4000);
       })
-      .catch(() => toast('Something went wrong, please reload the app.'));
+      .catch(() => toast(t('error')));
   }
 
   selectSubmission(submitid) {
-    const {toast} = this.props;
+    const {toast, t} = this.props;
     this.setState({loading: true});
     axios.post('./api/submission', {
       submitid
     }, Auth.getHeader())
       .then(res => {
-        if (!res.data) toast('Submission not found for this team or not judged yet.');
+        if (!res.data) toast(t('submissions.not_found'));
         else this.refreshSubmission();
         this.setState({loading: false, selected_submission: res.data});
       })
       .catch(() => {
         this.setState({loading: false});
-        toast('Something went wrong, please reload the app.');
+        toast(t('error'));
       });
   }
 
   render() {
-    const {contest} = this.props;
+    const {contest, t} = this.props;
     const {submissions} = this.state;
 
     const formatTime = t => {
@@ -118,10 +123,10 @@ class Submissions extends React.Component {
       <Table style={{width: '100%'}}>
         <TableHead>
           <TableRow style={{fontSize: 15}}>
-            <TableCell padding="none" style={{width:70, textAlign: 'center'}}>Time</TableCell>
-            <TableCell padding="none" style={{width:88, textAlign: 'center'}}>Problem</TableCell>
-            <TableCell padding="none" style={{width:98, textAlign: 'center'}}>Language</TableCell>
-            <TableCell padding="none" style={{textAlign: 'center'}}>Result</TableCell>
+            <TableCell padding="none" style={{width:70, textAlign: 'center'}}>{t('submissions.time')}</TableCell>
+            <TableCell padding="none" style={{width:88, textAlign: 'center'}}>{t('submissions.problem')}</TableCell>
+            <TableCell padding="none" style={{width:98, textAlign: 'center'}}>{t('submissions.language')}</TableCell>
+            <TableCell padding="none" style={{textAlign: 'center'}}>{t('submissions.result')}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -156,7 +161,7 @@ class Submissions extends React.Component {
         {this.state.loading && <Loading />}
         {submissions.length > 0 ?
           table :
-          <Typography type="subheading" style={{textAlign: 'center', fontStyle: 'italic'}}>No submissions.</Typography>}
+          <Typography type="subheading" style={{textAlign: 'center', fontStyle: 'italic'}}>{t('submissions.no_submissions')}</Typography>}
       </div>
     );
   }
@@ -168,4 +173,4 @@ Submissions.propTypes = {
   contest: PropTypes.object.isRequired,
 };
 
-export default Submissions;
+export default translate('translation')(Submissions);

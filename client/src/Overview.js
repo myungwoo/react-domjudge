@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {translate, Trans} from 'react-i18next';
 
 import moment from 'moment';
 
@@ -21,28 +22,32 @@ class Overview extends React.Component {
     const styles = {
       title: {paddingTop: 10, paddingBottom: 10, textAlign: 'center'}
     };
-    const {contest, user, state, toast} = this.props;
+    const {contest, user, state, toast, t} = this.props;
     let {sidx, cidx} = this.state;
     const start_date = moment(contest.starttime * 1000);
     const now = moment();
     let start_date_display;
     if (start_date.format('YYYYMMDD') === now.format('YYYYMMDD')) // today
-      start_date_display = start_date.format('HH:mm:ss');
+      start_date_display = start_date.format(t('overview.near_date_format'));
     else
-      start_date_display = start_date.format('ddd D MMM YYYY HH:mm:ss');
+      start_date_display = start_date.format(t('overview.far_date_format'));
     return (
       <Grid container spacing={16}>
         {state === 0 &&
         <Grid item xs={12}>
           <Paper style={{padding: 16, textAlign: 'center'}}>
-            <Typography type="display1">Welcome, <span style={{fontWeight: 700}}>{user.teamname}</span>!</Typography>
-            <Typography type="headline">contest is scheduled to start on {start_date_display}</Typography>
+            <Typography type="display1">
+              <Trans i18nKey="overview.welcome_team" teamname={user.teamname}>
+                Welcome, <span style={{fontWeight: 700}}>{user.teamname}</span>!
+              </Trans>
+            </Typography>
+            <Typography type="headline">{t('overview.start_schedule', {date: start_date_display})}</Typography>
           </Paper>
         </Grid>}
         {state === 2 &&
         <Grid item xs={12}>
           <Paper style={{padding: 16, textAlign: 'center'}}>
-            <Typography type="display1">Contest has been finished!!</Typography>
+            <Typography type="display1">{t('overview.contest_finished')}</Typography>
           </Paper>
         </Grid>}
         <Grid item xs={12} md={6}>
@@ -50,7 +55,7 @@ class Overview extends React.Component {
             {state !== 0 && <Grid item xs={12}>
               <Paper style={{padding: 16}}>
                 {this.state.submitform_loading && <LinearProgress />}
-                <Typography type="title" style={styles.title}>Submit your solution</Typography>
+                <Typography type="title" style={styles.title}>{t('overview.submitform_title')}</Typography>
                 <SubmitForm
                   afterSubmit={() => this.setState({sidx: (sidx && ++sidx) || 1})}
                   contest={contest}
@@ -61,7 +66,7 @@ class Overview extends React.Component {
             <Grid item xs={12}>
               <Paper style={{padding: 16}}>
                 {this.state.submission_loading && <LinearProgress />}
-                <Typography type="title" style={styles.title}>Submissions</Typography>
+                <Typography type="title" style={styles.title}>{t('overview.submissions_title')}</Typography>
                 <Submissions
                   sidx={sidx}
                   contest={contest}
@@ -76,7 +81,7 @@ class Overview extends React.Component {
             <Grid item xs={12}>
               <Paper style={{padding: 16}}>
                 {this.state.clarifications_loading && <LinearProgress />}
-                <Typography type="title" style={styles.title}>Clarifications</Typography>
+                <Typography type="title" style={styles.title}>{t('overview.clarifications_title')}</Typography>
                 <Clarifications
                   contest={contest}
                   toast={toast}
@@ -88,7 +93,7 @@ class Overview extends React.Component {
             <Grid item xs={12}>
               <Paper style={{padding: 16}}>
                 {this.state.clarification_requests_loading && <LinearProgress />}
-                <Typography type="title" style={styles.title}>Clarification Requests</Typography>
+                <Typography type="title" style={styles.title}>{t('overview.clarification_requests_title')}</Typography>
                 <ClarificationRequests
                   cidx={cidx}
                   contest={contest}
@@ -111,4 +116,4 @@ Overview.PropTypes = {
   state: PropTypes.number.isRequired,
 };
 
-export default Overview;
+export default translate('translations')(Overview);

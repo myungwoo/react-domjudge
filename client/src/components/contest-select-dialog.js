@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {translate} from 'react-i18next';
+
 import Button from 'material-ui/Button';
 import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
 import Dialog, { DialogTitle, DialogActions } from 'material-ui/Dialog';
@@ -19,10 +21,10 @@ class ContestSelectDialog extends React.Component {
     // Since contest list will not be changed after app load.
     // So it's able to use localStorage instead of state/props.
     let contests = Contest.getList();
-    let {contest, onContestChange, ...rest} = this.props; // eslint-disable-line no-unused-vars
+    let {contest, onContestChange, t, ...rest} = this.props; // eslint-disable-line no-unused-vars
     return (
       <Dialog {...rest}>
-        <DialogTitle>Select other contest</DialogTitle>
+        <DialogTitle>{t('contest_select_dialog.title')}</DialogTitle>
         <div>
           <List>
             {contests.map(c => (
@@ -38,7 +40,7 @@ class ContestSelectDialog extends React.Component {
         </div>
         <DialogActions>
           <Button onClick={this.props.onRequestClose} color="primary">
-            Close
+            {t('contest_select_dialog.close')}
           </Button>
         </DialogActions>
       </Dialog>
@@ -52,4 +54,4 @@ ContestSelectDialog.propTypes = {
   contest: PropTypes.object.isRequired,
 };
 
-export default ContestSelectDialog;
+export default translate('translations')(ContestSelectDialog);

@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import {translate} from 'react-i18next';
 
 import {Route, Switch, Redirect} from 'react-router-dom';
 import {AppBar, Toolbar, Typography, Button, IconButton, Drawer, Divider, Tooltip} from 'material-ui';
@@ -8,6 +9,7 @@ import MenuIcon from 'material-ui-icons/Menu';
 import WebIcon from 'material-ui-icons/Web';
 import AccountCircleIcon from 'material-ui-icons/AccountCircle';
 import DescriptionIcon from 'material-ui-icons/Description';
+import LanguageIcon from 'material-ui-icons/Language';
 import LibraryBooksIcon from 'material-ui-icons/LibraryBooks';
 import ListIcon from 'material-ui-icons/List';
 import HighlightOffIcon from 'material-ui-icons/HighlightOff';
@@ -20,6 +22,7 @@ import {ClockIcon} from './components/icons';
 import Timer, {getNow} from './components/timer';
 import UserInfoDialog from './components/user-info-dialog';
 import ContestSelectDialog from './components/contest-select-dialog';
+import LanguageSelectDialog from './components/language-select-dialog';
 
 import Overview from './Overview';
 import Problems from './Problems';
@@ -63,8 +66,8 @@ class Main extends React.Component {
   }
 
   logout() {
-    const {user, toast} = this.props;
-    toast(`Bye bye, ${user.username}!`);
+    const {user, toast, t} = this.props;
+    toast(t('auth.byebye', {username: user.username}));
     axios.get('./api/auth/logout', Auth.getHeader());
     Auth.doLogout();
     this.props.onLogout();
@@ -83,7 +86,7 @@ class Main extends React.Component {
     // Since contest list will not be changed after app load.
     // So it's able to use localStorage instead of state/props.
     let contests = Contest.getList();
-    let {toast, user, contest} = this.props;
+    let {toast, user, contest, t} = this.props;
     return (
       <div>
         {this.state.redirect_to && <Redirect to={this.state.redirect_to} />}
@@ -98,7 +101,7 @@ class Main extends React.Component {
             </IconButton>
             <Typography type="title" color="inherit" style={{flex: 1}}>
             </Typography>
-            <Tooltip placement="bottom" title={['Time to start'][this.state.contest_state] || 'Time left'}>
+            <Tooltip placement="bottom" title={[t('main.time_to_start')][this.state.contest_state] || t('main.time_left')}>
               <Button dense color="contrast" onClick={() => this.setState({timer_open: !this.state.timer_open})}>
                 <ClockIcon />
                 {this.state.timer_open &&
@@ -115,6 +118,9 @@ class Main extends React.Component {
               <Button dense color="contrast" onClick={() => this.setState({contests_open: true})}>
                 <ListIcon />
               </Button>}
+            <Button dense color="contrast" onClick={() => this.setState({languages_open: true})}>
+              <LanguageIcon />
+            </Button>
           </Toolbar>
         </AppBar>
         <UserInfoDialog
@@ -127,6 +133,9 @@ class Main extends React.Component {
             contest={contest}
             onContestChange={this.onContestChange.bind(this)}
             onRequestClose={() => this.setState({contests_open: false})} />}
+        <LanguageSelectDialog
+          open={this.state.languages_open}
+          onRequestClose={() => this.setState({languages_open: false})} />
         <Drawer open={this.state.open} onRequestClose={() => this.setState({open: false})}>
           <div>
             <List style={{width: 250}}>
@@ -134,19 +143,19 @@ class Main extends React.Component {
                 <ListItemIcon>
                   <DescriptionIcon />
                 </ListItemIcon>
-                <ListItemText primary="Overview" />
+                <ListItemText primary={t('main.overview')} />
               </ListItem>
               <ListItem button onClick={() => this.setState({open: false, redirect_to: '/problems'})}>
                 <ListItemIcon>
                   <LibraryBooksIcon />
                 </ListItemIcon>
-                <ListItemText primary="Problems" />
+                <ListItemText primary={t('main.problems')} />
               </ListItem>
               <ListItem button>
                 <ListItemIcon>
                   <WebIcon />
                 </ListItemIcon>
-                <ListItemText primary="Scoreboard" />
+                <ListItemText primary={t('main.scoreboard')} />
               </ListItem>
             </List>
             <Divider />
@@ -155,7 +164,7 @@ class Main extends React.Component {
                 <ListItemIcon>
                   <HighlightOffIcon />
                 </ListItemIcon>
-                <ListItemText primary="Logout" />
+                <ListItemText primary={t('main.logout')} />
               </ListItem>
             </List>
           </div>
@@ -184,4 +193,4 @@ Main.PropTypes = {
   onContestChange: PropTypes.func.isRequired
 };
 
-export default Main;
+export default translate('translations')(Main);

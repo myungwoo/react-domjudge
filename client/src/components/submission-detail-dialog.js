@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {translate} from 'react-i18next';
+
 import {Typography} from 'material-ui';
 import Button from 'material-ui/Button';
 import Dialog, {
@@ -14,7 +16,8 @@ let ResponsiveDialog = withResponsiveFullScreen()(Dialog);
 
 class SubmissionDetailDialog extends React.Component {
   render() {
-    const {submission, contest, ...rest} = this.props;
+    // eslint-disable-next-line no-unused-vars
+    const {submission, contest, t, i18n, ...rest} = this.props;
     const formatTime = t => {
       let s = Math.max(Math.floor((t-contest.starttime)/60), 0);
       const pad2 = v => v < 10 ? '0'+v : ''+v;
@@ -40,47 +43,49 @@ class SubmissionDetailDialog extends React.Component {
     };
     return (
       <ResponsiveDialog {...rest}>
-        <DialogTitle>Submission details</DialogTitle>
+        <DialogTitle>{t('submission_detail_dialog.title')}</DialogTitle>
         <DialogContent>
           {!submission.valid ?
-            <DialogContentText>This submission is being ignored. It is not used in determining your score.</DialogContentText>
+            <DialogContentText>{t('submission_detail_dialog.invalid_submission')}</DialogContentText>
             :
             <div>
               <table>
                 <tbody>
-                  <tr><td>Problem:</td><td>{submission.shortname} - {submission.probname}</td></tr>
-                  <tr><td>Submitted:</td><td>{formatTime(submission.submittime)}</td></tr>
-                  <tr><td>Language:</td><td>{submission.langname}</td></tr>
-                  <tr><td>Result:</td><td>{formatResult(submission.result)}</td></tr>
+                  <tr><td>{t('submission_detail_dialog.problem')}:</td><td>{submission.shortname} - {submission.probname}</td></tr>
+                  <tr><td>{t('submission_detail_dialog.submitted_time')}:</td><td>{formatTime(submission.submittime)}</td></tr>
+                  <tr><td>{t('submission_detail_dialog.language')}:</td><td>{submission.langname}</td></tr>
+                  <tr><td>{t('submission_detail_dialog.result')}:</td><td>{formatResult(submission.result)}</td></tr>
                 </tbody>
               </table>
               {typeof(submission.output_compile) === 'string' &&
               <div style={{paddingTop: 15}}>
-                <Typography type="title" style={{paddingBottom: 10}}>Compilation output</Typography>
+                <Typography type="title" style={{paddingBottom: 10}}>{t('submission_detail_dialog.compile_output')}</Typography>
                 {submission.output_compile.length > 0 ?
                   <pre style={styles.code}>{submission.output_compile}</pre>
                   :
-                  <Typography type="subheading" style={{fontStyle: 'italic'}}>There were no compiler errors or warnings.</Typography>
+                  <Typography type="subheading" style={{fontStyle: 'italic'}}>{t('submission_detail_dialog.no_compile_output')}</Typography>
                 }
               </div>
               }
               {submission.sample_runs &&
               <div style={{paddingTop: 10}}>
-                <Typography type="title" style={{paddingBottom: 10}}>Run(s) on the provided sample data</Typography>
+                <Typography type="title" style={{paddingBottom: 10}}>{t('submission_detail_dialog.sample_runs')}</Typography>
                 {submission.sample_runs.length > 0 ?
                   submission.sample_runs.map((e, idx) => (
                     <div key={idx} style={{paddingLeft: 10}}>
-                      <Typography type="subheading" style={{fontWeight: 'bold'}}>Run {e.rank}</Typography>
+                      <Typography type="subheading" style={{fontWeight: 'bold'}}>{t('submission_detail_dialog.run_rank', {rank: e.rank})}</Typography>
                       {e.runresult ?
                         <div style={{padding: 3}}>
                           <table style={{fontSize: 14}}>
                             <tbody>
-                              <tr><td>Description:</td><td>{e.description}</td></tr>
-                              <tr><td>Runtime:</td><td>{e.runtime}</td></tr>
-                              <tr><td>Result:</td><td>{formatResult(e.runresult)}</td></tr>
+                              <tr><td>{t('submission_detail_dialog.description')}:</td><td>{e.description}</td></tr>
+                              <tr><td>{t('submission_detail_dialog.runtime')}:</td><td>{e.runtime}</td></tr>
+                              <tr><td>{t('submission_detail_dialog.result')}:</td><td>{formatResult(e.runresult)}</td></tr>
                             </tbody>
                           </table>
-                          {[{m: e.output_run, t: 'Program output', b: 'There was no program output.'}, {m: e.output_diff, t: 'Diff output', b: 'There was no diff output.'}, {m: e.output_error, t: 'Error output (info/debug/error)', b: 'There was no stderr output.'}].map(({m, t, b}, i) => (
+                          {[{m: e.output_run, t: t('submission_detail_dialog.program_output'), b: t('submission_detail_dialog.no_program_output')},
+                            {m: e.output_diff, t: t('submission_detail_dialog.diff_output'), b: t('submission_detail_dialog.no_diff_output')},
+                            {m: e.output_error, t: t('submission_detail_dialog.stderr_output'), b: t('submission_detail_dialog.no_stderr_output')}].map(({m, t, b}, i) => (
                             <div key={i}>
                               <Typography type="body2" style={{fontWeight: 'bold'}}>{t}</Typography>
                               {m ?
@@ -92,12 +97,12 @@ class SubmissionDetailDialog extends React.Component {
                           ))}
                         </div>
                         :
-                        <Typography type="body2" style={{fontStyle: 'italic'}}>Run not finished yet.</Typography>
+                        <Typography type="body2" style={{fontStyle: 'italic'}}>{t('submission_detail_dialog.run_not_finished')}</Typography>
                       }
                     </div>
                   ))
                   :
-                  <Typography type="subheading" style={{fontStyle: 'italic'}}>No sample cases available.</Typography>
+                  <Typography type="subheading" style={{fontStyle: 'italic'}}>{t('submission_detail_dialog.no_sample_case')}</Typography>
                 }
               </div>
               }
@@ -106,7 +111,7 @@ class SubmissionDetailDialog extends React.Component {
         </DialogContent>
         <DialogActions>
           <Button onClick={rest.onRequestClose} color="primary">
-            Close
+            {t('submission_detail_dialog.close')}
           </Button>
         </DialogActions>
       </ResponsiveDialog>
@@ -120,4 +125,4 @@ SubmissionDetailDialog.propTypes = {
   onRequestClose: PropTypes.func.isRequired,
 };
 
-export default SubmissionDetailDialog;
+export default translate('translations')(SubmissionDetailDialog);

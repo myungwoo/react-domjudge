@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {translate} from 'react-i18next';
 
 import Auth from './storages/auth';
 import {TextField, Button} from 'material-ui';
@@ -18,29 +19,30 @@ class LoginPage extends React.Component {
   }
 
   handleSubmit() {
-    const {toast} = this.props;
+    const {toast, t} = this.props;
     const message = {
-      no_user: 'Sign in failed...',
-      wrong_password: 'Sign in failed...',
-      no_team: 'You\'re not a team member',
-      no_contest: 'No contest available'
+      no_user: t('auth.failed'),
+      wrong_password: t('auth.failed'),
+      no_team: t('auth.no_team'),
+      no_contest: t('auth.no_contest')
     };
     this.setState({loading: true});
     Auth.doLogin(this.state.username, this.state.password)
       .then(err => {
         if (err){
-          toast(message[err] || 'Something went wrong, please reload the app.');
+          toast(message[err] || t('error'));
           this.setState({loading: false});
         }
         else{
-          toast(`Welcome, ${this.state.username}!`);
+          toast(t('auth.welcome', {username: this.state.username}));
           this.props.onLogin();
         }
       })
-      .catch(() => toast('Something went wrong, please reload the app.'));
+      .catch(() => toast(t('error')));
   }
 
   render() {
+    const {t} = this.props;
     return (
       <div>
         {this.state.loading && <Loading loading={this.state.loading} />}
@@ -55,8 +57,8 @@ class LoginPage extends React.Component {
           boxShadow: 'rgba(0, 0, 0, 0.14902) 0px 1px 1px 0px, rgba(0, 0, 0, 0.09804) 0px 1px 2px 0px'
         }}>
           <TextField
-            placeholder="Username"
-            label="Username"
+            placeholder={t('login.username')}
+            label={t('login.username')}
             fullWidth
             style={{marginTop: 10, marginBottom: 16}}
             value={this.state.username}
@@ -64,8 +66,8 @@ class LoginPage extends React.Component {
             onKeyPress={e => { if (e.key === 'Enter') this.handleSubmit(); }}
           />
           <TextField
-            placeholder="Password"
-            label="Password"
+            placeholder={t('login.password')}
+            label={t('login.password')}
             type="password"
             fullWidth
             style={{marginBottom: 36}}
@@ -73,7 +75,7 @@ class LoginPage extends React.Component {
             onChange={evt => this.setState({password: evt.target.value})}
             onKeyPress={e => { if (e.key === 'Enter') this.handleSubmit(); }}
           />
-          <Button raised color="primary" style={{width: '100%'}} onClick={this.handleSubmit.bind(this)}>Sign In</Button>
+          <Button raised color="primary" style={{width: '100%'}} onClick={this.handleSubmit.bind(this)}>{t('login.sign_in')}</Button>
         </div>
       </div>
     );
@@ -85,4 +87,4 @@ LoginPage.PropTypes = {
   onLogin: PropTypes.object.isRequired
 };
 
-export default LoginPage;
+export default translate('translations')(LoginPage);
