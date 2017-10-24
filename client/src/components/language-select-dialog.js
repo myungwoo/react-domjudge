@@ -9,9 +9,6 @@ import CheckIcon from 'material-ui-icons/Check';
 
 import Language from '../storages/language';
 
-import GBFlag from '../flags/gb.png';
-import KRFlag from '../flags/kr.png';
-
 class LanguageSelectDialog extends React.Component {
   handleClick(lng) {
     const {i18n, onRequestClose} = this.props;
@@ -22,7 +19,7 @@ class LanguageSelectDialog extends React.Component {
 
   render() {
     let {t, ...rest} = this.props;
-    const languages = [{code: 'en', name: 'English', flag: GBFlag}, {code: 'ko', name: '한국어', flag: KRFlag}];
+    const languages = [{code: 'en', name: 'English', cc: 'GBR'}, {code: 'ko', name: '한국어', cc: 'KOR'}];
     const lng = Language.getLanguage();
     return (
       <Dialog {...rest}>
@@ -31,7 +28,7 @@ class LanguageSelectDialog extends React.Component {
           <List>
             {languages.map((e, idx) => (
               <ListItem button key={idx} onClick={this.handleClick.bind(this, e.code)}>
-                <img src={e.flag} alt={e.name} style={{width: 50, paddingRight: 10}} />
+                <img src={`./flags/${e.cc}.png`} alt={e.name} style={{paddingRight: 10}} />
                 <ListItemText inset primary={e.name} />
                 {lng === e.code &&
                   <ListItemIcon>
