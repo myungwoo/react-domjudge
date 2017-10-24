@@ -8,9 +8,9 @@ import {AppBar, Toolbar, Typography, Button, IconButton, Drawer, Divider, Toolti
 import MenuIcon from 'material-ui-icons/Menu';
 import WebIcon from 'material-ui-icons/Web';
 import AccountCircleIcon from 'material-ui-icons/AccountCircle';
-import DescriptionIcon from 'material-ui-icons/Description';
 import LanguageIcon from 'material-ui-icons/Language';
-import LibraryBooksIcon from 'material-ui-icons/LibraryBooks';
+import DashboardIcon from 'material-ui-icons/Dashboard';
+import DescriptionIcon from 'material-ui-icons/Description';
 import ListIcon from 'material-ui-icons/List';
 import HighlightOffIcon from 'material-ui-icons/HighlightOff';
 import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
@@ -141,13 +141,13 @@ class Main extends React.Component {
             <List style={{width: 250}}>
               <ListItem button onClick={() => this.setState({open: false, redirect_to: '/'})}>
                 <ListItemIcon>
-                  <DescriptionIcon />
+                  <DashboardIcon />
                 </ListItemIcon>
                 <ListItemText primary={t('main.overview')} />
               </ListItem>
               <ListItem button onClick={() => this.setState({open: false, redirect_to: '/problems'})}>
                 <ListItemIcon>
-                  <LibraryBooksIcon />
+                  <DescriptionIcon />
                 </ListItemIcon>
                 <ListItemText primary={t('main.problems')} />
               </ListItem>
