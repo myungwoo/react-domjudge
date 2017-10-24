@@ -21,4 +21,5 @@ module.exports = {
   language: require('./language'),
   judging: require('./judging'),
   clarification: require('./clarification'),
+  scoreboard: require('./scoreboard'),
 };

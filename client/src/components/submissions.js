@@ -65,7 +65,7 @@ class Submissions extends React.Component {
   }
 
   refreshSubmission(c) {
-    const {setLoading, toast, t} = this.props;
+    const {setLoading, onUpdate, toast, t} = this.props;
     const contest = c || this.props.contest;
     clearTimeout(this.timer);
     setLoading(true);
@@ -74,6 +74,7 @@ class Submissions extends React.Component {
     }, Auth.getHeader())
       .then(res => {
         this.setState({submissions: res.data});
+        onUpdate();
         setLoading(false);
         // If there's pending submission reload automatically.
         if (res.data.map(e => e.result).includes(null))
@@ -169,6 +170,7 @@ class Submissions extends React.Component {
 
 Submissions.propTypes = {
   toast: PropTypes.func.isRequired,
+  onUpdate: PropTypes.func.isRequired,
   setLoading: PropTypes.func.isRequired,
   contest: PropTypes.object.isRequired,
 };

@@ -320,6 +320,51 @@ router.post('/clarification/send', (req, res) => {
     .catch(() => res.sendStatus(500));
 });
 
+router.post('/scoreboard/my', (req, res) => {
+  if (!req.user){ res.sendStatus(401); return; }
+  const {teamid} = req.user;
+  const {cid} = req.body;
+  if (!cid || isNaN(Number(cid))){ res.sendStatus(400); return; }
+  (async function(req, res) {
+    let contest = (await db.contest.getContestByCidTeam(cid, teamid))[0];
+    if (!contest){ res.sendStatus(400); return; }
+    if (contest.starttime > Date.now()){ res.sendStatus(400); return; }
+    let team = (await db.team.getByTeamId(teamid))[0];
+    if (!team){ res.sendStatus(400); return; }
+    let affil = (await db.affiliation.getByAffilId(team.affilid))[0];
+    let total = (await db.scoreboard.getTotalByTeam(cid, teamid))[0];
+    let sortorder = (await db.team.getTeamCategoryByTeam(teamid))[0].sortorder;
+    let rank = (await db.scoreboard.getBetterThan(cid, total.points, total.totaltime, sortorder)) + 1;
+    // TODO: hard review
+    // tie breaking
+    if (total.points > 0){
+      let tied = (await db.scoreboard.getTied(cid, total.points, total.totaltime, sortorder)).map(e => e.teamid);
+      if (tied.length >= 1){
+        let my_times = (await db.scoreboard.getCorrectProblemScoreList(cid, teamid)).map(e => e.totaltime);
+        for (let tid of tied){
+          let you = (await db.scoreboard.getCorrectProblemScoreList(cid, tid)).map(e => e.totaltime);
+          for (let i=0;i<you.length;i++){
+            if (you[i] < my_times[i]) rank++;
+            if (you[i] !== my_times[i]) break;
+          }
+        }
+      }
+    }
+    let firstsovletimes = (await db.scoreboard.getFirstSolveTime(cid, sortorder)).reduce((acc, cur) => {
+      acc[cur.probid] = cur['MIN(totaltime)'];
+      return acc;
+    }, {});
+    let detail = (await db.scoreboard.getProblemScoreList(cid, teamid)).map(e => {
+      e.is_first = firstsovletimes[e.probid] === e.totaltime && e.is_correct;
+      return e;
+    });
+    if (contest.freezetime && contest.freezetime <= Date.now() && (!contest.unfreezetime || contest.unfreezetime > Date.now()))
+      rank = '?';
+    res.send({points: total.points, totaltime: total.totaltime, rank, detail, teamname: team.name, affil});
+  })(req, res)
+    .catch(() => res.sendStatus(500));
+});
+
 router.use('/', (req, res) => {
   // 404 Not found for remaining requests
   res.sendStatus(404);

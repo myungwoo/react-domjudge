@@ -133,5 +133,9 @@
   "problem_view": {
     "download": "다운로드",
     "cant_view": "PDF 파일이 브라우저에서 보이지 않는다면, <1><0>다운로드</0></1>해서 보시기 바랍니다!"
+  },
+  "scoreboard": {
+    "rank": "등수",
+    "team": "팀"
   }
 }
