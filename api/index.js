@@ -200,6 +200,7 @@ router.post('/submit', upload.array('files'), (req, res) => {
           resolve(res);
         });
       });
+      conn.end();
       res.send({success: true});
       try{
         await db.auditlog.addLog(cid, username, 'submission', submitid, 'added', 'via react');
@@ -213,6 +214,7 @@ router.post('/submit', upload.array('files'), (req, res) => {
           resolve(res);
         });
       });
+      conn.end();
       res.send({success: false});
     }
   })(req, res)
