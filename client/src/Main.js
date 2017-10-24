@@ -15,11 +15,13 @@ import ListIcon from 'material-ui-icons/List';
 import HighlightOffIcon from 'material-ui-icons/HighlightOff';
 import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
 
+import TimeSync from './TimeSync';
+
 import Auth from './storages/auth';
 import Contest from './storages/contest';
 
 import {ClockIcon} from './components/icons';
-import Timer, {getNow} from './components/timer';
+import Timer from './components/timer';
 import UserInfoDialog from './components/user-info-dialog';
 import ContestSelectDialog from './components/contest-select-dialog';
 import LanguageSelectDialog from './components/language-select-dialog';
@@ -31,7 +33,7 @@ class Main extends React.Component {
   constructor(props) {
     super(props);
     let {contest} = props;
-    let now = getNow();
+    let now = TimeSync.getNow()/1000;
     let contest_state = 0;
     if (now >= contest.endtime) contest_state = 2;
     else if (now >= contest.starttime) contest_state = 1;
@@ -57,7 +59,7 @@ class Main extends React.Component {
 
   tick() {
     let {contest} = this.props;
-    let now = getNow();
+    let now = TimeSync.getNow()/1000;
     let contest_state = 0;
     if (now >= contest.endtime) contest_state = 2;
     else if (now >= contest.starttime) contest_state = 1;
@@ -74,7 +76,7 @@ class Main extends React.Component {
   }
 
   onContestChange(contest) {
-    let now = getNow();
+    let now = TimeSync.getNow()/1000;
     let contest_state = 0;
     if (now >= contest.endtime) contest_state = 2;
     else if (now >= contest.starttime) contest_state = 1;

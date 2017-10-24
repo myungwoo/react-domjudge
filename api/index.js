@@ -19,6 +19,7 @@ router.get('/status', (req, res) => {
     catch(err){ db_conn = false; }
     res.send({
       pong: true,
+      now: Date.now(),
       db_conn
     });
   })(req, res);
@@ -111,7 +112,7 @@ router.post('/problems', (req, res) => {
   (async function(req, res) {
     let contest = (await db.contest.getContestByCidTeam(cid, teamid))[0];
     if (!contest){ res.sendStatus(204); return; }
-    if (contest.starttime > Date.now()){ res.sendStatus(403); return; }
+    if (contest.starttime*1000 > Date.now()){ res.sendStatus(403); return; }
     res.send(await db.problem.getListByContest(cid));
   })(req, res);
 });
@@ -124,7 +125,7 @@ router.post('/problems/with/text', (req, res) => {
   (async function(req, res) {
     let contest = (await db.contest.getContestByCidTeam(cid, teamid))[0];
     if (!contest){ res.sendStatus(204); return; }
-    if (contest.starttime > Date.now()){ res.sendStatus(403); return; }
+    if (contest.starttime*1000 > Date.now()){ res.sendStatus(403); return; }
     res.send(await db.problem.getListByContestWithText(cid));
   })(req, res);
 });
@@ -137,7 +138,7 @@ router.post('/problem', (req, res) => {
   (async function(req, res) {
     let contest = (await db.contest.getContestByCidTeam(cid, teamid))[0];
     if (!contest){ res.sendStatus(204); return; }
-    if (contest.starttime > Date.now()){ res.sendStatus(403); return; }
+    if (contest.starttime*1000 > Date.now()){ res.sendStatus(403); return; }
     let problem = (await db.problem.getByContest(probid, cid))[0];
     if (!problem){ res.sendStatus(204); return; }
     /* Only supports pdf */
@@ -169,8 +170,7 @@ router.post('/submit', upload.array('files'), (req, res) => {
     const contests = await db.contest.getContestByCidTeam(cid, teamid);
     if (contests.length === 0){ res.sendStatus(400); return; }
     const contest = contests[0];
-    const now = Date.now();
-    if (contest.starttime > now){ res.sendStatus(400); return; }
+    if (contest.starttime*1000 > Date.now()){ res.sendStatus(400); return; }
     const problems = await db.problem.getByContest(probid, cid);
     if (problems.length === 0){ res.sendStatus(400); return; }
     const languages = await db.language.getById(langid);
@@ -330,7 +330,7 @@ router.post('/scoreboard/my', (req, res) => {
   (async function(req, res) {
     let contest = (await db.contest.getContestByCidTeam(cid, teamid))[0];
     if (!contest){ res.sendStatus(400); return; }
-    if (contest.starttime > Date.now()){ res.sendStatus(400); return; }
+    if (contest.starttime*1000 > Date.now()){ res.sendStatus(400); return; }
     let team = (await db.team.getByTeamId(teamid))[0];
     if (!team){ res.sendStatus(400); return; }
     let affil = (await db.affiliation.getByAffilId(team.affilid))[0];
@@ -360,7 +360,7 @@ router.post('/scoreboard/my', (req, res) => {
       e.is_first = firstsovletimes[e.probid] === e.totaltime && e.is_correct;
       return e;
     });
-    if (contest.freezetime && contest.freezetime <= Date.now() && (!contest.unfreezetime || contest.unfreezetime > Date.now()))
+    if (contest.freezetime && contest.freezetime*1000 <= Date.now() && (!contest.unfreezetime || contest.unfreezetime*1000 > Date.now()))
       rank = '?';
     res.send({points: total.points, totaltime: total.totaltime, rank, detail, teamname: team.name, affil});
   })(req, res)

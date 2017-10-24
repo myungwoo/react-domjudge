@@ -5,6 +5,8 @@ import {translate} from 'react-i18next';
 import {Snackbar, Typography} from 'material-ui';
 import {red} from 'material-ui/colors';
 
+import TimeSync from './TimeSync';
+
 import Auth from './storages/auth';
 import Contest from './storages/contest';
 import Config from './storages/config';
@@ -48,8 +50,11 @@ class App extends React.Component {
       user = res;
     }).bind(this);
     const check_api = async function(){
+      let bef = Date.now();
       let res = (await axios.get('./api/status'));
+      let aft = Date.now();
       if (res.status !== 200 || !res.data.pong || !res.data.db_conn) throw new Error();
+      TimeSync.setTimediff(res.data.now - (bef+aft)/2);
     };
     const get_contest = (async function(){
       // TODO: Contest.updateInfo에서 Auth.getHeader를 쓰는데 비동기로 풀어나가도 괜찮은지?
