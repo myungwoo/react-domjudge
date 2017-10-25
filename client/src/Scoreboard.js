@@ -32,6 +32,10 @@ class Scoreboard extends React.Component {
     return true;
   }
 
+  componentWillUnmount() {
+    clearTimeout(this.timer);
+  }
+
   refreshScoreboard(c) {
     const contest = c || this.props.contest;
     const {toast, t} = this.props;

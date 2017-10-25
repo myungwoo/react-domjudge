@@ -60,7 +60,7 @@ class Submissions extends React.Component {
     this.pendings = submissions.filter(e => !e.result).map(e => e.submitid);
   }
 
-  componentWillMount() {
+  componentWillUnmount() {
     clearTimeout(this.timer);
   }
 
