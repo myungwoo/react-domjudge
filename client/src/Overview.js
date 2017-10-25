@@ -52,8 +52,8 @@ class Overview extends React.Component {
           </Paper>
         </Grid>}
         {state !== 0 &&
-        <Grid item xs={12}>
-          <Paper style={{padding: 16}}>
+        <Grid item xs={12} style={{textAlign: 'center'}}>
+          <Paper style={{padding: 16, display: 'inline-block', maxWidth: '100%'}}>
             {this.state.myscore_loading && <LinearProgress />}
             <MyScore
               sbidx={sbidx}

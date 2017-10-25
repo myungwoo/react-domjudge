@@ -362,7 +362,101 @@ router.post('/scoreboard/my', (req, res) => {
     });
     if (contest.freezetime && contest.freezetime*1000 <= Date.now() && (!contest.unfreezetime || contest.unfreezetime*1000 > Date.now()))
       rank = '?';
-    res.send({points: total.points, totaltime: total.totaltime, rank, detail, teamname: team.name, affil});
+    res.send({points: total.points, totaltime: total.totaltime, rank, detail, team: {
+      teamid: team.teamid,
+      teamname: team.name,
+      affilname: (affil && affil.name) || null,
+      country: (affil && affil.country) || null,
+      color: null,
+    }});
+  })(req, res)
+    .catch(() => res.sendStatus(500));
+});
+
+router.post('/scoreboard', (req, res) => {
+  if (!req.user){ res.sendStatus(401); return; }
+  const {teamid} = req.user;
+  const {cid} = req.body;
+  const now = Date.now();
+  if (!cid || isNaN(Number(cid))){ res.sendStatus(400); return; }
+  (async function(req, res) {
+    let contest = (await db.contest.getContestByCidTeam(cid, teamid))[0];
+    if (!contest){ res.sendStatus(400); return; }
+    if (contest.starttime*1000 > now){ res.sendStatus(204); return; }
+    let target = 'public';
+    if ((!contest.freezetime && contest.endtime <= now) ||
+        (contest.unfreezetime && contest.unfreezetime <= now))
+      target = 'jury';
+    let [teams, problems, caches] = await Promise.all([
+      db.team.getPublicList(cid),
+      db.problem.getListByContest(cid),
+      db.scoreboard.getScorecacheList(cid, target)
+    ]);
+    let sortorder_of_team = {};
+    let firstsolve = {};
+    let table = {};
+    for (let team of teams){
+      sortorder_of_team[team.teamid] = team.sortorder;
+      firstsolve[team.sortorder] = {};
+      table[team.teamid] = {points: 0, totaltime: team.penalty, solve_times: []};
+      for (let problem of problems) table[team.teamid][problem.probid] = {
+        probid: problem.probid, shortname: problem.shortname,
+        submissions: 0, pending: 0, totaltime: 0, is_correct: 0, is_first: false
+      };
+    }
+    let penalty1 = await db.configuration.getConfig('penalty_time', 20);
+    // caches must order by totaltime
+    for (let cache of caches){
+      let row = table[cache.teamid];
+      if (!row) continue;
+      let cell = row[cache.probid];
+      if (!cell) continue;
+      const sortorder = sortorder_of_team[cache.teamid];
+      if (cache.is_correct && !cell.is_correct){
+        if (!firstsolve[sortorder][cache.probid])
+          firstsolve[sortorder][cache.probid] = cache.totaltime;
+        row.points++;
+        row.totaltime += cache.totaltime + penalty1 * (cache.submissions - 1);
+        row.solve_times.push(cache.totaltime);
+        if (cache.totaltime === firstsolve[sortorder][cache.probid])
+          cell.is_first = true;
+      }
+      cell.submissions = cache.submissions;
+      cell.pending = cache.pending;
+      cell.totaltime = cache.totaltime;
+      cell.is_correct = cache.is_correct;
+    }
+    let ret = [];
+    for (let team of teams){
+      let row = table[team.teamid];
+      row.team = team;
+      row.detail = [];
+      for (let problem of problems){
+        row.detail.push(row[problem.probid]);
+        delete row[problem.probid];
+      }
+      ret.push(row);
+    }
+    const my_cmp = (a, b) => {
+      if (a.team.sortorder !== b.team.sortorder) return a.team.sortorder - b.team.sortorder;
+      if (a.points !== b.points) return b.points-a.points;
+      if (a.totaltime !== b.totaltime) return a.totaltime-b.totaltime;
+      for (let i=a.points-1;i>=0;i--)
+        if (a.solve_times[i] !== b.solve_times[i])
+          return a.solve_times[i] - b.solve_times[i];
+      return 0;
+    };
+    ret.sort(my_cmp);
+    let rank = 1, bef = null;
+    for (let row of ret){
+      if (bef && bef.team.sortorder !== row.team.sortorder) rank = 1;
+      row.rank = rank;
+      if (bef && !my_cmp(bef, row)) row.rank = bef.rank;
+      bef = row;
+      rank++;
+    }
+    for (let row of ret) delete row.solve_times;
+    res.send({scoreboard: ret, problems});
   })(req, res)
     .catch(() => res.sendStatus(500));
 });

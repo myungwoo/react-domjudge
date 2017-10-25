@@ -81,3 +81,13 @@ exports.getFirstSolveTime = (cid, sortorder) => {
       });
   });
 };
+
+exports.getScorecacheList = (cid, target) => {
+  target = target || 'public';
+  return new Promise((resolve, reject) => {
+    pool.query(`SELECT * FROM scorecache_${target} WHERE cid = ? ORDER BY totaltime`, [cid], (err, res) => {
+      if (err) reject(err);
+      resolve(res);
+    });
+  });
+};

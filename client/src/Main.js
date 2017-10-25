@@ -28,6 +28,7 @@ import LanguageSelectDialog from './components/language-select-dialog';
 
 import Overview from './Overview';
 import Problems from './Problems';
+import Scoreboard from './Scoreboard';
 
 class Main extends React.Component {
   constructor(props) {
@@ -153,7 +154,7 @@ class Main extends React.Component {
                 </ListItemIcon>
                 <ListItemText primary={t('main.problems')} />
               </ListItem>
-              <ListItem button>
+              <ListItem button onClick={() => this.setState({open: false, redirect_to: '/scoreboard'})}>
                 <ListItemIcon>
                   <WebIcon />
                 </ListItemIcon>
@@ -179,6 +180,8 @@ class Main extends React.Component {
               (<Overview {...props} user={user} contest={contest} state={this.state.contest_state} toast={toast} />)} />
             <Route path="/problems" render={props =>
               (<Problems {...props} contest={contest} state={this.state.contest_state} toast={toast} />)} />
+            <Route path="/scoreboard" render={props =>
+              (<Scoreboard {...props} contest={contest} state={this.state.contest_state} toast={toast} />)} />
             <Redirect to="/" />
           </Switch>
         </div>

@@ -3,91 +3,9 @@ import PropTypes from 'prop-types';
 import {translate} from 'react-i18next';
 import axios from 'axios';
 
-import {red, lightGreen, orange} from 'material-ui/colors';
-import {withStyles} from 'material-ui/styles';
-import classNames from 'classnames';
+import ScoreboardTable from './scoreboard-table';
 
 import Auth from '../storages/auth';
-
-const cellwidth = 60;
-const styles = () => ({
-  root: {
-    overflowX: 'scroll',
-    maxWidth: '100%',
-  },
-  container: {
-    textAlign: 'center',
-    fontSize: 24,
-  },
-  row: {
-    display: 'block',
-    whiteSpace: 'nowrap',
-    margin: '5px 0px',
-  },
-  cell: {
-    display: 'inline-block',
-    textAlign: 'center',
-    padding: '5px 0px',
-    verticalAlign: 'top',
-  },
-  rank: {
-    width: 70,
-    marginRight: 3,
-  },
-  ranktext: {
-    padding: '16px 0px',
-  },
-  team: {
-    width: 350,
-    paddingLeft: 10, paddingRight: 10,
-    marginLeft: 3, marginRight: 3,
-    textAlign: 'center',
-  },
-  teaminfo: {
-    borderRadius: 5,
-  },
-  teamname: {
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-  },
-  affil: {
-    fontSize: 16,
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-  },
-  problem: {
-    width: cellwidth,
-    marginLeft: 3, marginRight: 3,
-  },
-  score: {
-    width: cellwidth,
-    marginLeft: 3, marginRight: 3,
-    borderRadius: 5,
-    color: '#fff',
-  },
-  firstsolve: {
-    backgroundColor: lightGreen['A700'],
-  },
-  correct: {
-    backgroundColor: lightGreen[400],
-  },
-  wrong: {
-    backgroundColor: red[400],
-  },
-  pending: {
-    backgroundColor: orange[400],
-  },
-  total: {
-    width: cellwidth,
-    margin: '0px 3px',
-  },
-  bignumber: {
-    fontWeight: 'bold',
-  },
-  smallnumber: {
-    fontSize: 16
-  },
-});
 
 class MyScore extends React.Component {
   constructor(props) {
@@ -124,49 +42,16 @@ class MyScore extends React.Component {
   }
 
   render() {
-    const {t, classes} = this.props;
     const {info} = this.state;
-    const getClassByDetail = e => {
-      if (e.is_first) return classes.firstsolve;
-      if (e.is_correct) return classes.correct;
-      if (e.pending) return classes.pending;
-      if (e.submissions) return classes.wrong;
-    };
+    let scoreboard = null;
+    if (info){
+      scoreboard = {scoreboard: [info]};
+      scoreboard.problems = [];
+      for (let c of info.detail) scoreboard.problems.push({probid: c.probid, shortname: c.shortname});
+    }
+    else return '';
     return (
-      <div className={classes.root}>
-        {info && <div className={classes.container}>
-          <div className={classes.row}>
-            <div className={classNames(classes.cell, classes.rank)}>{t('scoreboard.rank')}</div>
-            <div className={classNames(classes.cell, classes.team)}>{t('scoreboard.team')}</div>
-            {info.detail.map((e, idx) => (
-              <div key={idx} className={classNames(classes.cell, classes.problem)}>
-                {e.shortname}
-              </div>
-            ))}
-            <div className={classNames(classes.cell, classes.total)}></div>
-          </div>
-          <div className={classes.row}>
-            <div className={classNames(classes.cell, classes.rank, classes.ranktext)}>{info.rank}</div>
-            <div className={classNames(classes.cell, classes.team, classes.teaminfo)}>
-              <div className={classes.teamname}>{info.teamname}</div>
-              <div className={classes.affil}>
-                {(info.affil && info.affil.country) && <img src={`./flags/${info.affil.country}.png`} alt={info.affil.country} style={{height: '1em'}} />}
-                {(info.affil && info.affil.name) || '\u00A0'}
-              </div>
-            </div>
-            {info.detail.map((e, idx) => (
-              <div key={idx} className={classNames(classes.cell, classes.score, getClassByDetail(e))}>
-                <div className={classes.bignumber}>{e.submissions+e.pending ? e.submissions+e.pending : '\u00A0'}</div>
-                <div className={classes.smallnumber}>{e.is_correct ? e.totaltime : '\u00A0'}</div>
-              </div>
-            ))}
-            <div className={classNames(classes.cell, classes.total)}>
-              <div className={classes.bignumber}>{info.points}</div>
-              <div className={classes.smallnumber}>{info.totaltime}</div>
-            </div>
-          </div>
-        </div>}
-      </div>
+      <ScoreboardTable scoreboard={scoreboard} />
     );
   }
 }
@@ -177,4 +62,4 @@ MyScore.PropTypes = {
   setLoading: PropTypes.func.isRequired,
 };
 
-export default withStyles(styles)(translate('translations')(MyScore));
+export default translate('translations')(MyScore);

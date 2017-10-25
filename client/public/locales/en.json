@@ -135,6 +135,7 @@
     "cant_view": "If you can't view PDF file in browser, <1><0>download it!</0></1>"
   },
   "scoreboard": {
+    "contest_not_starts": "Contest is not started yet.",    
     "rank": "Rank",
     "team": "Team"
   }
