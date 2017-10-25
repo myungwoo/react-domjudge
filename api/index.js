@@ -413,7 +413,7 @@ router.post('/scoreboard', (req, res) => {
       if (!cell) continue;
       const sortorder = sortorder_of_team[cache.teamid];
       if (cache.is_correct && !cell.is_correct){
-        if (!firstsolve[sortorder][cache.probid])
+        if (firstsolve[sortorder][cache.probid] === undefined)
           firstsolve[sortorder][cache.probid] = cache.totaltime;
         row.points++;
         row.totaltime += cache.totaltime + penalty1 * (cache.submissions - 1);
