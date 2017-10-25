@@ -135,6 +135,12 @@
     "cant_view": "PDF 파일이 브라우저에서 보이지 않는다면, <1><0>다운로드</0></1>해서 보시기 바랍니다!"
   },
   "scoreboard": {
+    "title": "점수판",
+    "title_final": "최종 점수판",
+    "frozen": "얼었음",
+    "near_date_format": "HH:mm:ss",
+    "far_date_format": "YY년 M월 D일 HH:mm:ss",
+    "frozen_date": "점수판이 {{date}}부터 얼었습니다.",
     "contest_not_starts": "대회가 아직 시작하지 않았습니다.",    
     "rank": "등수",
     "team": "팀"

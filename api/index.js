@@ -383,10 +383,14 @@ router.post('/scoreboard', (req, res) => {
     let contest = (await db.contest.getContestByCidTeam(cid, teamid))[0];
     if (!contest){ res.sendStatus(400); return; }
     if (contest.starttime*1000 > now){ res.sendStatus(204); return; }
-    let target = 'public';
+    let final = false;
     if ((!contest.freezetime && contest.endtime <= now) ||
         (contest.unfreezetime && contest.unfreezetime <= now))
-      target = 'jury';
+      final = true;
+    let frozen = false;
+    if (contest.freezetime && contest.freezetime <= now && (!contest.unfreezetime || contest.unfreezetime >= now))
+      frozen = true;
+    const target = final ? 'jury' : 'public';
     let [teams, problems, caches] = await Promise.all([
       db.team.getPublicList(cid),
       db.problem.getListByContest(cid),
@@ -456,7 +460,7 @@ router.post('/scoreboard', (req, res) => {
       rank++;
     }
     for (let row of ret) delete row.solve_times;
-    res.send({scoreboard: ret, problems});
+    res.send({scoreboard: ret, problems, final, frozen});
   })(req, res)
     .catch(() => res.sendStatus(500));
 });

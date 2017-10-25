@@ -13,6 +13,8 @@ import SubmitForm from './components/submit-form';
 import Clarifications from './components/clarifications';
 import ClarificationRequests from './components/clarification-requests';
 
+import TimeSync from './TimeSync';
+
 class Overview extends React.Component {
   constructor(props) {
     super(props);
@@ -26,7 +28,7 @@ class Overview extends React.Component {
     const {contest, user, state, toast, t} = this.props;
     let {sidx, cidx, sbidx} = this.state;
     const start_date = moment(contest.starttime * 1000);
-    const now = moment();
+    const now = moment(TimeSync.getNow());
     let start_date_display;
     if (start_date.format('YYYYMMDD') === now.format('YYYYMMDD')) // today
       start_date_display = start_date.format(t('overview.near_date_format'));

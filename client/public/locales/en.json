@@ -135,6 +135,12 @@
     "cant_view": "If you can't view PDF file in browser, <1><0>download it!</0></1>"
   },
   "scoreboard": {
+    "title": "Scoreboard",
+    "title_final": "Final scoreboard",
+    "frozen": "Frozen",
+    "near_date_format": "HH:mm:ss",
+    "far_date_format": "ddd D MMM YYYY HH:mm:ss",
+    "frozen_date": "scoreboard is frozen since {{date}}",
     "contest_not_starts": "Contest is not started yet.",    
     "rank": "Rank",
     "team": "Team"
