@@ -112,7 +112,7 @@ router.post('/problems', (req, res) => {
   (async function(req, res) {
     let contest = (await db.contest.getContestByCidTeam(cid, teamid))[0];
     if (!contest){ res.sendStatus(204); return; }
-    if (contest.starttime*1000 > Date.now()){ res.sendStatus(403); return; }
+    if (contest.starttime*1000 > Date.now()){ res.sendStatus(204); return; }
     res.send(await db.problem.getListByContest(cid));
   })(req, res);
 });
@@ -125,7 +125,7 @@ router.post('/problems/with/text', (req, res) => {
   (async function(req, res) {
     let contest = (await db.contest.getContestByCidTeam(cid, teamid))[0];
     if (!contest){ res.sendStatus(204); return; }
-    if (contest.starttime*1000 > Date.now()){ res.sendStatus(403); return; }
+    if (contest.starttime*1000 > Date.now()){ res.sendStatus(204); return; }
     res.send(await db.problem.getListByContestWithText(cid));
   })(req, res);
 });
