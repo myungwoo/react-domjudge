@@ -408,7 +408,11 @@ router.post('/scoreboard', (req, res) => {
         submissions: 0, pending: 0, totaltime: 0, is_correct: 0, is_first: false
       };
     }
-    let penalty1 = await db.configuration.getConfig('penalty_time', 20);
+    let [penalty1, show_pending, show_affiliations] = await Promise.all([
+      db.configuration.getConfig('penalty_time', 20),
+      db.configuration.getConfig('show_pending', 0),
+      db.configuration.getConfig('show_affiliations', 1)
+    ]);
     // caches must order by totaltime
     for (let cache of caches){
       let row = table[cache.teamid];
@@ -426,7 +430,7 @@ router.post('/scoreboard', (req, res) => {
           cell.is_first = true;
       }
       cell.submissions = cache.submissions;
-      cell.pending = cache.pending;
+      cell.pending = show_pending ? cache.pending : 0;
       cell.totaltime = cache.totaltime;
       cell.is_correct = cache.is_correct;
     }
@@ -458,6 +462,8 @@ router.post('/scoreboard', (req, res) => {
       if (bef && !my_cmp(bef, row)) row.rank = bef.rank;
       bef = row;
       rank++;
+      if (!show_affiliations)
+        row.team.affilname = row.team.country = null;
     }
     for (let row of ret) delete row.solve_times;
     res.send({scoreboard: ret, problems, final, frozen});
