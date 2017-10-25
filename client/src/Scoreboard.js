@@ -72,7 +72,7 @@ class Scoreboard extends React.Component {
         <Grid item xs={12} style={{textAlign: 'center'}}>
           <Paper style={{padding: 16, display: 'inline-block', maxWidth: '100%'}}>
             {loading && <LinearProgress />}
-            <Typography type="display1" style={{textAlign: 'center', color: '#000000'}}>
+            <Typography type="display1" style={{textAlign: 'center', color: '#000000', marginTop: 15}}>
               {scoreboard.final ? t('scoreboard.title_final') : t('scoreboard.title')}
               {scoreboard.frozen &&
               <span style={{color: '#BDBDBD', fontSize: 26}}> ({t('scoreboard.frozen')})</span>}
