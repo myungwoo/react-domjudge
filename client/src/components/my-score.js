@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {translate} from 'react-i18next';
 import axios from 'axios';
 
-import {red, green, orange} from 'material-ui/colors';
+import {red, lightGreen, orange} from 'material-ui/colors';
 import {withStyles} from 'material-ui/styles';
 import classNames from 'classnames';
 
@@ -28,15 +28,23 @@ const styles = () => ({
     display: 'inline-block',
     textAlign: 'center',
     padding: '5px 0px',
+    verticalAlign: 'top',
   },
   rank: {
-    width: 50,
-    verticalAlign: 'top',
+    width: 70,
+    marginRight: 3,
+  },
+  ranktext: {
+    padding: '16px 0px',
   },
   team: {
     width: 350,
-    paddingLeft: 10, paddingRight: 20,
-    textAlign: 'right',
+    paddingLeft: 10, paddingRight: 10,
+    marginLeft: 3, marginRight: 3,
+    textAlign: 'center',
+  },
+  teaminfo: {
+    borderRadius: 5,
   },
   teamname: {
     whiteSpace: 'nowrap',
@@ -58,10 +66,10 @@ const styles = () => ({
     color: '#fff',
   },
   firstsolve: {
-    backgroundColor: green['A400'],    
+    backgroundColor: lightGreen['A700'],
   },
   correct: {
-    backgroundColor: green[400],
+    backgroundColor: lightGreen[400],
   },
   wrong: {
     backgroundColor: red[400],
@@ -100,7 +108,7 @@ class MyScore extends React.Component {
     }
     return true;
   }
-  
+
   refreshScore(c) {
     const contest = c || this.props.contest;
     const {setLoading, toast, t} = this.props;
@@ -138,8 +146,8 @@ class MyScore extends React.Component {
             <div className={classNames(classes.cell, classes.total)}></div>
           </div>
           <div className={classes.row}>
-            <div className={classNames(classes.cell, classes.rank)}>{info.rank}</div>
-            <div className={classNames(classes.cell, classes.team)}>
+            <div className={classNames(classes.cell, classes.rank, classes.ranktext)}>{info.rank}</div>
+            <div className={classNames(classes.cell, classes.team, classes.teaminfo)}>
               <div className={classes.teamname}>{info.teamname}</div>
               <div className={classes.affil}>
                 {(info.affil && info.affil.country) && <img src={`./flags/${info.affil.country}.png`} alt={info.affil.country} style={{height: '1em'}} />}
