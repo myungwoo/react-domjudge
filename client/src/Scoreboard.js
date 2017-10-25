@@ -28,12 +28,14 @@ class Scoreboard extends React.Component {
     this.refreshScoreboard();
   }
 
-  shouldComponentUpdate(nextProps) {
+  shouldComponentUpdate(nextProps, nextState) {
     if (JSON.stringify(this.props.contest) !== JSON.stringify(nextProps.contest) ||
         this.props.state !== nextProps.state){
       this.refreshScoreboard(nextProps.contest);
+      return true;
     }
-    return true;
+    return this.props.state !== nextProps.state ||
+           JSON.stringify(this.state) !== JSON.stringify(nextState);
   }
 
   componentWillUnmount() {
