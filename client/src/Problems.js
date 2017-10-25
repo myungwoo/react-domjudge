@@ -60,7 +60,7 @@ class Problems extends React.Component {
       <Grid container spacing={16}>
         {(loading && <Loading />) || ''}
         {redirect_to && <Redirect to={redirect_to} />}
-        {(state && problems[0] &&
+        {(state && problems && problems[0] &&
         <Grid item xs={12} style={{height: '100vh', marginTop: -86, paddingTop: 86}}>
           <Paper style={{height: '100%'}}>
             <div style={{height: '100%', width: problemSidebarWidth, display: 'inline-block', verticalAlign: 'top'}}>
@@ -86,7 +86,7 @@ class Problems extends React.Component {
             </div>
           </Paper>
         </Grid>) || ''}
-        {(state && !problems[0] && !loading &&
+        {(state && (!problems || !problems[0]) && !loading &&
         <Grid item xs={12}>
           <Switch>
             <Route exact path="/problems" render={() =>

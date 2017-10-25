@@ -111,8 +111,8 @@ router.post('/problems', (req, res) => {
   if (!cid || isNaN(Number(cid))){ res.sendStatus(400); return; }
   (async function(req, res) {
     let contest = (await db.contest.getContestByCidTeam(cid, teamid))[0];
-    if (!contest){ res.sendStatus(204); return; }
-    if (contest.starttime*1000 > Date.now()){ res.sendStatus(204); return; }
+    if (!contest){ res.sendStatus(400); return; }
+    if (contest.starttime*1000 > Date.now()){ res.json(null); return; }
     res.send(await db.problem.getListByContest(cid));
   })(req, res);
 });
@@ -124,8 +124,8 @@ router.post('/problems/with/text', (req, res) => {
   if (!cid || isNaN(Number(cid))){ res.sendStatus(400); return; }
   (async function(req, res) {
     let contest = (await db.contest.getContestByCidTeam(cid, teamid))[0];
-    if (!contest){ res.sendStatus(204); return; }
-    if (contest.starttime*1000 > Date.now()){ res.sendStatus(204); return; }
+    if (!contest){ res.sendStatus(400); return; }
+    if (contest.starttime*1000 > Date.now()){ res.json(null); return; }
     res.send(await db.problem.getListByContestWithText(cid));
   })(req, res);
 });
@@ -382,7 +382,7 @@ router.post('/scoreboard', (req, res) => {
   (async function(req, res) {
     let contest = (await db.contest.getContestByCidTeam(cid, teamid))[0];
     if (!contest){ res.sendStatus(400); return; }
-    if (contest.starttime*1000 > now){ res.sendStatus(204); return; }
+    if (contest.starttime*1000 > now){ res.json(null); return; }
     let final = false;
     if ((!contest.freezetime && contest.endtime <= now) ||
         (contest.unfreezetime && contest.unfreezetime <= now))

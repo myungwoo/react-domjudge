@@ -68,7 +68,7 @@ class Scoreboard extends React.Component {
     }
     return (
       <Grid container spacing={16}>
-        {(state && (!loading || scoreboard) &&
+        {(state && scoreboard &&
         <Grid item xs={12} style={{textAlign: 'center'}}>
           <Paper style={{padding: 16, display: 'inline-block', maxWidth: '100%'}}>
             {loading && <LinearProgress />}
@@ -84,7 +84,7 @@ class Scoreboard extends React.Component {
             <ScoreboardTable scoreboard={scoreboard} />
           </Paper>
         </Grid>) || ''}
-        {((!state || loading) &&
+        {((!state || loading) && !scoreboard &&
         <Grid item xs={12}>
           <Paper style={{padding: 16}}>
             {loading && <LinearProgress />}
