@@ -53,14 +53,12 @@ router.post('/submissions', (req, res) => {
   const {teamid} = req.user;
   if (!cid || isNaN(Number(cid))){ res.sendStatus(400); return; }
   (async function(req, res){
-    let contests = await db.contest.getContestByCid(cid);
-    if (contests.length === 0){
-      res.send([]);
-      return;
-    }
-    let contest = contests[0];
-    let submissions = await db.submission.getListByTeamContest(cid, teamid);
-    let verification_required = await db.configuration.getConfig('verification_required', 0);
+    let contest = (await db.contest.getContestByCid(cid))[0];
+    if (!contest){ res.send([]); return; }
+    let [submissions, verification_required] = await Promise.all([
+      db.submission.getListByTeamContest(cid, teamid),
+      db.configuration.getConfig('verification_required', 0),
+    ]);
     res.send(submissions.map(x => {
       let {...e} = x;
       if (verification_required && !e.verified)
@@ -78,20 +76,20 @@ router.post('/submission', (req, res) => {
   const {teamid} = req.user;
   if (!submitid || isNaN(Number(submitid))){ res.sendStatus(400); return; }
   (async function(req, res){
-    let submissions = await db.submission.getDetailByTeam(submitid, teamid);
-    if (submissions.length === 0){ res.sendStatus(204); return; }
-    let submission = submissions[0];
-    let contests = await db.contest.getContestByCid(submission.cid);
-    if (contests.length === 0){ res.sendStatus(500); return; }
-    let contest = contests[0];
-    let verification_required = await db.configuration.getConfig('verification_required', 0);
+    let submission = (await db.submission.getDetailByTeam(submitid, teamid))[0];
+    if (!submission){ res.sendStatus(204); return; }
+    let contest = (await db.contest.getContestByCid(submission.cid))[0];
+    if (!contest){ res.sendStatus(500); return; }
+    let [verification_required, show_compile, show_sample] = await Promise.all([
+      db.configuration.getConfig('verification_required', 0),
+      db.configuration.getConfig('show_compile', 2),
+      db.configuration.getConfig('show_sample_output', 0),
+    ]);
     if (submission.submittime >= contest.endtime || (verification_required && !submission.verified)){ res.json(null); return; }
     if (verification_required && !submission.verified)
       submission.result = null;
-    let show_compile = await db.configuration.getConfig('show_compile', 2);
     if (show_compile !== 2 && (show_compile !== 1 || submission.result !== 'compile-error'))
       submission.output_compile = undefined;
-    let show_sample = await db.configuration.getConfig('show_sample_output', 0);
     if (show_sample && submission.result !== 'compile-error')
       submission.sample_runs = await db.submission.getSampleRun(submitid);
     res.send(submission);
@@ -162,18 +160,21 @@ router.post('/submit', upload.array('files'), (req, res) => {
   if (!probid || isNaN(Number(probid))){ res.sendStatus(400); return; }
   if (!langid || typeof langid !== 'string'){ res.sendStatus(400); return; }
   (async function(req, res) {
-    const maxfiles = await db.configuration.getConfig('sourcefiles_limit', 100);
-    const maxsize = await db.configuration.getConfig('sourcesize_limit', 256);
+    const [maxfiles, maxsize] = await Promise.all([
+      db.configuration.getConfig('sourcefiles_limit', 100),
+      db.configuration.getConfig('sourcesize_limit', 256),
+    ]);
     if (files.length > maxfiles){ res.sendStatus(400); return; }
     let totalsize = files.map(e => e.size).reduce((a, b) => a+b, 0);
     if (totalsize > maxsize*1024){ res.sendStatus(400); return; }
-    const contests = await db.contest.getContestByCidTeam(cid, teamid);
-    if (contests.length === 0){ res.sendStatus(400); return; }
-    const contest = contests[0];
+    const contest = (await db.contest.getContestByCidTeam(cid, teamid))[0];
+    if (!contest){ res.sendStatus(400); return; }
     if (contest.starttime*1000 > Date.now()){ res.sendStatus(400); return; }
-    const problems = await db.problem.getByContest(probid, cid);
+    const [problems, languages] = await Promise.all([
+      db.problem.getByContest(probid, cid),
+      db.language.getById(langid),
+    ]);
     if (problems.length === 0){ res.sendStatus(400); return; }
-    const languages = await db.language.getById(langid);
     if (languages.length === 0){ res.sendStatus(400); return; }
 
     const conn = await new Promise((resolve, reject) => {
@@ -229,8 +230,10 @@ router.post('/clarifications', (req, res) => {
   (async function(req, res) {
     let contest = (await db.contest.getContestByCidTeam(cid, teamid))[0];
     if (!contest){ res.sendStatus(400); return; }
-    let clarifications = await db.clarification.getListByCidTeam(cid, teamid);
-    const categories = await db.configuration.getConfig('clar_categories', {'general':'General issue', 'tech':'Technical issue'});
+    let [clarifications, categories] = await Promise.all([
+      db.clarification.getListByCidTeam(cid, teamid),
+      db.configuration.getConfig('clar_categories', {'general':'General issue', 'tech':'Technical issue'}),
+    ]);
     res.send(clarifications.map(e => {
       e.from = e.from || 'Jury';
       e.to = e.to || 'All';
@@ -250,8 +253,10 @@ router.post('/clarifications/my', (req, res) => {
   (async function(req, res) {
     let contest = (await db.contest.getContestByCidTeam(cid, teamid))[0];
     if (!contest){ res.sendStatus(400); return; }
-    let clarifications = await db.clarification.getMyListByCidTeam(cid, teamid);
-    const categories = await db.configuration.getConfig('clar_categories', {'general':'General issue', 'tech':'Technical issue'});
+    let [clarifications, categories] = await Promise.all([
+      db.clarification.getMyListByCidTeam(cid, teamid),
+      db.configuration.getConfig('clar_categories', {'general':'General issue', 'tech':'Technical issue'}),
+    ]);
     res.send(clarifications.map(e => {
       if (e.from === teamname) e.from = 'You';
       e.to = e.to || 'Jury';
@@ -271,8 +276,10 @@ router.post('/clarification', (req, res) => {
     let clarification = (await db.clarification.getByIdTeam(clarid, teamid))[0];
     if (!clarification){ res.sendStatus(401); return; }
     let respid = clarification.respid || clarid;
-    let data = (await db.clarification.getNextByIdTeam(respid, teamid));
-    const categories = await db.configuration.getConfig('clar_categories', {'general':'General issue', 'tech':'Technical issue'});
+    let [data, categories] = await Promise.all([
+      db.clarification.getNextByIdTeam(respid, teamid),
+      db.configuration.getConfig('clar_categories', {'general':'General issue', 'tech':'Technical issue'}),
+    ]);
     const simplify = e => {
       let {clarid, cid, submittime, body, sender, category, probid} = e;
       let subject = (e.shortname && e.probname && `Problem ${e.shortname}: ${e.probname}`) || categories[e.category || 'general'];
