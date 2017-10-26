@@ -6,7 +6,17 @@ import {red, lightGreen, orange} from 'material-ui/colors';
 import {withStyles} from 'material-ui/styles';
 import classNames from 'classnames';
 
-const cellwidth = 60;
+import Config from '../storages/config';
+
+const score_in_seconds = Config.getConfig('score_in_seconds', 0);
+const timeformat = t => {
+  if (score_in_seconds){
+    const pad2 = v => v < 10 ? '0'+v : v;
+    return Math.floor(t/3600)+':'+pad2(Math.floor(t%3600/60))+':'+pad2(t%60);
+  }
+  else return t;
+};
+const cellwidth = score_in_seconds ? 70 : 60;
 const styles = () => ({
   root: {
     overflowX: 'scroll',
@@ -123,12 +133,12 @@ class ScoreboardTable extends React.Component {
             {row.detail.map((e, idx) => (
               <div key={idx} className={classNames(classes.cell, classes.score, getClassByDetail(e))}>
                 <div className={classes.bignumber}>{e.submissions+e.pending ? e.submissions+e.pending : '\u00A0'}</div>
-                <div className={classes.smallnumber}>{e.is_correct ? e.totaltime : '\u00A0'}</div>
+                <div className={classes.smallnumber}>{e.is_correct ? timeformat(e.solvetime) : '\u00A0'}</div>
               </div>
             ))}
             <div className={classNames(classes.cell, classes.total)}>
               <div className={classes.bignumber}>{row.points}</div>
-              <div className={classes.smallnumber}>{row.totaltime}</div>
+              <div className={classes.smallnumber}>{timeformat(row.totaltime)}</div>
             </div>
           </div>
         ))}

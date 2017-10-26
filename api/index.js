@@ -344,14 +344,17 @@ router.post('/scoreboard/my', (req, res) => {
     let total = (await db.scoreboard.getTotalByTeam(cid, teamid))[0];
     let sortorder = (await db.team.getTeamCategoryByTeam(teamid))[0].sortorder;
     let rank = (await db.scoreboard.getBetterThan(cid, total.points, total.totaltime, sortorder)) + 1;
+
+    const score_in_seconds = (await db.configuration.getConfig('score_in_seconds', 0));
+    let to_score = solvetime => score_in_seconds ? solvetime : Math.floor(solvetime / 60);
     // TODO: hard review
     // tie breaking
     if (total.points > 0){
       let tied = (await db.scoreboard.getTied(cid, total.points, total.totaltime, sortorder)).map(e => e.teamid);
       if (tied.length >= 1){
-        let my_times = (await db.scoreboard.getCorrectProblemScoreList(cid, teamid)).map(e => e.totaltime);
+        let my_times = (await db.scoreboard.getCorrectProblemScoreList(cid, teamid)).map(e => to_score(e.solvetime));
         for (let tid of tied){
-          let you = (await db.scoreboard.getCorrectProblemScoreList(cid, tid)).map(e => e.totaltime);
+          let you = (await db.scoreboard.getCorrectProblemScoreList(cid, tid)).map(e => to_score(e.solvetime));
           for (let i=0;i<you.length;i++){
             if (you[i] < my_times[i]) rank++;
             if (you[i] !== my_times[i]) break;
@@ -360,11 +363,12 @@ router.post('/scoreboard/my', (req, res) => {
       }
     }
     let firstsovletimes = (await db.scoreboard.getFirstSolveTime(cid, sortorder)).reduce((acc, cur) => {
-      acc[cur.probid] = cur['MIN(totaltime)'];
+      acc[cur.probid] = to_score(cur.solvetime);
       return acc;
     }, {});
     let detail = (await db.scoreboard.getProblemScoreList(cid, teamid)).map(e => {
-      e.is_first = firstsovletimes[e.probid] === e.totaltime && e.is_correct;
+      e.solvetime = to_score(e.solvetime);
+      e.is_first = firstsovletimes[e.probid] === e.solvetime && e.is_correct;
       return e;
     });
     if (contest.freezetime && contest.freezetime*1000 <= Date.now() && (!contest.unfreezetime || contest.unfreezetime*1000 > Date.now()))
@@ -397,48 +401,51 @@ router.post('/scoreboard', (req, res) => {
     let frozen = false;
     if (contest.freezetime && contest.freezetime <= now && (!contest.unfreezetime || contest.unfreezetime >= now))
       frozen = true;
-    const target = final ? 'jury' : 'public';
-    let [teams, problems, caches] = await Promise.all([
+    const target = final ? 'restricted' : 'public';
+    let [teams, problems, caches, score_in_seconds, penalty1, show_pending, show_affiliations, show_teams_submissions] = await Promise.all([
       db.team.getPublicList(cid),
       db.problem.getListByContest(cid),
-      db.scoreboard.getScorecacheList(cid, target)
+      db.scoreboard.getScorecacheList(cid, target),
+      db.configuration.getConfig('score_in_seconds', 0),
+      db.configuration.getConfig('penalty_time', 20),
+      db.configuration.getConfig('show_pending', 0),
+      db.configuration.getConfig('show_affiliations', 1),
+      db.configuration.getConfig('show_teams_submissions', 1),
     ]);
+    let second_to_score = v => score_in_seconds ? v : Math.floor(v / 60);
+    let minute_to_score = v => score_in_seconds ? v*60 : v;
     let sortorder_of_team = {};
     let firstsolve = {};
     let table = {};
     for (let team of teams){
       sortorder_of_team[team.teamid] = team.sortorder;
       firstsolve[team.sortorder] = {};
-      table[team.teamid] = {points: 0, totaltime: team.penalty, solve_times: []};
+      table[team.teamid] = {points: 0, totaltime: minute_to_score(team.penalty), solve_times: []};
       for (let problem of problems) table[team.teamid][problem.probid] = {
         probid: problem.probid, shortname: problem.shortname,
-        submissions: 0, pending: 0, totaltime: 0, is_correct: 0, is_first: false
+        submissions: 0, pending: 0, solvetime: 0, is_correct: 0, is_first: false
       };
     }
-    let [penalty1, show_pending, show_affiliations] = await Promise.all([
-      db.configuration.getConfig('penalty_time', 20),
-      db.configuration.getConfig('show_pending', 0),
-      db.configuration.getConfig('show_affiliations', 1)
-    ]);
     // caches must order by totaltime
     for (let cache of caches){
       let row = table[cache.teamid];
       if (!row) continue;
       let cell = row[cache.probid];
       if (!cell) continue;
+      cache.solvetime = second_to_score(cache.solvetime);
       const sortorder = sortorder_of_team[cache.teamid];
       if (cache.is_correct && !cell.is_correct){
         if (firstsolve[sortorder][cache.probid] === undefined)
-          firstsolve[sortorder][cache.probid] = cache.totaltime;
+          firstsolve[sortorder][cache.probid] = cache.solvetime;
         row.points++;
-        row.totaltime += cache.totaltime + penalty1 * (cache.submissions - 1);
+        row.totaltime += cache.solvetime + minute_to_score(penalty1) * (cache.submissions - 1);
         row.solve_times.push(cache.totaltime);
         if (cache.totaltime === firstsolve[sortorder][cache.probid])
           cell.is_first = true;
       }
       cell.submissions = cache.submissions;
       cell.pending = show_pending ? cache.pending : 0;
-      cell.totaltime = cache.totaltime;
+      cell.solvetime = cache.solvetime;
       cell.is_correct = cache.is_correct;
     }
     let ret = [];
@@ -471,7 +478,10 @@ router.post('/scoreboard', (req, res) => {
       rank++;
       if (!show_affiliations)
         row.team.affilname = row.team.country = null;
+      if (!show_teams_submissions)
+        row.detail = [];
     }
+    if (!show_teams_submissions) problems = [];
     for (let row of ret) delete row.solve_times;
     res.send({scoreboard: ret, problems, final, frozen});
   })(req, res)

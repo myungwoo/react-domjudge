@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const db = require('../db');
 
 const crypto = require('crypto');
+const TwinBcrypt = require('twin-bcrypt');
 
 // It chould be changed by DOMjudge's hashing algorithm
 const hash_password = (username, password) => crypto.createHash('md5').update(username + '#' + password).digest('hex');
@@ -15,7 +16,8 @@ router.post('/login', (req, res) => {
       let users = await db.user.getByUsername(data.username);
       if (users.length !== 1) throw new Error('no_user');
       let user = users[0];
-      if (user.password !== hash_password(user.username, data.password)) throw new Error('wrong_password');
+      if (user.password !== hash_password(user.username, data.password) &&
+          !TwinBcrypt.compareSync(data.password, user.password)) throw new Error('wrong_password');
       
       let teams = await db.team.getByTeamId(user.teamid);
       if (teams.length !== 1) throw new Error('no_team');
