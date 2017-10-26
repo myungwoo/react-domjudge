@@ -84,7 +84,13 @@ const styles = () => ({
 });
 
 class ScoreboardTable extends React.Component {
+  shouldComponentUpdate(nextProps) {
+    return JSON.stringify(this.props.scoreboard) !== JSON.stringify(nextProps.scoreboard) ||
+           this.current_lng !== nextProps.i18n.language;
+  }
+
   render() {
+    this.current_lng = this.props.i18n.language;
     const {scoreboard, t, classes} = this.props;
     const getClassByDetail = e => {
       if (e.is_first) return classes.firstsolve;
