@@ -3,6 +3,9 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import {translate} from 'react-i18next';
 
+import {withStyles} from 'material-ui/styles';
+import classNames from 'classnames';
+
 import {Route, Switch, Redirect} from 'react-router-dom';
 import {AppBar, Toolbar, Typography, Button, IconButton, Drawer, Divider, Tooltip} from 'material-ui';
 import MenuIcon from 'material-ui-icons/Menu';
@@ -13,6 +16,7 @@ import DashboardIcon from 'material-ui-icons/Dashboard';
 import DescriptionIcon from 'material-ui-icons/Description';
 import ListIcon from 'material-ui-icons/List';
 import HighlightOffIcon from 'material-ui-icons/HighlightOff';
+import ChevronLeftIcon from 'material-ui-icons/ChevronLeft';
 import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
 
 import TimeSync from './TimeSync';
@@ -29,6 +33,84 @@ import LanguageSelectDialog from './components/language-select-dialog';
 import Overview from './Overview';
 import Problems from './Problems';
 import Scoreboard from './Scoreboard';
+
+const drawerWidth = 240;
+
+const styles = theme => ({
+  appFrame: {
+    position: 'relative',
+    display: 'flex',
+    width: '100%',
+    minHeight: '100vh',
+  },
+  appBar: {
+    position: 'fixed',
+    zIndex: theme.zIndex.navDrawer + 1,
+    transition: theme.transitions.create(['width', 'margin'], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+  },
+  appBarShift: {
+    marginLeft: drawerWidth,
+    width: `calc(100% - ${drawerWidth}px)`,
+    transition: theme.transitions.create(['width', 'margin'], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  },
+  menuButton: {
+    position: 'fixed',
+    left: 5,
+  },
+  hide: {
+    display: 'none',
+  },
+  drawerPaper: {
+    position: 'fixed',
+    height: '100%',
+    width: drawerWidth,
+    transition: theme.transitions.create('width', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  },
+  drawerPaperClose: {
+    width: 60,
+    overflowX: 'hidden',
+    transition: theme.transitions.create('width', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+  },
+  drawerInner: {
+    // Make the items inside not wrap when transitioning:
+    width: drawerWidth,
+  },
+  drawerHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    padding: '0 8px',
+    ...theme.mixins.toolbar,
+  },
+  content: {
+    width: '100%',
+    overflow: 'hidden',
+    paddingLeft: 60,
+    paddingTop: 56,
+    [theme.breakpoints.up('sm')]: {
+      paddingTop: 64,
+    },
+  },
+  contentShift: {
+    paddingLeft: drawerWidth,
+    transition: theme.transitions.create(['padding-left'], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  },
+});
 
 class Main extends React.Component {
   constructor(props) {
@@ -89,16 +171,17 @@ class Main extends React.Component {
     // Since contest list will not be changed after app load.
     // So it's able to use localStorage instead of state/props.
     let contests = Contest.getList();
-    let {toast, user, contest, t} = this.props;
+    let {toast, user, contest, t, classes} = this.props;
     return (
-      <div>
+      <div className={classes.appFrame}>
         {this.state.redirect_to && <Redirect to={this.state.redirect_to} />}
-        <AppBar>
+        <AppBar className={classNames(classes.appBar, this.state.open && classes.appBarShift)}>
           <Toolbar>
             <IconButton
               color="contrast"
               aria-label="open drawer"
               onClick={() => this.setState({open: true})}
+              className={classNames(classes.menuButton, this.state.open && classes.hide)}
             >
               <MenuIcon />
             </IconButton>
@@ -139,22 +222,34 @@ class Main extends React.Component {
         <LanguageSelectDialog
           open={this.state.languages_open}
           onRequestClose={() => this.setState({languages_open: false})} />
-        <Drawer open={this.state.open} onRequestClose={() => this.setState({open: false})}>
-          <div>
+        <Drawer
+          type="permanent"
+          classes={{
+            paper: classNames(classes.drawerPaper, !this.state.open && classes.drawerPaperClose),
+          }}
+          open={this.state.open}
+          onRequestClose={() => this.setState({open: false})}
+        >
+          <div className={classes.drawerInner}>
+            <div className={classes.drawerHeader}>
+              <IconButton onClick={() => this.setState({open: false})}>
+                <ChevronLeftIcon />
+              </IconButton>
+            </div>
             <List style={{width: 250}}>
-              <ListItem button onClick={() => this.setState({open: false, redirect_to: '/'})}>
+              <ListItem button onClick={() => this.setState({redirect_to: '/'})}>
                 <ListItemIcon>
                   <DashboardIcon />
                 </ListItemIcon>
                 <ListItemText primary={t('main.overview')} />
               </ListItem>
-              <ListItem button onClick={() => this.setState({open: false, redirect_to: '/problems'})}>
+              <ListItem button onClick={() => this.setState({redirect_to: '/problems'})}>
                 <ListItemIcon>
                   <DescriptionIcon />
                 </ListItemIcon>
                 <ListItemText primary={t('main.problems')} />
               </ListItem>
-              <ListItem button onClick={() => this.setState({open: false, redirect_to: '/scoreboard'})}>
+              <ListItem button onClick={() => this.setState({redirect_to: '/scoreboard'})}>
                 <ListItemIcon>
                   <WebIcon />
                 </ListItemIcon>
@@ -172,9 +267,7 @@ class Main extends React.Component {
             </List>
           </div>
         </Drawer>
-        <div style={{
-          width: '100%', padding: '86px 20px 15px 20px'
-        }}>
+        <div className={classNames(classes.content, this.state.open && classes.contentShift)}>
           <Switch>
             <Route exact path="/" render={props =>
               (<Overview {...props} user={user} contest={contest} state={this.state.contest_state} toast={toast} />)} />
@@ -198,4 +291,4 @@ Main.PropTypes = {
   onContestChange: PropTypes.func.isRequired
 };
 
-export default translate('translations')(Main);
+export default translate('translations')(withStyles(styles, {withTheme: true})(Main));

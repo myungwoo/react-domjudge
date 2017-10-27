@@ -71,7 +71,7 @@ class Scoreboard extends React.Component {
         frozen_date_display = frozen_date.format(t('scoreboard.far_date_format'));
     }
     return (
-      <Grid container spacing={16}>
+      <Grid container spacing={16} style={{padding: 14}}>
         {(state && scoreboard &&
         <Grid item xs={12} style={{textAlign: 'center'}}>
           <Paper style={{padding: 16, display: 'inline-block', maxWidth: '100%'}}>

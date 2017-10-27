@@ -35,7 +35,7 @@ class Overview extends React.Component {
     else
       start_date_display = start_date.format(t('overview.far_date_format'));
     return (
-      <Grid container spacing={16}>
+      <Grid container spacing={16} style={{padding: 14}}>
         {state === 0 &&
         <Grid item xs={12}>
           <Paper style={{padding: 16, textAlign: 'center'}}>
@@ -55,7 +55,7 @@ class Overview extends React.Component {
         </Grid>}
         {state !== 0 &&
         <Grid item xs={12} style={{textAlign: 'center'}}>
-          <Paper style={{padding: 16, display: 'inline-block', minWidth: 300, maxWidth: '100%'}}>
+          <Paper style={{padding: 16, display: 'inline-block', minWidth: 200, maxWidth: '100%'}}>
             {this.state.myscore_loading && <LinearProgress />}
             <MyScore
               sbidx={sbidx}

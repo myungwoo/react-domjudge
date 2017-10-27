@@ -130,7 +130,7 @@ class Clarifications extends React.Component {
               <TableCell padding="none" style={{textAlign: 'center'}}>{c.from}</TableCell>
               <TableCell padding="none" style={{textAlign: 'center'}}>{c.to}</TableCell>
               <TableCell padding="none" style={{textAlign: 'center'}}>{c.subject}</TableCell>
-              <TableCell padding="none" style={{textAlign: 'center', whiteSpace: 'pre-wrap'}}>{c.body}</TableCell>
+              <TableCell padding="none" style={{textAlign: 'center', whiteSpace: 'pre-wrap', paddingLeft: 10, paddingRight: 10}}>{c.body}</TableCell>
             </TableRow>
           ))}
           {this.state.selected_clarification &&

@@ -27,7 +27,13 @@ const styles = () => ({
     fontSize: 24,
     display: 'block',
     whiteSpace: 'nowrap',
-    margin: '5px 0px',
+    padding: 5,
+  },
+  teamrow: {
+    borderRadius: 5,
+    '&:hover': {
+      background: 'rgba(0, 0, 0, 0.12)',
+    }
   },
   cell: {
     display: 'inline-block',
@@ -121,7 +127,7 @@ class ScoreboardTable extends React.Component {
           <div className={classNames(classes.cell, classes.total)}></div>
         </div>
         {scoreboard.scoreboard.map(row => (
-          <div className={classes.row} key={row.team.teamid}>
+          <div className={classNames(classes.row, classes.teamrow)} key={row.team.teamid}>
             <div className={classNames(classes.cell, classes.rank, classes.ranktext)}>{row.rank}</div>
             <div className={classNames(classes.cell, classes.team, classes.teaminfo)} style={{backgroundColor: row.team.color}}>
               <div className={classes.teamname}>{row.team.teamname}</div>

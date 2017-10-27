@@ -57,11 +57,11 @@ class Problems extends React.Component {
     const {contest, toast, state, t} = this.props;
     const {loading, problems, redirect_to} = this.state;
     return (
-      <Grid container spacing={16}>
+      <Grid container spacing={16} style={{padding: 14}}>
         {(loading && <Loading />) || ''}
         {redirect_to && <Redirect to={redirect_to} />}
         {(state && problems && problems[0] &&
-        <Grid item xs={12} style={{height: '100vh', marginTop: -86, paddingTop: 86}}>
+        <Grid item xs={12} style={{height: 'calc(100vh - 86px)'}}>
           <Paper style={{height: '100%'}}>
             <div style={{height: '100%', width: problemSidebarWidth, display: 'inline-block', verticalAlign: 'top'}}>
               <List subheader={<ListSubheader style={{background: '#fff'}}>{t('problems.title')}</ListSubheader>} style={{width: '100%', maxHeight: '100%', overflow: 'auto'}}>
