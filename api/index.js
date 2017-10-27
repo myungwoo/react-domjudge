@@ -340,14 +340,14 @@ router.post('/scoreboard/my', (req, res) => {
     if (contest.starttime*1000 > Date.now()){ res.sendStatus(400); return; }
     let team = (await db.team.getByTeamId(teamid))[0];
     if (!team){ res.sendStatus(400); return; }
-    let [affil, total, sortorder, problems] = await Promise.all([
+    let [affil, total, category, problems] = await Promise.all([
       db.affiliation.getByAffilId(team.affilid),
       db.scoreboard.getTotalByTeam(cid, teamid),
       db.team.getTeamCategoryByTeam(teamid),
       db.problem.getListByContest(cid),
     ]);
-    affil = affil[0]; total = total[0] || {points: 0, totaltime: 0};
-    sortorder = sortorder[0].sortorder;
+    affil = affil[0]; total = total[0] || {points: 0, totaltime: 0}; category = category[0];
+    let {sortorder, color} = category;
     rank = (await db.scoreboard.getBetterThan(cid, total.points, total.totaltime, sortorder)) + 1;
 
     let info = {};
@@ -401,7 +401,7 @@ router.post('/scoreboard/my', (req, res) => {
       teamname: team.name,
       affilname: (affil && affil.name) || null,
       country: (affil && affil.country) || null,
-      color: null,
+      color: color,
     }});
   })(req, res)
     .catch(() => res.sendStatus(500));
