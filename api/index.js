@@ -342,6 +342,7 @@ router.post('/scoreboard/my', (req, res) => {
     if (!team){ res.sendStatus(400); return; }
     let affil = (await db.affiliation.getByAffilId(team.affilid))[0];
     let total = (await db.scoreboard.getTotalByTeam(cid, teamid))[0];
+    if (!total) total = {points: 0, totaltime: 0};
     let sortorder = (await db.team.getTeamCategoryByTeam(teamid))[0].sortorder;
     let rank = (await db.scoreboard.getBetterThan(cid, total.points, total.totaltime, sortorder)) + 1;
 
