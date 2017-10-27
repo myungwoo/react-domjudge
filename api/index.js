@@ -340,11 +340,27 @@ router.post('/scoreboard/my', (req, res) => {
     if (contest.starttime*1000 > Date.now()){ res.sendStatus(400); return; }
     let team = (await db.team.getByTeamId(teamid))[0];
     if (!team){ res.sendStatus(400); return; }
-    let affil = (await db.affiliation.getByAffilId(team.affilid))[0];
-    let total = (await db.scoreboard.getTotalByTeam(cid, teamid))[0];
-    if (!total) total = {points: 0, totaltime: 0};
-    let sortorder = (await db.team.getTeamCategoryByTeam(teamid))[0].sortorder;
-    let rank = (await db.scoreboard.getBetterThan(cid, total.points, total.totaltime, sortorder)) + 1;
+    let [affil, total, sortorder, problems] = await Promise.all([
+      db.affiliation.getByAffilId(team.affilid),
+      db.scoreboard.getTotalByTeam(cid, teamid),
+      db.team.getTeamCategoryByTeam(teamid),
+      db.problem.getListByContest(cid),
+    ]);
+    affil = affil[0]; total = total[0] || {points: 0, totaltime: 0};
+    sortorder = sortorder[0].sortorder;
+    rank = (await db.scoreboard.getBetterThan(cid, total.points, total.totaltime, sortorder)) + 1;
+
+    let info = {};
+    for (let problem of problems)
+      info[problem.probid] = {
+        probid: problem.probid,
+        shortname: problem.shortname,
+        submissions: 0,
+        pending: 0,
+        solvetime: 0,
+        is_correct: 0,
+        is_first: false,
+      };
 
     const score_in_seconds = (await db.configuration.getConfig('score_in_seconds', 0));
     let to_score = solvetime => score_in_seconds ? solvetime : Math.floor(solvetime / 60);
@@ -367,10 +383,16 @@ router.post('/scoreboard/my', (req, res) => {
       acc[cur.probid] = to_score(cur.solvetime);
       return acc;
     }, {});
-    let detail = (await db.scoreboard.getProblemScoreList(cid, teamid)).map(e => {
+    for (let e of (await db.scoreboard.getProblemScoreList(cid, teamid))){
       e.solvetime = to_score(e.solvetime);
       e.is_first = firstsovletimes[e.probid] === e.solvetime && e.is_correct;
-      return e;
+      info[e.probid] = e;
+    }
+    let detail = Object.values(info);
+    detail.sort((a, b) => {
+      if (a.shortname < b.shortname) return -1;
+      if (a.shortname > b.shortname) return 1;
+      return 0;
     });
     if (contest.freezetime && contest.freezetime*1000 <= Date.now() && (!contest.unfreezetime || contest.unfreezetime*1000 > Date.now()))
       rank = '?';
