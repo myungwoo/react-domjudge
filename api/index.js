@@ -395,11 +395,11 @@ router.post('/scoreboard', (req, res) => {
     if (!contest){ res.sendStatus(400); return; }
     if (contest.starttime*1000 > now){ res.json(null); return; }
     let final = false;
-    if ((!contest.freezetime && contest.endtime <= now) ||
-        (contest.unfreezetime && contest.unfreezetime <= now))
+    if ((!contest.freezetime && contest.endtime*1000 <= now) ||
+        (contest.unfreezetime && contest.unfreezetime*1000 <= now))
       final = true;
     let frozen = false;
-    if (contest.freezetime && contest.freezetime <= now && (!contest.unfreezetime || contest.unfreezetime >= now))
+    if (contest.freezetime && contest.freezetime*1000 <= now && (!contest.unfreezetime || contest.unfreezetime*1000 >= now))
       frozen = true;
     const target = final ? 'restricted' : 'public';
     let [teams, problems, caches, score_in_seconds, penalty1, show_pending, show_affiliations, show_teams_submissions] = await Promise.all([
