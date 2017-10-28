@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {translate} from 'react-i18next';
 
-import {red, lightGreen, orange, green} from 'material-ui/colors';
+import {red, orange, green} from 'material-ui/colors';
 import {withStyles} from 'material-ui/styles';
 import classNames from 'classnames';
 
