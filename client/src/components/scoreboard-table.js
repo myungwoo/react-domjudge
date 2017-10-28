@@ -27,7 +27,10 @@ const styles = () => ({
     fontSize: 24,
     display: 'block',
     whiteSpace: 'nowrap',
+  },
+  rowWrapper: {
     padding: 5,
+    display: 'inline-block',
   },
   teamrow: {
     borderRadius: 5,
@@ -117,34 +120,38 @@ class ScoreboardTable extends React.Component {
     return (
       <div className={classes.root}>
         <div className={classes.row}>
-          <div className={classNames(classes.cell, classes.rank)}>{t('scoreboard.rank')}</div>
-          <div className={classNames(classes.cell, classes.team)}>{t('scoreboard.team')}</div>
-          {scoreboard.problems.map((e, idx) => (
-            <div key={idx} className={classNames(classes.cell, classes.problem)}>
-              {e.shortname}
-            </div>
-          ))}
-          <div className={classNames(classes.cell, classes.total)}></div>
-        </div>
-        {scoreboard.scoreboard.map(row => (
-          <div className={classNames(classes.row, classes.teamrow)} key={row.team.teamid}>
-            <div className={classNames(classes.cell, classes.rank, classes.ranktext)}>{row.rank}</div>
-            <div className={classNames(classes.cell, classes.team, classes.teaminfo)} style={{backgroundColor: row.team.color}}>
-              <div className={classes.teamname}>{row.team.teamname}</div>
-              <div className={classes.affil}>
-                {row.team.country && <img src={`./flags/${row.team.country}.png`} alt={row.team.country} style={{height: '1em'}} />}
-                {row.team.affilname || '\u00A0'}
-              </div>
-            </div>
-            {row.detail.map((e, idx) => (
-              <div key={idx} className={classNames(classes.cell, classes.score, getClassByDetail(e))}>
-                <div className={classes.bignumber}>{e.submissions+e.pending ? e.submissions+e.pending : '\u00A0'}</div>
-                <div className={classes.smallnumber}>{e.is_correct ? timeformat(e.solvetime) : '\u00A0'}</div>
+          <div className={classes.rowWrapper}>
+            <div className={classNames(classes.cell, classes.rank)}>{t('scoreboard.rank')}</div>
+            <div className={classNames(classes.cell, classes.team)}>{t('scoreboard.team')}</div>
+            {scoreboard.problems.map((e, idx) => (
+              <div key={idx} className={classNames(classes.cell, classes.problem)}>
+                {e.shortname}
               </div>
             ))}
-            <div className={classNames(classes.cell, classes.total)}>
-              <div className={classes.bignumber}>{row.points}</div>
-              <div className={classes.smallnumber}>{timeformat(row.totaltime)}</div>
+            <div className={classNames(classes.cell, classes.total)}></div>
+          </div>
+        </div>
+        {scoreboard.scoreboard.map(row => (
+          <div className={classes.row} key={row.team.teamid}>
+            <div className={classNames(classes.rowWrapper, classes.teamrow)}>
+              <div className={classNames(classes.cell, classes.rank, classes.ranktext)}>{row.rank}</div>
+              <div className={classNames(classes.cell, classes.team, classes.teaminfo)} style={{backgroundColor: row.team.color}}>
+                <div className={classes.teamname}>{row.team.teamname}</div>
+                <div className={classes.affil}>
+                  {row.team.country && <img src={`./flags/${row.team.country}.png`} alt={row.team.country} style={{height: '1em'}} />}
+                  {row.team.affilname || '\u00A0'}
+                </div>
+              </div>
+              {row.detail.map((e, idx) => (
+                <div key={idx} className={classNames(classes.cell, classes.score, getClassByDetail(e))}>
+                  <div className={classes.bignumber}>{e.submissions+e.pending ? e.submissions+e.pending : '\u00A0'}</div>
+                  <div className={classes.smallnumber}>{e.is_correct ? timeformat(e.solvetime) : '\u00A0'}</div>
+                </div>
+              ))}
+              <div className={classNames(classes.cell, classes.total)}>
+                <div className={classes.bignumber}>{row.points}</div>
+                <div className={classes.smallnumber}>{timeformat(row.totaltime)}</div>
+              </div>
             </div>
           </div>
         ))}
