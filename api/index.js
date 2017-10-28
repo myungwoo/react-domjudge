@@ -348,7 +348,7 @@ router.post('/scoreboard/my', (req, res) => {
     ]);
     affil = affil[0]; total = total[0] || {points: 0, totaltime: 0}; category = category[0];
     let {sortorder, color} = category;
-    rank = (await db.scoreboard.getBetterThan(cid, total.points, total.totaltime, sortorder)) + 1;
+    let rank = (await db.scoreboard.getBetterThan(cid, total.points, total.totaltime, sortorder)) + 1;
 
     let info = {};
     for (let problem of problems)
@@ -463,7 +463,7 @@ router.post('/scoreboard', (req, res) => {
         row.points++;
         row.totaltime += cache.solvetime + minute_to_score(penalty1) * (cache.submissions - 1);
         row.solve_times.push(cache.totaltime);
-        if (cache.totaltime === firstsolve[sortorder][cache.probid])
+        if (cache.solvetime === firstsolve[sortorder][cache.probid])
           cell.is_first = true;
       }
       cell.submissions = cache.submissions;

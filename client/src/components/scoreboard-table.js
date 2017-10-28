@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {translate} from 'react-i18next';
 
-import {red, lightGreen, orange} from 'material-ui/colors';
+import {red, lightGreen, orange, green} from 'material-ui/colors';
 import {withStyles} from 'material-ui/styles';
 import classNames from 'classnames';
 
@@ -76,10 +76,10 @@ const styles = () => ({
     color: '#fff',
   },
   firstsolve: {
-    backgroundColor: lightGreen['A700'],
+    backgroundColor: green[800],
   },
   correct: {
-    backgroundColor: lightGreen[400],
+    backgroundColor: green[500],
   },
   wrong: {
     backgroundColor: red[400],
