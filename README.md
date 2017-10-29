@@ -1,9 +1,12 @@
-# DOMJudge with React
+# DOMjudge with React
 
 ## 개요
 
-* React를 이용한 DOMJudge front-end 개발
-* DOMJudge api에서 부족한 기능들과 로그인 등의 구현을 위해 express를 통한 api 서버 구축
+* React를 이용한 DOMjudge front-end 개발
+* 완벽한 기능 구현을 위해 DOMjudge api 대신 express를 통한 api 서버 구축
+* location 이동이 전혀 없는 application 구축이 목표
+* (대회에 필요는 없을 수 있지만) 최대한 responsive 지향
+* DOMjudge에 없는 기능들 구현 (제출한 파일 보기, submission 결과 알림, 새로운 clarification 알림)
 
 ## 설치
 

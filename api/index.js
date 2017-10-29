@@ -12,7 +12,6 @@ router.use('/', authMiddleware);
 
 router.use('/auth', require('./auth'));
 router.get('/status', (req, res) => {
-  // TODO: check domjudge api conn
   (async function(req, res){
     let db_conn = true;
     try{ await db.ping(); }
