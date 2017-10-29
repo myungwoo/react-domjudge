@@ -12,9 +12,14 @@ import Dialog, {
   DialogContentText
 } from 'material-ui/Dialog';
 
+import SyntaxHighlighter from 'react-syntax-highlighter';
+import {googlecode} from 'react-syntax-highlighter/dist/styles';
+
 let ResponsiveDialog = withResponsiveFullScreen()(Dialog);
 
 class SubmissionDetailDialog extends React.Component {
+  state = {ftab: 0}
+
   render() {
     // eslint-disable-next-line no-unused-vars
     const {submission, contest, t, i18n, ...rest} = this.props;
@@ -106,6 +111,19 @@ class SubmissionDetailDialog extends React.Component {
                 }
               </div>
               }
+              <Typography type="title" style={{paddingTop: 10}}>{t('submission_detail_dialog.submitted_file', {count: submission.files.length})}</Typography>
+              {submission.files.map((e, idx) => (
+                <div key={idx}>
+                  <Typography type="subheading" style={{paddingTop: 10}}>{e.filename}</Typography>
+                  <SyntaxHighlighter
+                    showLineNumbers
+                    style={googlecode}
+                    customStyle={{borderRadius: 5, margin: 0}}
+                  >
+                    {e.sourcecode}
+                  </SyntaxHighlighter>
+                </div>
+              ))}
             </div>
           }
         </DialogContent>

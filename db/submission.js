@@ -52,6 +52,18 @@ exports.getSampleRun = submitid => {
   });
 };
 
+exports.getSubmissionFiles = submitid => {
+  return new Promise((resolve, reject) => {
+    pool.query('SELECT filename, rank, sourcecode FROM submission_file WHERE submitid = ?', [submitid], (err, res) => {
+      if (err) reject(err);
+      resolve(res.map(e => {
+        if (e.sourcecode) e.sourcecode = e.sourcecode.toString('utf-8');
+        return e;
+      }));
+    });
+  });
+};
+
 exports.addSubmission = (cid, teamid, probid, langid, connection) => {
   const conn = connection || pool;
   return new Promise((resolve, reject) => {

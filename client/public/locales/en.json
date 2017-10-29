@@ -104,6 +104,8 @@
     "no_stderr_output": "There was no stderr output.",
     "run_not_finished": "Run not finished yet.",
     "no_sample_case": "No sample cases available.",
+    "submitted_file": "Submitted file",
+    "submitted_file_plural": "Submitted files",
     "close": "Close"
   },
   "clarification": {

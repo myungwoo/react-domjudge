@@ -104,6 +104,8 @@
     "no_stderr_output": "표준에러 출력이 없습니다.",
     "run_not_finished": "아직 실행이 끝나지 않았습니다.",
     "no_sample_case": "결과가 없습니다.",
+    "submitted_file": "제출한 파일",
+    "submitted_file_plural": "제출한 파일들",
     "close": "닫기"
   },
   "clarification": {

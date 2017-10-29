@@ -92,6 +92,7 @@ router.post('/submission', (req, res) => {
       submission.output_compile = undefined;
     if (show_sample && submission.result !== 'compile-error')
       submission.sample_runs = await db.submission.getSampleRun(submitid);
+    submission.files = await db.submission.getSubmissionFiles(submitid);
     res.send(submission);
     try{
       await db.judging.setSeen(submission.judgingid);
