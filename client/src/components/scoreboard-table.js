@@ -51,7 +51,6 @@ const styles = () => ({
     padding: '16px 0px',
   },
   team: {
-    width: 350,
     paddingLeft: 10, paddingRight: 10,
     marginLeft: 3, marginRight: 3,
     textAlign: 'center',
@@ -117,12 +116,26 @@ class ScoreboardTable extends React.Component {
       if (e.pending) return classes.pending;
       if (e.submissions) return classes.wrong;
     };
+    const getTextWidth = (txt, font) => {
+      let element = document.createElement('canvas');
+      let context = element.getContext('2d');
+      context.font = font;
+      return context.measureText(txt).width;
+    };
+    let teamWidth = 50; // minimum width
+    for (let row of scoreboard.scoreboard){
+      let name = getTextWidth(row.team.teamname, '24px Roboto');
+      let affil = getTextWidth(row.team.affilname, '16px Roboto');
+      if (row.team.country) affil += 23; // flag's width
+      teamWidth = Math.max(teamWidth, name, affil);
+    }
+    teamWidth += 20; // because of padding
     return (
       <div className={classes.root}>
         <div className={classes.row}>
           <div className={classes.rowWrapper}>
             <div className={classNames(classes.cell, classes.rank)}>{t('scoreboard.rank')}</div>
-            <div className={classNames(classes.cell, classes.team)}>{t('scoreboard.team')}</div>
+            <div className={classNames(classes.cell, classes.team)} style={{width: teamWidth}}>{t('scoreboard.team')}</div>
             {scoreboard.problems.map((e, idx) => (
               <div key={idx} className={classNames(classes.cell, classes.problem)}>
                 {e.shortname}
@@ -135,7 +148,7 @@ class ScoreboardTable extends React.Component {
           <div className={classes.row} key={row.team.teamid}>
             <div className={classNames(classes.rowWrapper, classes.teamrow)}>
               <div className={classNames(classes.cell, classes.rank, classes.ranktext)}>{row.rank}</div>
-              <div className={classNames(classes.cell, classes.team, classes.teaminfo)} style={{backgroundColor: row.team.color}}>
+              <div className={classNames(classes.cell, classes.team, classes.teaminfo)} style={{backgroundColor: row.team.color, width: teamWidth}}>
                 <div className={classes.teamname}>{row.team.teamname}</div>
                 <div className={classes.affil}>
                   {row.team.country && <img src={`./flags/${row.team.country}.png`} alt={row.team.country} style={{height: '1em'}} />}
