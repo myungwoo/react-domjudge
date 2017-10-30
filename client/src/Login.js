@@ -47,10 +47,11 @@ class LoginPage extends React.Component {
       <div>
         {this.state.loading && <Loading loading={this.state.loading} />}
         <hgroup style={{textAlign: 'center', marginTop: '4em'}}>
-          <h1 style={{fontWeight: 300, color: '#636363'}}><a href="http://domjudge.org" target="_blank" rel="noopener noreferrer">DOMjudge</a> with React</h1>
-          <h3 style={{fontWeight: 300, color: '#4a89dc'}}>Powered by <a href="https://github.com/myungwoo" target="_blank" rel="noopener noreferrer">Myungwoo Chun</a></h3>
+          <h1 style={{fontWeight: 700, color: '#636363'}}><a href="http://domjudge.org" target="_blank" rel="noopener noreferrer">DOMjudge</a> with React</h1>
+          <h3 style={{fontWeight: 500, color: '#4a89dc'}}>Powered by <a href="https://github.com/myungwoo" target="_blank" rel="noopener noreferrer">Myungwoo Chun</a></h3>
         </hgroup>
         <div style={{
+          maxWidth: '100%',
           width: '380px', margin: '4em auto', padding: '3em 2em 2em 2em',
           background: '#fafafa',
           border: '1px solid #ebebeb',

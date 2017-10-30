@@ -18,6 +18,7 @@ import Login from './Login';
 import Loading from './components/loading';
 
 import './App.css';
+import 'typeface-roboto';
 
 class App extends React.Component {
   constructor(props) {

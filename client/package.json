@@ -18,7 +18,8 @@
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
     "react-scripts": "1.0.14",
-    "react-syntax-highlighter": "^5.8.0"
+    "react-syntax-highlighter": "^5.8.0",
+    "typeface-roboto": "0.0.43"
   },
   "scripts": {
     "start": "react-scripts start",
