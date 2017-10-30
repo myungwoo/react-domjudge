@@ -38,12 +38,11 @@ class SubmitForm extends React.Component {
     this.loadForm();
   }
 
-  shouldComponentUpdate(nextProps) {
+  componentWillReceiveProps(nextProps) {
     if (JSON.stringify(this.props.contest) !== JSON.stringify(nextProps.contest)){
       // If contest has been changed problem, language list also has to be changed
       this.loadForm(nextProps.contest);
     }
-    return true;
   }
   
   loadForm(c) {

@@ -31,13 +31,12 @@ class Clarifications extends React.Component {
     clearTimeout(this.timer);
   }
 
-  shouldComponentUpdate(nextProps) {
+  componentWillReceiveProps(nextProps) {
     if (JSON.stringify(this.props.contest) !== JSON.stringify(nextProps.contest)){
       // If contest has been changed clarification list also has to be changed
       this.viewed = null; this.notified = new Set();
       this.refreshClarification(nextProps.contest);
     }
-    return true;
   }
 
   refreshClarification(c) {

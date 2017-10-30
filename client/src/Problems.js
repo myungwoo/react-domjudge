@@ -29,12 +29,11 @@ class Problems extends React.Component {
     this.refreshList();
   }
 
-  shouldComponentUpdate(nextProps) {
+  componentWillReceiveProps(nextProps) {
     if (JSON.stringify(this.props.contest) !== JSON.stringify(nextProps.contest) ||
         this.props.state !== nextProps.state){
       this.refreshList(nextProps.contest);
     }
-    return true;
   }
 
   componentDidUpdate() {

@@ -19,12 +19,11 @@ class MyScore extends React.Component {
     this.refreshScore();
   }
 
-  shouldComponentUpdate(nextProps) {
+  componentWillReceiveProps(nextProps) {
     if (JSON.stringify(this.props.contest) !== JSON.stringify(nextProps.contest) ||
         this.props.sbidx !== nextProps.sbidx){
       this.refreshScore(nextProps.contest);
     }
-    return true;
   }
 
   refreshScore(c) {

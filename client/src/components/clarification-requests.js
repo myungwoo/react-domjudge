@@ -23,13 +23,12 @@ class ClarificationRequests extends React.Component {
     this.refreshClarification();
   }
 
-  shouldComponentUpdate(nextProps) {
+  componentWillReceiveProps(nextProps) {
     if (JSON.stringify(this.props.contest) !== JSON.stringify(nextProps.contest) ||
         JSON.stringify(this.props.cidx) !== JSON.stringify(nextProps.cidx)){
       // If contest has been changed clarification request list also has to be changed
       this.refreshClarification(nextProps.contest);
     }
-    return true;
   }
 
   refreshClarification(c) {

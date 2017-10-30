@@ -21,13 +21,15 @@ class ProblemView extends React.Component {
     this.refreshProblem();
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    if (this.state.url !== nextState.url){
-      window.URL.revokeObjectURL(this.state.url);
-    }
+  componentWillReceiveProps(nextProps) {
     if (JSON.stringify(this.props.problem) !== JSON.stringify(nextProps.problem)){
       this.refreshProblem(nextProps.problem);
     }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (this.state.url !== nextState.url)
+      window.URL.revokeObjectURL(this.state.url);
     return true;
   }
   

@@ -28,15 +28,10 @@ class Scoreboard extends React.Component {
     this.refreshScoreboard();
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
+  componentWillReceiveProps(nextProps) {
     if (JSON.stringify(this.props.contest) !== JSON.stringify(nextProps.contest) ||
-        this.props.state !== nextProps.state){
+        this.props.state !== nextProps.state)
       this.refreshScoreboard(nextProps.contest);
-      return true;
-    }
-    return this.currect_lng !== nextProps.i18n.language ||
-           this.props.state !== nextProps.state ||
-           JSON.stringify(this.state) !== JSON.stringify(nextState);
   }
 
   componentWillUnmount() {
