@@ -50,7 +50,7 @@ class SubmitForm extends React.Component {
     const contest = c || this.props.contest;
     (async function(){
       setLoading(true);
-      let problems = (await axios.post('./api/problems', {cid: contest.cid}, Auth.getHeader())).data;
+      let problems = (await axios.get(`./api/problems?cid=${contest.cid}`, Auth.getHeader())).data;
       let languages = (await axios.get('./api/languages', Auth.getHeader())).data;
       this.files = [];
       this.probid_to_obj = problems.reduce((acc, cur) => {

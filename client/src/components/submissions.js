@@ -68,9 +68,7 @@ class Submissions extends React.Component {
     const contest = c || this.props.contest;
     clearTimeout(this.timer);
     setLoading(true);
-    axios.post('./api/submissions', {
-      cid: contest.cid
-    }, Auth.getHeader())
+    axios.get(`./api/submissions?cid=${contest.cid}`, Auth.getHeader())
       .then(res => {
         this.setState({submissions: res.data});
         onUpdate();
@@ -85,9 +83,7 @@ class Submissions extends React.Component {
   selectSubmission(submitid) {
     const {toast, t} = this.props;
     this.setState({loading: true});
-    axios.post('./api/submission', {
-      submitid
-    }, Auth.getHeader())
+    axios.get(`./api/submission/${submitid}`, Auth.getHeader())
       .then(res => {
         if (!res.data) toast(t('submissions.not_found'));
         else this.refreshSubmission();

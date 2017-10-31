@@ -52,7 +52,7 @@ class ClarificationDialog extends React.Component {
   componentDidMount() {
     const {contest, toast, t} = this.props;
     // Get problem list
-    axios.post('./api/problems', {cid: contest.cid}, Auth.getHeader())
+    axios.get(`./api/problems?cid=${contest.cid}`, Auth.getHeader())
       .then(res => {
         this.setState({loading: false, problems: res.data});
       })
@@ -66,7 +66,7 @@ class ClarificationDialog extends React.Component {
     const {contest, toast, afterSend, onRequestClose, t} = this.props;
     const {subject, text} = this.state;
     this.setState({loading: true, open: false});
-    axios.post('./api/clarification/send', {
+    axios.post('./api/clarification', {
       cid: contest.cid,
       subject,
       text,

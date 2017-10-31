@@ -46,9 +46,9 @@ router.get('/contests', (req, res) => {
   }
 });
 
-router.post('/submissions', (req, res) => {
+router.get('/submissions', (req, res) => {
   if (!req.user){ res.sendStatus(401); return; }
-  const {cid} = req.body;
+  const {cid} = req.query;
   const {teamid} = req.user;
   if (!cid || isNaN(Number(cid))){ res.sendStatus(400); return; }
   (async function(req, res){
@@ -69,9 +69,9 @@ router.post('/submissions', (req, res) => {
   })(req, res);
 });
 
-router.post('/submission', (req, res) => {
+router.get('/submission/:submitid', (req, res) => {
   if (!req.user){ res.sendStatus(401); return; }
-  const {submitid} = req.body;
+  const {submitid} = req.params;
   const {teamid} = req.user;
   if (!submitid || isNaN(Number(submitid))){ res.sendStatus(400); return; }
   (async function(req, res){
@@ -102,35 +102,24 @@ router.post('/submission', (req, res) => {
     .catch(() => res.sendStatus(500));
 });
 
-router.post('/problems', (req, res) => {
+router.get('/problems', (req, res) => {
   if (!req.user){ res.sendStatus(401); return; }
-  const {cid} = req.body;
+  const {cid, withtext} = req.query;
   const {teamid} = req.user;
   if (!cid || isNaN(Number(cid))){ res.sendStatus(400); return; }
   (async function(req, res) {
     let contest = (await db.contest.getContestByCidTeam(cid, teamid))[0];
     if (!contest){ res.sendStatus(400); return; }
     if (contest.starttime*1000 > Date.now()){ res.json(null); return; }
-    res.send(await db.problem.getListByContest(cid));
+    if (withtext !== undefined) res.send(await db.problem.getListByContestWithText(cid));
+    else res.send(await db.problem.getListByContest(cid));
   })(req, res);
 });
 
-router.post('/problems/with/text', (req, res) => {
+router.get('/problemtext/:probid', (req, res) => {
   if (!req.user){ res.sendStatus(401); return; }
-  const {cid} = req.body;
-  const {teamid} = req.user;
-  if (!cid || isNaN(Number(cid))){ res.sendStatus(400); return; }
-  (async function(req, res) {
-    let contest = (await db.contest.getContestByCidTeam(cid, teamid))[0];
-    if (!contest){ res.sendStatus(400); return; }
-    if (contest.starttime*1000 > Date.now()){ res.json(null); return; }
-    res.send(await db.problem.getListByContestWithText(cid));
-  })(req, res);
-});
-
-router.post('/problem', (req, res) => {
-  if (!req.user){ res.sendStatus(401); return; }
-  const {cid, probid} = req.body;
+  const {probid} = req.params;
+  const {cid} = req.query;
   const {teamid} = req.user;
   if (!cid || isNaN(Number(cid))){ res.sendStatus(400); return; }
   (async function(req, res) {
@@ -222,10 +211,10 @@ router.post('/submit', upload.array('files'), (req, res) => {
     .catch(() => res.send({success: false}));
 });
 
-router.post('/clarifications', (req, res) => {
+router.get('/clarifications', (req, res) => {
   if (!req.user){ res.sendStatus(401); return; }
   const {teamid, teamname} = req.user;
-  const {cid} = req.body;
+  const {cid} = req.query;
   if (!cid || isNaN(Number(cid))){ res.sendStatus(400); return; }
   (async function(req, res) {
     let contest = (await db.contest.getContestByCidTeam(cid, teamid))[0];
@@ -245,10 +234,10 @@ router.post('/clarifications', (req, res) => {
     .catch(() => res.sendStatus(500));
 });
 
-router.post('/clarifications/my', (req, res) => {
+router.get('/clarifications/my', (req, res) => {
   if (!req.user){ res.sendStatus(401); return; }
   const {teamid, teamname} = req.user;
-  const {cid} = req.body;
+  const {cid} = req.query;
   if (!cid || isNaN(Number(cid))){ res.sendStatus(400); return; }
   (async function(req, res) {
     let contest = (await db.contest.getContestByCidTeam(cid, teamid))[0];
@@ -267,10 +256,10 @@ router.post('/clarifications/my', (req, res) => {
     .catch(() => res.sendStatus(500));
 });
 
-router.post('/clarification', (req, res) => {
+router.get('/clarification/:clarid', (req, res) => {
   if (!req.user){ res.sendStatus(401); return; }
   const {teamid} = req.user;
-  const {clarid} = req.body;
+  const {clarid} = req.params;
   if (!clarid || isNaN(Number(clarid))){ res.sendStatus(400); return; }
   (async function(req, res) {
     let clarification = (await db.clarification.getByIdTeam(clarid, teamid))[0];
@@ -302,7 +291,7 @@ router.post('/clarification', (req, res) => {
     .catch(() => res.sendStatus(500));
 });
 
-router.post('/clarification/send', (req, res) => {
+router.post('/clarification', (req, res) => {
   if (!req.user){ res.sendStatus(401); return; }
   const {teamid, username} = req.user;
   const {cid, subject, text} = req.body;
@@ -329,10 +318,10 @@ router.post('/clarification/send', (req, res) => {
     .catch(() => res.sendStatus(500));
 });
 
-router.post('/scoreboard/my', (req, res) => {
+router.get('/scoreboard/my', (req, res) => {
   if (!req.user){ res.sendStatus(401); return; }
   const {teamid} = req.user;
-  const {cid} = req.body;
+  const {cid} = req.query;
   if (!cid || isNaN(Number(cid))){ res.sendStatus(400); return; }
   (async function(req, res) {
     let contest = (await db.contest.getContestByCidTeam(cid, teamid))[0];
@@ -407,10 +396,10 @@ router.post('/scoreboard/my', (req, res) => {
     .catch(() => res.sendStatus(500));
 });
 
-router.post('/scoreboard', (req, res) => {
+router.get('/scoreboard', (req, res) => {
   if (!req.user){ res.sendStatus(401); return; }
   const {teamid} = req.user;
-  const {cid} = req.body;
+  const {cid} = req.query;
   const now = Date.now();
   if (!cid || isNaN(Number(cid))){ res.sendStatus(400); return; }
   (async function(req, res) {

@@ -45,7 +45,7 @@ class Problems extends React.Component {
     const contest = c || this.props.contest;
     const {toast, t} = this.props;
     this.setState({loading: true});
-    axios.post('./api/problems/with/text', {cid: contest.cid}, Auth.getHeader())
+    axios.get(`./api/problems?cid=${contest.cid}&withtext`, Auth.getHeader())
       .then(res => {
         this.setState({loading: false, problems: res.data});
       })

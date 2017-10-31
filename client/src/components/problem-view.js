@@ -37,9 +37,7 @@ class ProblemView extends React.Component {
     const problem = p || this.props.problem;
     const {toast, contest, t} = this.props;
     this.setState({loading: true});
-    axios.post('./api/problem', {
-      cid: contest.cid, probid: problem.probid
-    }, {responseType: 'arraybuffer', ...Auth.getHeader()})
+    axios.get(`./api/problemtext/${problem.probid}?cid=${contest.cid}`, {responseType: 'arraybuffer', ...Auth.getHeader()})
       .then(res => {
         let blob = new Blob([res.data], {type: 'application/pdf'});
         let url = window.URL.createObjectURL(blob);

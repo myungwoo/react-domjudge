@@ -35,9 +35,7 @@ class ClarificationRequests extends React.Component {
     const {setLoading, toast, t} = this.props;
     const contest = c || this.props.contest;
     setLoading(true);
-    axios.post('./api/clarifications/my', {
-      cid: contest.cid
-    }, Auth.getHeader())
+    axios.get(`./api/clarifications/my?cid=${contest.cid}`, Auth.getHeader())
       .then(res => {
         let clars = res.data.map(e => {
           e.body = e.body.split('\n').filter(e => e[0] !== '>' && e.trim()[0]).join(' ');
@@ -53,9 +51,7 @@ class ClarificationRequests extends React.Component {
   selectClarification(clarid) {
     const {toast, t} = this.props;
     this.setState({loading: true});
-    axios.post('./api/clarification', {
-      clarid
-    }, Auth.getHeader())
+    axios.get(`./api/clarification/${clarid}`, Auth.getHeader())
       .then(res => {
         this.setState({loading: false, selected_clarification: res.data});
         this.refreshClarification();

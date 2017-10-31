@@ -43,7 +43,7 @@ class Scoreboard extends React.Component {
     const {toast, t} = this.props;
     clearTimeout(this.timer);
     this.setState({loading: true});
-    axios.post('./api/scoreboard', {cid: contest.cid}, Auth.getHeader())
+    axios.get(`./api/scoreboard?cid=${contest.cid}`, Auth.getHeader())
       .then(res => {
         this.setState({loading: false, scoreboard: res.data});
         // Reload scoreboard automatically.

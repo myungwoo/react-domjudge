@@ -30,9 +30,7 @@ class MyScore extends React.Component {
     const contest = c || this.props.contest;
     const {setLoading, toast, t} = this.props;
     setLoading(true);
-    axios.post('./api/scoreboard/my', {
-      cid: contest.cid
-    }, Auth.getHeader())
+    axios.get(`./api/scoreboard/my?cid=${contest.cid}`, Auth.getHeader())
       .then(res => {
         this.setState({info: res.data});
         setLoading(false);
