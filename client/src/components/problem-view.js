@@ -56,8 +56,11 @@ class ProblemView extends React.Component {
       <div style={{height: '100%'}}>
         {loading && <Loading />}
         <div>
+          <a href={url} target="_blank" rel="noopener noreferrer">
+            <Button raised color="default" style={{width: '50%'}}>{t('problem_view.link')}</Button>
+          </a>
           <a href={url} download={`${problem.shortname} - ${problem.name}.pdf`}>
-            <Button raised color="primary" style={{width: '100%'}}>{t('problem_view.download')}</Button>
+            <Button raised color="primary" style={{width: '50%'}}>{t('problem_view.download')}</Button>
           </a>
         </div>
         <object data={url} type="application/pdf" style={{width: '100%', height: 'calc(100% - 36px)'}}>

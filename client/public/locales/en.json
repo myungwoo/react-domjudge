@@ -133,6 +133,7 @@
     "contest_not_starts": "Problem texts will appear here at contest start."
   },
   "problem_view": {
+    "link": "Link",
     "download": "Download",
     "cant_view": "If you can't view PDF file in browser, <1><0>download it!</0></1>"
   },
