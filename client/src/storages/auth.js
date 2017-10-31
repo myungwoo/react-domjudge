@@ -46,7 +46,7 @@ const Auth = {
     }
   },
 
-  getHeader: () => ({headers: {'x-access-token': localStorage.getItem('jwt-token')}})
+  getHeader: () => ({headers: {'authorization': `Bearer ${localStorage.getItem('jwt-token')}`}})
 };
 
 export default Auth;

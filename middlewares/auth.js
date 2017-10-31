@@ -2,7 +2,9 @@ const jwt = require('jsonwebtoken');
 
 module.exports = function(req, res, next) {
   const secret = req.app.get('jwt-secret');
-  const token = req.headers['x-access-token'];
+  const auth = req.headers.authorization;
+  if (!auth){ next(); return; }
+  const token = auth.split(' ')[1];
 
   req.user = null;
   try {
