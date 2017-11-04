@@ -13,6 +13,8 @@ import Auth from '../storages/auth';
 
 import Logo from '../logo.png';
 
+import {useDesktopNotification} from '../config';
+
 class Submissions extends React.Component {
   constructor(props) {
     super(props);
@@ -44,15 +46,17 @@ class Submissions extends React.Component {
       if (s && s.result){
         if (!this.notified.has(sid)){
           this.notified.add(sid);
-          let n = new Notification(
-            t('notification.new_result.title'), {
-              body: t('notification.new_result.body', {shortname: s.shortname, result: s.result.toUpperCase()}),
-              icon: Logo
-            });
-          n.onclick = evt => {
-            window.focus();
-            evt.target.close();
-          };
+          if (useDesktopNotification){
+            let n = new Notification(
+              t('notification.new_result.title'), {
+                body: t('notification.new_result.body', {shortname: s.shortname, result: s.result.toUpperCase()}),
+                icon: Logo
+              });
+            n.onclick = evt => {
+              window.focus();
+              evt.target.close();
+            };
+          }
         }
       }else pendings.push(sid);
     }

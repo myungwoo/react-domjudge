@@ -13,6 +13,8 @@ import Auth from '../storages/auth';
 
 import Logo from '../logo.png';
 
+import {useDesktopNotification} from '../config';
+
 class Clarifications extends React.Component {
   constructor(props) {
     super(props);
@@ -56,15 +58,17 @@ class Clarifications extends React.Component {
           for (let clar of clars){
             if (!this.viewed.has(clar.clarid) && !this.notified.has(clar.clarid)){
               this.notified.add(clar.clarid);
-              let n = new Notification(
-                t('notification.new_clarification.title'), {
-                  body: t('notification.new_clarification.body', {subject: clar.subject, to: clar.to, body: clar.body}),
-                  icon: Logo
-                });
-              n.onclick = evt => {
-                window.focus();
-                evt.target.close();
-              };
+              if (useDesktopNotification){
+                let n = new Notification(
+                  t('notification.new_clarification.title'), {
+                    body: t('notification.new_clarification.body', {subject: clar.subject, to: clar.to, body: clar.body}),
+                    icon: Logo
+                  });
+                n.onclick = evt => {
+                  window.focus();
+                  evt.target.close();
+                };
+              }
             }
           }
         }
