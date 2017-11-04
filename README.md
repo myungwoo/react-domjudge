@@ -16,6 +16,7 @@
 - It is now compatible with **DOMjudge version 5.3.x**
 
 ![Main page](./images/main.png)
+[More images here.](./images)
 
 ## Requirements
 
