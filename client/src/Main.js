@@ -34,6 +34,8 @@ import Overview from './Overview';
 import Problems from './Problems';
 import Scoreboard from './Scoreboard';
 
+import {availableLanguages} from './config';
+
 const drawerWidth = 240;
 
 const styles = theme => ({
@@ -172,6 +174,7 @@ class Main extends React.Component {
     // So it's able to use localStorage instead of state/props.
     let contests = Contest.getList();
     let {toast, user, contest, t, classes} = this.props;
+    const languageSelection = (availableLanguages && availableLanguages.length > 1);
     return (
       <div className={classes.appFrame}>
         {this.state.redirect_to && <Redirect to={this.state.redirect_to} />}
@@ -204,9 +207,9 @@ class Main extends React.Component {
               <Button dense color="contrast" onClick={() => this.setState({contests_open: true})}>
                 <ListIcon />
               </Button>}
-            <Button dense color="contrast" onClick={() => this.setState({languages_open: true})}>
+            {languageSelection && <Button dense color="contrast" onClick={() => this.setState({languages_open: true})}>
               <LanguageIcon />
-            </Button>
+            </Button>}
           </Toolbar>
         </AppBar>
         <UserInfoDialog
@@ -219,9 +222,9 @@ class Main extends React.Component {
             contest={contest}
             onContestChange={this.onContestChange.bind(this)}
             onRequestClose={() => this.setState({contests_open: false})} />}
-        <LanguageSelectDialog
+        {languageSelection && <LanguageSelectDialog
           open={this.state.languages_open}
-          onRequestClose={() => this.setState({languages_open: false})} />
+          onRequestClose={() => this.setState({languages_open: false})} />}
         <Drawer
           type="permanent"
           classes={{

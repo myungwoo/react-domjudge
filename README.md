@@ -48,7 +48,7 @@ NODE_ENV=production PORT=3000 node server.js
 ## Configuration
 
 - API server side: [config.js](./config.js)
-- React client side: [client/src/config.js](./client/src/config.js)
+- React client side: [client/src/config.js](./client/src/config.js) [after update this config you need to **re-build** the client]
 
 ## Use our server with Apache2
 

@@ -9,6 +9,8 @@ import CheckIcon from 'material-ui-icons/Check';
 
 import Language from '../storages/language';
 
+import {availableLanguages} from '../config';
+
 class LanguageSelectDialog extends React.Component {
   handleClick(lng) {
     const {i18n, onRequestClose} = this.props;
@@ -19,7 +21,7 @@ class LanguageSelectDialog extends React.Component {
 
   render() {
     let {t, ...rest} = this.props;
-    const languages = [{code: 'en', name: 'English', cc: 'GBR'}, {code: 'ko', name: '한국어', cc: 'KOR'}];
+    const languages = availableLanguages;
     const lng = Language.getLanguage();
     return (
       <Dialog {...rest}>
