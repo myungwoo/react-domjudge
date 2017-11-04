@@ -9,7 +9,7 @@ module.exports = function(req, res, next) {
   req.user = null;
   try {
     // eslint-disable-next-line no-unused-vars
-    let {iat, exp, iss, ...rest} = jwt.verify(token, secret, {
+    let {iat, exp, iss, sub, ...rest} = jwt.verify(token, secret, {
       issuer: req.app.get('jwt-issuer'),
       subject: req.app.get('jwt-subject'),
     });

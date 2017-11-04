@@ -13,21 +13,18 @@ router.post('/login', (req, res) => {
     const secret = req.app.get('jwt-secret');
     const data = req.body;
     try{
-      let users = await db.user.getByUsername(data.username);
-      if (users.length !== 1) throw new Error('no_user');
-      let user = users[0];
+      let user = (await db.user.getByUsername(data.username))[0];
+      if (!user) throw new Error('no_user');
       if (user.password !== hash_password(user.username, data.password) &&
           !TwinBcrypt.compareSync(data.password, user.password)) throw new Error('wrong_password');
-      
-      let teams = await db.team.getByTeamId(user.teamid);
-      if (teams.length !== 1) throw new Error('no_team');
-      let team = teams[0];
+
+      let team = (await db.team.getByTeamId(user.teamid))[0];
+      if (!team) throw new Error('no_team');
 
       let contests = await db.contest.getListByTeam(team.teamid);
       if (contests.length === 0) throw new Error('no_contest');
 
-      let affils = await db.affiliation.getByAffilId(team.affilid);
-      let affiliation = affils.length === 1 ? affils[0] : null;
+      let affiliation = (await db.affiliation.getByAffilId(team.affilid))[0] || null;
       let userdata = {
         userid: user.userid,
         username: user.username,
@@ -75,14 +72,25 @@ router.get('/logout', (req, res) => {
 router.get('/user', (req, res) => {
   (async function(req, res){
     if (!req.user) throw Error();
-    let users = await db.user.getByUsername(req.user.username);
-    if (users.length !== 1) throw Error();
-    let user = users[0];
+    let user = (await db.user.getByUsername(req.user.username))[0];
+    if (!user) throw Error();
+    let team = (await db.team.getByTeamId(user.teamid))[0];
+    if (!team) throw Error();
+    let affiliation = (await db.affiliation.getByAffilId(team.affilid))[0] || null;
 
-    let teams = await db.team.getByTeamId(user.teamid);
-    if (teams.length !== 1) throw Error();
-
-    res.json(req.user);
+    let userdata = {
+      userid: user.userid,
+      username: user.username,
+      name: user.name,
+      teamname: team.name,
+      teamid: team.teamid,
+      affiliation: affiliation
+    };
+    // If userdata has been updated
+    if (JSON.stringify(userdata) !== JSON.stringify(req.user))
+      throw Error(); // reject the token
+      
+    res.send(req.user);
   })(req, res)
     .catch(() => res.json(null));
 });
