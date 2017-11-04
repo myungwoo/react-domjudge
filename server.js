@@ -12,10 +12,12 @@ app.set('db_pool', db);
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json({limit: config.express.max_body_size}));
 
+// Move configuration to app value
 app.set('jwt-secret', config.auth.secret);
 app.set('jwt-expire', config.auth.token_expire);
 app.set('jwt-issuer', config.auth.issuer);
 app.set('jwt-subject', config.auth.subject);
+app.set('domjudge-allow-submitted-files', config.domjudge.allow_view_submitted_files);
 
 app.use('/api', require('./api'));
 

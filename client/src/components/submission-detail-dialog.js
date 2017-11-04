@@ -111,19 +111,22 @@ class SubmissionDetailDialog extends React.Component {
                 }
               </div>
               }
-              <Typography type="title" style={{paddingTop: 10}}>{t('submission_detail_dialog.submitted_file', {count: submission.files.length})}</Typography>
-              {submission.files.map((e, idx) => (
-                <div key={idx}>
-                  <Typography type="subheading" style={{paddingTop: 10}}>{e.filename}</Typography>
-                  <SyntaxHighlighter
-                    showLineNumbers
-                    style={googlecode}
-                    customStyle={{borderRadius: 5, margin: 0}}
-                  >
-                    {e.sourcecode}
-                  </SyntaxHighlighter>
-                </div>
-              ))}
+              {submission.files &&
+              <div style={{paddingTop: 10}}>
+                <Typography type="title">{t('submission_detail_dialog.submitted_file', {count: submission.files.length})}</Typography>
+                {submission.files.map((e, idx) => (
+                  <div key={idx}>
+                    <Typography type="subheading" style={{paddingTop: 10}}>{e.filename}</Typography>
+                    <SyntaxHighlighter
+                      showLineNumbers
+                      style={googlecode}
+                      customStyle={{borderRadius: 5, margin: 0}}
+                    >
+                      {e.sourcecode}
+                    </SyntaxHighlighter>
+                  </div>
+                ))}
+              </div>}
             </div>
           }
         </DialogContent>
