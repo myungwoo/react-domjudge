@@ -1,56 +1,64 @@
 # DOMjudge with React
 
-## 개요
+## What's this?
 
-* React를 이용한 DOMjudge front-end 개발
-* 완벽한 기능 구현을 위해 DOMjudge api 대신 express를 통한 api 서버 구축
-* location 이동이 전혀 없는 application 구축이 목표
-* (대회에 필요는 없을 수 있지만) 최대한 responsive 지향
-* DOMjudge에 없는 기능들 구현 (제출한 파일 보기, submission 결과 알림, 새로운 clarification 알림)
+- Development of [DOMjudge](https://domjudge.org) front-end using React.
+- For the full-compatible usage, use own api server instead of DOMjudge's api.
+- Fully React-ful application (no page loading except the first time)
+- *(It's not a need of competitive programming contest)* We highly support responsive web.
+- And new feature which is not in original DOMjudge:
+  - Viewing submitted file
+  - Desktop notification of new submission result
+  - Desktop notification of new clarification
+- Support multiple language
+  - English
+  - Korean
+- It is now compatible with **DOMjudge version 5.3.x**
 
-## 설치
+![Main page](./images/main.png)
+
+## Requirements
+
+- OS: Windows, Ubuntu, macOS
+- Node.js 8+ ([Windows](https://nodejs.org/en/download/package-manager/#windows), [Ubuntu](https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions), [macOS](https://nodejs.org/en/download/package-manager/#macos))
+
+## How to install
 
 ```bash
+git clone https://github.com/myungwoo/react-domjudge.git
+cd react-domjudge
 npm i && cd client && npm i && cd ..
+```
 
+## How to run
+
+### For development
+```bash
+cd react-domjudge
 npm start
 ```
 
-## ESLint 확인
-
+### For production
 ```bash
-npm run lint
-
-cd client
-npm run lint
-```
-
-## API server config
-
-```bash
-vim config.js
-```
-
-## Client 빌드
-
-```bash
-cd client
-npm run build
-```
-
-## Client 빌드 이후 production으로 서버 실행
-
-```bash
+cd react-domjudge
+cd client && npm run build && cd ..
 NODE_ENV=production PORT=3000 node server.js
 ```
 
-## Apache2를 통한 proxy 설정
+## Configuration
 
+- API server side: [config.js](./config.js)
+- React client side: [client/src/config.js](./client/src/config.js)
+
+## Use our server with Apache2
+
+Run:
 ```bash
 sudo a2enmod proxy
 sudo a2enmod proxy_http
 ```
 
+And at apache2 config file:
 ```
 LoadModule proxy_module modules/mod_proxy.so
 LoadModule proxy_http_module modules/mod_proxy_http.so
@@ -59,7 +67,3 @@ RedirectMatch ^/react$ /react/
 ProxyPass "/react/" "http://localhost:3000/"
 ProxyPassReverse "/react/" "http://localhost:3000/"
 ```
-
-## 도움이 됐던 사이트들
-
-[Create-react-app with express api](https://github.com/fullstackreact/food-lookup-demo)
