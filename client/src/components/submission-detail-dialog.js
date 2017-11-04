@@ -42,7 +42,7 @@ class SubmissionDetailDialog extends React.Component {
         backgroundColor: '#fafafa',
         padding: 5,
         fontFamily: 'monospace',
-        overflowX: 'scroll',
+        overflowX: 'auto',
         whiteSpace: 'pre',
       },
     };

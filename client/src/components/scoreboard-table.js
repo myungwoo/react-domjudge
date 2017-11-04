@@ -19,7 +19,7 @@ const timeformat = t => {
 const cellwidth = score_in_seconds ? 70 : 60;
 const styles = () => ({
   root: {
-    overflowX: 'scroll',
+    overflowX: 'auto',
     maxWidth: '100%',
   },
   row: {
