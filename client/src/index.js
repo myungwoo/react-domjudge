@@ -6,10 +6,14 @@ import App from './App';
 import i18n from './i18n';
 import registerServiceWorker from './registerServiceWorker';
 
+import {useServiceWorker} from './config';
+
 ReactDOM.render(
   <I18nextProvider i18n={i18n()}>
     <HashRouter>
       <App />
     </HashRouter>
   </I18nextProvider>, document.getElementById('root'));
-registerServiceWorker();
+
+if (useServiceWorker)
+  registerServiceWorker();

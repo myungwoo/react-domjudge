@@ -1,7 +1,9 @@
+import {localStoragePrefix as pfx} from '../config';
+
 const Language = {
-  getLanguage: () => localStorage.getItem('language') || 'en',
+  getLanguage: () => localStorage.getItem(pfx + 'language') || 'en',
   setLanguage: lng => {
-    localStorage.setItem('language', lng);
+    localStorage.setItem(pfx + 'language', lng);
   }
 };
 
