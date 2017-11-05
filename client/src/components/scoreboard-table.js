@@ -70,6 +70,9 @@ const styles = () => ({
   problem: {
     width: cellwidth,
     marginLeft: 3, marginRight: 3,
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
   },
   score: {
     width: cellwidth,
