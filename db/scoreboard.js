@@ -56,7 +56,7 @@ exports.getCorrectProblemScoreList = (cid, teamid) => {
 
 exports.getProblemScoreList = (cid, teamid) => {
   return new Promise((resolve, reject) => {
-    pool.query(`SELECT sc.probid, p.shortname, sc.submissions_restricted AS submissions, sc.pending_restricted AS pending, sc.solvetime_restricted AS solvetime, sc.is_correct_restricted AS is_correct
+    pool.query(`SELECT sc.probid, p.shortname, sc.submissions_restricted AS submissions, sc.pending_restricted AS pending, sc.solvetime_restricted AS solvetime, sc.is_correct_restricted AS is_correct, p.color
                 FROM scorecache sc
                 LEFT JOIN contestproblem p USING (probid, cid)
                 WHERE cid = ? AND teamid = ?

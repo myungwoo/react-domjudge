@@ -44,7 +44,7 @@ class MyScore extends React.Component {
     if (info){
       scoreboard = {scoreboard: [info]};
       scoreboard.problems = [];
-      for (let c of info.detail) scoreboard.problems.push({probid: c.probid, shortname: c.shortname});
+      for (let c of info.detail) scoreboard.problems.push({probid: c.probid, shortname: c.shortname, color: c.color});
     }
     else return '';
     return (

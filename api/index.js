@@ -345,6 +345,7 @@ router.get('/scoreboard/my', (req, res) => {
       info[problem.probid] = {
         probid: problem.probid,
         shortname: problem.shortname,
+        color: problem.color,
         submissions: 0,
         pending: 0,
         solvetime: 0,
