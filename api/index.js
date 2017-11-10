@@ -90,7 +90,11 @@ router.get('/submission/:submitid', (req, res) => {
     if (show_compile !== 2 && (show_compile !== 1 || submission.result !== 'compile-error'))
       submission.output_compile = undefined;
     if (show_sample && submission.result !== 'compile-error')
-      submission.sample_runs = await db.submission.getSampleRun(submitid);
+      submission.sample_runs = (await db.submission.getSampleRun(submitid)).map(e => {
+        let {...x} = e;
+        x.description = e.description.toString();
+        return x;
+      });
     if (req.app.get('domjudge-allow-submitted-files'))
       submission.files = await db.submission.getSubmissionFiles(submitid);
     res.send(submission);
