@@ -456,7 +456,7 @@ router.get('/scoreboard', (req, res) => {
           firstsolve[sortorder][cache.probid] = cache.solvetime;
         row.points++;
         row.totaltime += cache.solvetime + minute_to_score(penalty1) * (cache.submissions - 1);
-        row.solve_times.push(cache.totaltime);
+        row.solve_times.push(cache.solvetime);
         if (cache.solvetime === firstsolve[sortorder][cache.probid])
           cell.is_first = true;
       }
