@@ -2,6 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import {translate} from 'react-i18next';
 
+import {Helmet} from 'react-helmet';
 import {Snackbar, Typography} from 'material-ui';
 import {red} from 'material-ui/colors';
 
@@ -84,7 +85,7 @@ class App extends React.Component {
 
   render() {
     const {t} = this.props;
-    let content;
+    let content, title = 'DOMjudge - React';
     if (this.state.error)
       content = (
         <Typography type="display2" style={{textAlign: 'center', paddingTop: 100, color: red['A400']}}>
@@ -98,16 +99,21 @@ class App extends React.Component {
           <Loading />
         </Typography>
       );
-    else if (this.state.user)
+    else if (this.state.user){
       content = (<Main toast={this.toast.bind(this)}
         onLogout={() => this.setState({user: Auth.getUser()})}
         onContestChange={contest => this.setState({contest})}
         user={this.state.user} contest={this.state.contest} />);
+      title = this.state.contest.name;
+    }
     else
       content = (<Login toast={this.toast.bind(this)} onLogin={() => this.setState({user: Auth.getUser(), contest: Contest.getContest()})} />);
 
     return (
       <div>
+        <Helmet>
+          <title>{title}</title>
+        </Helmet>
         {content}
         <Snackbar
           anchorOrigin={{vertical: 'top', horizontal: 'right'}}
