@@ -374,12 +374,12 @@ router.get('/scoreboard/my', (req, res) => {
       }
     }
     let firstsovletimes = (await db.scoreboard.getFirstSolveTime(cid, sortorder)).reduce((acc, cur) => {
-      acc[cur.probid] = to_score(cur.solvetime);
+      acc[cur.probid] = cur.solvetime;
       return acc;
     }, {});
     for (let e of (await db.scoreboard.getProblemScoreList(cid, teamid))){
-      e.solvetime = to_score(e.solvetime);
       e.is_first = firstsovletimes[e.probid] === e.solvetime && e.is_correct;
+      e.solvetime = to_score(e.solvetime);
       info[e.probid] = e;
     }
     let detail = Object.values(info);
@@ -449,15 +449,16 @@ router.get('/scoreboard', (req, res) => {
       if (!row) continue;
       let cell = row[cache.probid];
       if (!cell) continue;
-      cache.solvetime = second_to_score(cache.solvetime);
+      let org_score = cache.solvetime;
+      cache.solvetime = second_to_score(org_score);
       const sortorder = sortorder_of_team[cache.teamid];
       if (cache.is_correct && !cell.is_correct){
         if (firstsolve[sortorder][cache.probid] === undefined)
-          firstsolve[sortorder][cache.probid] = cache.solvetime;
+          firstsolve[sortorder][cache.probid] = org_score;
         row.points++;
         row.totaltime += cache.solvetime + minute_to_score(penalty1) * (cache.submissions - 1);
         row.solve_times.push(cache.solvetime);
-        if (cache.solvetime === firstsolve[sortorder][cache.probid])
+        if (org_score === firstsolve[sortorder][cache.probid])
           cell.is_first = true;
       }
       cell.submissions = cache.submissions;
