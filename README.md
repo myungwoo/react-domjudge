@@ -14,6 +14,7 @@
   - English
   - Korean
 - It is now compatible with **DOMjudge version 5.3.x**
+- Used at: [Algospot.com 10th Anniversary Contest](https://algospot.com/forum/read/4331/), [2017 ACM-ICPC Daejeon Regional](http://icpckorea.org/archives/1439)
 
 ![Main page](./images/main.png)
 [More images here.](./images)
