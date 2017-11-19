@@ -154,7 +154,7 @@ class ScoreboardTable extends React.Component {
               <div className={classNames(classes.cell, classes.team, classes.teaminfo)} style={{backgroundColor: row.team.color, width: teamWidth}}>
                 <div className={classes.teamname}>{row.team.teamname}</div>
                 <div className={classes.affil}>
-                  {row.team.country && <img src={`./flags/${row.team.country}.png`} alt={row.team.country} style={{height: '1em'}} />}
+                  {row.team.country && <img src={`./flags/${row.team.country}.png`} title={row.team.country} alt={row.team.country} style={{height: '1em'}} />}
                   {row.team.affilname || '\u00A0'}
                 </div>
               </div>
@@ -171,6 +171,20 @@ class ScoreboardTable extends React.Component {
             </div>
           </div>
         ))}
+        {scoreboard.summary &&
+        <div className={classes.row}>
+          <div className={classes.rowWrapper}>
+            <div className={classNames(classes.cell, classes.rank)}></div>
+            <div className={classNames(classes.cell, classes.team)} style={{width: teamWidth}}></div>
+            {scoreboard.summary.problems.map((e, idx) => (
+              <div key={idx} className={classNames(classes.cell, classes.total)}>
+                <div className={classes.bignumber} title={t('scoreboard.correct_count')}>{e.corrects}</div>
+                <div className={classes.smallnumber} title={t('scoreboard.submission_count')}>{e.submissions}</div>
+              </div>
+            ))}
+            <div className={classNames(classes.cell, classes.total)}></div>
+          </div>
+        </div>}
       </div>
     );
   }

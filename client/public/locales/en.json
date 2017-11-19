@@ -144,8 +144,10 @@
     "near_date_format": "HH:mm:ss",
     "far_date_format": "ddd D MMM YYYY HH:mm:ss",
     "frozen_date": "scoreboard is frozen since {{date}}",
-    "contest_not_starts": "Contest is not started yet.",    
+    "contest_not_starts": "Contest is not started yet.",
     "rank": "Rank",
-    "team": "Team"
+    "team": "Team",
+    "submission_count": "#submitted",
+    "correct_count": "#correct"
   }
 }

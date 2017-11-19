@@ -144,8 +144,10 @@
     "near_date_format": "HH:mm:ss",
     "far_date_format": "YY년 M월 D일 HH:mm:ss",
     "frozen_date": "점수판이 {{date}}부터 얼었습니다.",
-    "contest_not_starts": "대회가 아직 시작하지 않았습니다.",    
+    "contest_not_starts": "대회가 아직 시작하지 않았습니다.",
     "rank": "등수",
-    "team": "팀"
+    "team": "팀",
+    "submission_count": "제출 수",
+    "correct_count": "맞은 팀 수"
   }
 }

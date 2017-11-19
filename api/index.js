@@ -434,6 +434,17 @@ router.get('/scoreboard', (req, res) => {
     let sortorder_of_team = {};
     let firstsolve = {};
     let table = {};
+    let summary = {
+      problems: {},
+    };
+    for (let problem of problems)
+      summary.problems[problem.probid] = {
+        probid: problem.probid,
+        shortname: problem.shortname,
+        name: problem.name,
+        submissions: 0,
+        corrects: 0,
+      };
     for (let team of teams){
       sortorder_of_team[team.teamid] = team.sortorder;
       firstsolve[team.sortorder] = {};
@@ -443,7 +454,7 @@ router.get('/scoreboard', (req, res) => {
         submissions: 0, pending: 0, solvetime: 0, is_correct: 0, is_first: false
       };
     }
-    // caches must order by totaltime
+    // caches must order by solvetime
     for (let cache of caches){
       let row = table[cache.teamid];
       if (!row) continue;
@@ -460,7 +471,9 @@ router.get('/scoreboard', (req, res) => {
         row.solve_times.push(cache.solvetime);
         if (org_score === firstsolve[sortorder][cache.probid])
           cell.is_first = true;
+        summary.problems[cache.probid].corrects++;
       }
+      summary.problems[cache.probid].submissions += cache.submissions;
       cell.submissions = cache.submissions;
       cell.pending = show_pending ? cache.pending : 0;
       cell.solvetime = cache.solvetime;
@@ -499,9 +512,13 @@ router.get('/scoreboard', (req, res) => {
       if (!show_teams_submissions)
         row.detail = [];
     }
-    if (!show_teams_submissions) problems = [];
+    summary.problems = problems.map(e => summary.problems[e.probid]);
+    if (!show_teams_submissions){
+      problems = [];
+      summary = null;
+    }
     for (let row of ret) delete row.solve_times;
-    res.send({scoreboard: ret, problems, final, frozen});
+    res.send({scoreboard: ret, problems, final, frozen, summary});
   })(req, res)
     .catch(() => res.sendStatus(500));
 });
