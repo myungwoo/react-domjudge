@@ -139,8 +139,8 @@ class ScoreboardTable extends React.Component {
           <div className={classes.rowWrapper}>
             <div className={classNames(classes.cell, classes.rank)}>{t('scoreboard.rank')}</div>
             <div className={classNames(classes.cell, classes.team)} style={{width: teamWidth}}>{t('scoreboard.team')}</div>
-            {scoreboard.problems.map((e, idx) => (
-              <div key={idx} className={classNames(classes.cell, classes.problem)}>
+            {scoreboard.problems.map(e => (
+              <div key={e.probid} className={classNames(classes.cell, classes.problem)}>
                 {e.shortname}
               </div>
             ))}

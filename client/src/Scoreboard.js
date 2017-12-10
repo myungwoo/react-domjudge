@@ -53,7 +53,6 @@ class Scoreboard extends React.Component {
   }
 
   render() {
-    this.currect_lng = this.props.i18n.language;
     const {contest, state, t} = this.props;
     const {loading, scoreboard} = this.state;
     let frozen_date_display = '';

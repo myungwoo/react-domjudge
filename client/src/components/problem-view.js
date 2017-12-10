@@ -1,6 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {translate, Trans} from 'react-i18next';
+import {withStyles} from 'material-ui/styles';
+import classNames from 'classnames';
+
 import axios from 'axios';
 
 import Button from 'material-ui/Button';
@@ -9,13 +12,18 @@ import Loading from './loading';
 
 import Auth from '../storages/auth';
 
-class ProblemView extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      url: null,
-    };
-  }
+const styles = () => ({
+  fullWidth: {width: '100%'},
+  halfWidth: {width: '50%'},
+  fullHeight: {height: '100%'},
+  fitHeight: {height: 'calc(100% - 36px)'},
+  download: {color: 'blue', textDecoration: 'underline'},
+});
+
+class ProblemView extends React.PureComponent {
+  state = {
+    url: null,
+  };
 
   componentDidMount() {
     this.refreshProblem();
@@ -27,13 +35,12 @@ class ProblemView extends React.Component {
     }
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    if (this.state.url !== nextState.url)
-      window.URL.revokeObjectURL(this.state.url);
-    return true;
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.url !== prevState.url && prevState.url)
+      window.URL.revokeObjectURL(prevState.url);
   }
   
-  refreshProblem(p) {
+  refreshProblem = p => {
     const problem = p || this.props.problem;
     const {toast, contest, t} = this.props;
     this.setState({loading: true});
@@ -47,27 +54,27 @@ class ProblemView extends React.Component {
         this.setState({loading: false});
         toast(t('error'));
       });
-  }
+  };
 
   render() {
-    const {problem, t} = this.props;
+    const {problem, t, classes} = this.props;
     const {url, loading} = this.state;
     return (
-      <div style={{height: '100%'}}>
+      <div className={classes.fullHeight}>
         {loading && <Loading />}
         <div>
           <a href={url} target="_blank" rel="noopener noreferrer">
-            <Button raised color="default" style={{width: '50%'}}>{t('problem_view.link')}</Button>
+            <Button raised color="default" className={classes.halfWidth}>{t('problem_view.link')}</Button>
           </a>
           <a href={url} download={`${problem.shortname} - ${problem.name}.pdf`}>
-            <Button raised color="primary" style={{width: '50%'}}>{t('problem_view.download')}</Button>
+            <Button raised color="primary" className={classes.halfWidth}>{t('problem_view.download')}</Button>
           </a>
         </div>
-        <object data={url} type="application/pdf" style={{width: '100%', height: 'calc(100% - 36px)'}}>
+        <object data={url} type="application/pdf" className={classNames(classes.fullWidth, classes.fitHeight)}>
           <Trans i18nKey="problem_view.cant_view">
             If you can't view PDF file in browser,
             <a href={url} download={`${problem.shortname} - ${problem.name}.pdf`}>
-              <span style={{color: 'blue', textDecoration: 'underline'}}>
+              <span className={classes.download}>
                 download it!
               </span>
             </a>
@@ -84,4 +91,4 @@ ProblemView.PropTypes = {
   problem: PropTypes.number.isRequired,
 };
 
-export default translate('translations')(ProblemView);
+export default withStyles(styles)(translate('translations')(ProblemView));
