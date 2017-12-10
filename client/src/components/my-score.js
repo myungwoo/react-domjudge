@@ -7,13 +7,10 @@ import ScoreboardTable from './scoreboard-table';
 
 import Auth from '../storages/auth';
 
-class MyScore extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      info: null,
-    };
-  }
+class MyScore extends React.PureComponent {
+  state = {
+    info: null,
+  };
 
   componentDidMount() {
     this.refreshScore();
@@ -26,7 +23,7 @@ class MyScore extends React.Component {
     }
   }
 
-  refreshScore(c) {
+  refreshScore = c => {
     const contest = c || this.props.contest;
     const {setLoading, toast, t} = this.props;
     setLoading(true);
@@ -36,20 +33,17 @@ class MyScore extends React.Component {
         setLoading(false);
       })
       .catch(() => toast(t('error')));
-  }
+  };
 
   render() {
     const {info} = this.state;
-    let scoreboard = null;
     if (info){
-      scoreboard = {scoreboard: [info]};
+      const scoreboard = {scoreboard: [info]};
       scoreboard.problems = [];
       for (let c of info.detail) scoreboard.problems.push({probid: c.probid, shortname: c.shortname});
+      return <ScoreboardTable scoreboard={scoreboard} />;
     }
     else return '';
-    return (
-      <ScoreboardTable scoreboard={scoreboard} />
-    );
   }
 }
 

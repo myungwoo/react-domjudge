@@ -1,6 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {translate} from 'react-i18next';
+import {withStyles} from 'material-ui/styles';
+import classNames from 'classnames';
+
 import axios from 'axios';
 
 import {Typography} from 'material-ui';
@@ -15,7 +18,22 @@ import Logo from '../logo.png';
 
 import {useDesktopNotification} from '../config';
 
-class Clarifications extends React.Component {
+import {formatTime} from '../Helper';
+
+const styles = () => ({
+  fullWidth: {width: '100%'},
+  bigFont: {fontSize: 15},
+  center: {textAlign: 'center'},
+  time: {width: 43},
+  from: {width: 53},
+  subject: {maxWidth: 67},
+  body: {whiteSpace: 'pre-wrap'},
+  unread: {fontWeight: 800},
+  click: {cursor: 'pointer'},
+  noClar: {textAlign: 'center', fontStyle: 'italic'},
+});
+
+class Clarifications extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -41,7 +59,7 @@ class Clarifications extends React.Component {
     }
   }
 
-  refreshClarification(c) {
+  refreshClarification = c => {
     const {setLoading, toast, t} = this.props;
     const contest = c || this.props.contest;
     clearTimeout(this.timer);
@@ -80,9 +98,9 @@ class Clarifications extends React.Component {
         this.timer = setTimeout(this.refreshClarification.bind(this, contest), 30 * 1000);
       })
       .catch(() => toast(t('error')));
-  }
+  };
 
-  selectClarification(clarid) {
+  selectClarification = clarid => () => {
     const {toast, t} = this.props;
     this.setState({loading: true});
     axios.get(`./api/clarification/${clarid}`, Auth.getHeader())
@@ -96,53 +114,46 @@ class Clarifications extends React.Component {
       });
   }
 
-  render() {
-    const {contest, user, toast, afterSend, t} = this.props;
-    const {clarifications} = this.state;
+  closeDialog = () => this.setState({selected_clarification: null});
 
-    const formatTime = t => {
-      let s = Math.max(Math.floor((t-contest.starttime)/60), 0);
-      const pad2 = v => v < 10 ? '0'+v : ''+v;
-      return pad2(Math.floor(s/60)) + ':' + pad2(s%60);
-    };
+  render() {
+    const {contest, user, toast, afterSend, t, classes} = this.props;
+    const {clarifications} = this.state;
     const table = (
-      <Table style={{width: '100%'}}>
+      <Table className={classes.fullWidth}>
         <TableHead>
-          <TableRow style={{fontSize: 15}}>
-            <TableCell padding="none" style={{width:43, textAlign: 'center'}}>{t('clarification.time')}</TableCell>
-            <TableCell padding="none" style={{width:53, textAlign: 'center'}}>{t('clarification.from')}</TableCell>
-            <TableCell padding="none" style={{width:53, textAlign: 'center'}}>{t('clarification.to')}</TableCell>
-            <TableCell padding="none" style={{maxWidth:67, textAlign: 'center'}}>{t('clarification.subject')}</TableCell>
-            <TableCell padding="none" style={{textAlign: 'center'}}>{t('clarification.text')}</TableCell>
+          <TableRow className={classes.bigFont}>
+            <TableCell padding="none" className={classNames(classes.time, classes.center)}>{t('clarification.time')}</TableCell>
+            <TableCell padding="none" className={classNames(classes.from, classes.center)}>{t('clarification.from')}</TableCell>
+            <TableCell padding="none" className={classNames(classes.from, classes.center)}>{t('clarification.to')}</TableCell>
+            <TableCell padding="none" className={classNames(classes.subject, classes.center)}>{t('clarification.subject')}</TableCell>
+            <TableCell padding="none" className={classes.center}>{t('clarification.text')}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {clarifications.map((c, idx) => (
             <TableRow key={idx} hover
-              onClick={this.selectClarification.bind(this, c.clarid)}
-              style={{
-                fontWeight: c.unread ? 800 : 'inherit',
-                cursor: 'pointer',
-              }}
+              onClick={this.selectClarification(c.clarid)}
+              className={classNames(c.unread && classes.unread, classes.click)}
             >
-              <TableCell padding="none" style={{textAlign: 'center'}}>{formatTime(c.submittime)}</TableCell>
-              <TableCell padding="none" style={{textAlign: 'center'}}>{c.from}</TableCell>
-              <TableCell padding="none" style={{textAlign: 'center'}}>{c.to}</TableCell>
-              <TableCell padding="none" style={{textAlign: 'center'}}>{c.subject}</TableCell>
-              <TableCell padding="none" style={{textAlign: 'center', whiteSpace: 'pre-wrap', paddingLeft: 10, paddingRight: 10}}>{c.body}</TableCell>
+              <TableCell padding="none" className={classes.center}>{formatTime(contest.starttime, c.submittime)}</TableCell>
+              <TableCell padding="none" className={classes.center}>{c.from}</TableCell>
+              <TableCell padding="none" className={classes.center}>{c.to}</TableCell>
+              <TableCell padding="none" className={classes.center}>{c.subject}</TableCell>
+              <TableCell padding="none" className={classNames(classes.center, classes.body)}>{c.body}</TableCell>
             </TableRow>
           ))}
           {this.state.selected_clarification &&
           <ClarificationDialog
             fullWidth
             maxWidth="sm"
-            open={true}
+            open
             contest={contest}
             user={user}
             toast={toast}
             clarification={this.state.selected_clarification}
             afterSend={afterSend}
-            onRequestClose={() => this.setState({selected_clarification: null})}
+            onRequestClose={this.closeDialog}
           />}
         </TableBody>
       </Table>
@@ -152,7 +163,7 @@ class Clarifications extends React.Component {
         {this.state.loading && <Loading />}
         {clarifications.length > 0 ?
           table :
-          <Typography type="subheading" style={{textAlign: 'center', fontStyle: 'italic'}}>{t('clarification.no_clarification')}</Typography>}
+          <Typography type="subheading" className={classes.noClar}>{t('clarification.no_clarification')}</Typography>}
       </div>
     );
   }
@@ -166,4 +177,4 @@ Clarifications.propTypes = {
   user: PropTypes.object.isRequired,
 };
 
-export default translate('translations')(Clarifications);
+export default withStyles(styles)(translate('translations')(Clarifications));
