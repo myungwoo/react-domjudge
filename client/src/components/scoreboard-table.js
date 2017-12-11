@@ -102,33 +102,32 @@ const styles = () => ({
   smallnumber: {
     fontSize: 16
   },
+  flag: {
+    height: '1em',
+  },
 });
 
-class ScoreboardTable extends React.Component {
-  shouldComponentUpdate(nextProps) {
-    return JSON.stringify(this.props.scoreboard) !== JSON.stringify(nextProps.scoreboard) ||
-           this.current_lng !== nextProps.i18n.language;
-  }
+class ScoreboardTable extends React.PureComponent {
+  getClassByDetail = e => {
+    if (e.is_first) return this.props.classes.firstsolve;
+    if (e.is_correct) return this.props.classes.correct;
+    if (e.pending) return this.props.classes.pending;
+    if (e.submissions) return this.props.classes.wrong;
+  };
+
+  getTextWidth = (txt, font) => {
+    let element = document.createElement('canvas');
+    let context = element.getContext('2d');
+    context.font = font;
+    return context.measureText(txt).width;
+  };
 
   render() {
-    this.current_lng = this.props.i18n.language;
     const {scoreboard, t, classes} = this.props;
-    const getClassByDetail = e => {
-      if (e.is_first) return classes.firstsolve;
-      if (e.is_correct) return classes.correct;
-      if (e.pending) return classes.pending;
-      if (e.submissions) return classes.wrong;
-    };
-    const getTextWidth = (txt, font) => {
-      let element = document.createElement('canvas');
-      let context = element.getContext('2d');
-      context.font = font;
-      return context.measureText(txt).width;
-    };
     let teamWidth = 50; // minimum width
     for (let row of scoreboard.scoreboard){
-      let name = getTextWidth(row.team.teamname, '24px Roboto');
-      let affil = getTextWidth(row.team.affilname, '16px Roboto');
+      let name = this.getTextWidth(row.team.teamname, '24px Roboto');
+      let affil = this.getTextWidth(row.team.affilname, '16px Roboto');
       if (row.team.country) affil += 23; // flag's width
       teamWidth = Math.max(teamWidth, name, affil);
     }
@@ -154,12 +153,12 @@ class ScoreboardTable extends React.Component {
               <div className={classNames(classes.cell, classes.team, classes.teaminfo)} style={{backgroundColor: row.team.color, width: teamWidth}}>
                 <div className={classes.teamname}>{row.team.teamname}</div>
                 <div className={classes.affil}>
-                  {row.team.country && <img src={`./flags/${row.team.country}.png`} title={row.team.country} alt={row.team.country} style={{height: '1em'}} />}
+                  {row.team.country && <img src={`./flags/${row.team.country}.png`} title={row.team.country} alt={row.team.country} className={classes.flag} />}
                   {row.team.affilname || '\u00A0'}
                 </div>
               </div>
               {row.detail.map((e, idx) => (
-                <div key={idx} className={classNames(classes.cell, classes.score, getClassByDetail(e))}>
+                <div key={e.probid} className={classNames(classes.cell, classes.score, this.getClassByDetail(e))}>
                   <div className={classes.bignumber}>{e.submissions+e.pending ? e.submissions+e.pending : '\u00A0'}</div>
                   <div className={classes.smallnumber}>{e.is_correct ? timeformat(e.solvetime) : '\u00A0'}</div>
                 </div>
@@ -177,7 +176,7 @@ class ScoreboardTable extends React.Component {
             <div className={classNames(classes.cell, classes.rank)}></div>
             <div className={classNames(classes.cell, classes.team)} style={{width: teamWidth}}></div>
             {scoreboard.summary.problems.map((e, idx) => (
-              <div key={idx} className={classNames(classes.cell, classes.total)}>
+              <div key={e.probid} className={classNames(classes.cell, classes.total)}>
                 <div className={classes.bignumber} title={t('scoreboard.correct_count')}>{e.corrects}</div>
                 <div className={classes.smallnumber} title={t('scoreboard.submission_count')}>{e.submissions}</div>
               </div>

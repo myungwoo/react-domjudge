@@ -16,7 +16,7 @@ const styles = () => ({
   flag: {paddingRight: 10},
 });
 
-class LanguageSelectDialog extends React.Component {
+class LanguageSelectDialog extends React.PureComponent {
   handleClick = lng => () => {
     const {i18n, onRequestClose} = this.props;
     onRequestClose();
@@ -33,7 +33,7 @@ class LanguageSelectDialog extends React.Component {
         <DialogTitle>{t('language_select_dialog.title')}</DialogTitle>
         <List>
           {languages.map((e, idx) => (
-            <ListItem button key={idx} onClick={this.handleClick(e.code)}>
+            <ListItem button key={e.code} onClick={this.handleClick(e.code)}>
               <img src={`./flags/${e.cc}.png`} alt={e.name} className={classes.flag} />
               <ListItemText inset primary={e.name} />
               {lng === e.code &&
